@@ -16,7 +16,7 @@
                     <a class="nav-link" th:href="@{/index}">Consulta de Notícias</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/portal}">Cadastro de Portal<span class="sr-only">(atual)</span></a>
+                    <a class="nav-link" th:href="@{/portais}">Cadastro de Portal<span class="sr-only">(atual)</span></a>
                 </li>
             </ul>
         </div>
@@ -47,18 +47,18 @@
                     </select>
                 </div>
             </div>
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label for="tags" class="form-label">Tags</label>
                 <select id="tags" class="form-select" multiple th:field="*{tags}">
                     <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
                 </select>
                 <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
-            </div>
+            </div> -->
             <div class="form-check mb-3">
                 <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
                 <label class="form-check-label" for="ativo">Ativo</label>
             </div>
-            <button type="submit" class="btn btn-primary float-end">Adicionar Portal</button>
+            <button type="submit" class="btn btn-primary float-end">Salvar</button>
         </form>
     </div>
 
@@ -71,7 +71,7 @@
                     <th>Nome</th>
                     <th>URL</th>
                     <th>Agendador</th>
-                    <th>Tags</th>
+                    <!-- <th>Tags</th> -->
                     <th>Status</th>
                     <th>Ações</th>
                 </tr>
@@ -81,11 +81,11 @@
                     <td th:text="${portal.id}"></td>
                     <td th:text="${portal.nome}"></td>
                     <td th:text="${portal.url}"></td>
-                    <td th:text="${portal.agendador.tipo}"></td>
-                    <td>
+                    <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
+                    <!-- <td>
                         <span th:each="tag : ${portal.tags}" th:text="${tag.nome}" th:if="${!iterStat.last}">, </span>
                         <span th:text="${tag.nome}" th:if="${iterStat.last}"></span>
-                    </td>
+                    </td> -->
                     <td th:text="${portal.ativo ? 'Ativo' : 'Desativado'}"></td>
                     <td>
                         <a class="btn btn-warning" th:href="@{/portais/editar/{id}(id=${portal.id})}">Editar</a>

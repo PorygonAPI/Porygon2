@@ -9,9 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+// import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+// import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequestMapping("/portais")
@@ -26,9 +27,10 @@ public class PortalController {
     @Autowired
     private TagRepository tagRepository;  
 
-    @GetMapping("/novo")
+    @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
         model.addAttribute("portal", new Portal());
+        model.addAttribute("portais", portalRepository.findAll()); // listar os portais
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("tags", tagRepository.findAll());  
         return "portal";
@@ -37,35 +39,35 @@ public class PortalController {
     @PostMapping("/salvar")
     public String salvarPortal(@ModelAttribute Portal portal) {
         portalRepository.save(portal);
-        return "redirect:/portais/listar";
+        return "redirect:/portais";
     }
 
-    @GetMapping("/listar")
-    public String listarPortais(Model model) {
-        model.addAttribute("portais", portalRepository.findAll());
-        return "listar-portais"; // Retorna o template listar-portais.html
-    }
+    // @GetMapping("/editar/{id}")
+    // public String mostrarFormularioEdicao(@PathVariable("id") Integer id, Model model) {
+    //     Portal portal = portalRepository.findById(id)
+    //         .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
+        
+    //     model.addAttribute("portal", portal); 
+    //     model.addAttribute("portais", portalRepository.findAll());
+    //     model.addAttribute("agendadores", agendadorRepository.findAll());
+    //     model.addAttribute("tags", tagRepository.findAll());
+    //     return "portal"; 
+    // }
 
-    @GetMapping("/editar/{id}")
-    public String mostrarFormularioEdicao(@PathVariable("id") Integer id, Model model) {
-        Portal portal = portalRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
-        model.addAttribute("portal", portal);
-        model.addAttribute("agendadores", agendadorRepository.findAll());
-        return "portal"; // Retorna o template portal.html
-    }
+    // @PutMapping("/atualizar/{id}")
+    // public String atualizarPortal(@PathVariable("id") Integer id, @ModelAttribute Portal portal) {
+    //     portal.setId(id);
+    //     portalRepository.save(portal);
+    //     return "redirect:/portais";
+    // }
 
-    @PostMapping("/atualizar/{id}")
-    public String atualizarPortal(@PathVariable("id") Integer id, @ModelAttribute Portal portal) {
-        portal.setId(id);
-        portalRepository.save(portal);
-        return "redirect:/portais/listar";
-    }
-
-    @GetMapping("/alternar/{id}")
-    public String alternarAtivo(@PathVariable("id") Integer id) {
-        Portal portal = portalRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
-        portal.setAtivo(!portal.isAtivo());
-        portalRepository.save(portal);
-        return "redirect:/portais/listar";
-    }
+    // @GetMapping("/alternar/{id}")
+    // public String alternarAtivo(@PathVariable("id") Integer id) {
+    //     Portal portal = portalRepository.findById(id)
+    //         .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
+        
+    //     portal.setAtivo(!portal.isAtivo()); 
+    //     portalRepository.save(portal);
+    //     return "redirect:/portais"; 
+    // }
 }
