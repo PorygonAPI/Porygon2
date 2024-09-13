@@ -63,18 +63,20 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 ## :hammer_and_wrench: Produto</h1>
 
 ### :computer: Tecnologias Utilizadas
-> * Linguagem Java versão
-> * Banco de Dados modelo Relacional MySQL versão
-> * Github
-
-### Configurando o Ambiente para a Execução do Programa
-Digite em seu terminal os seguintes comandos: 
-1. Instale as dependências do programa: código
-2. Execute o programa: comando
+- **Java 22**
+- **Spring Boot 3.3.3**
+  - Spring Data JPA
+  - Spring Web
+  - Spring Thymeleaf
+  - Spring DevTools
+- **MySQL** como banco de dados relacional
+- **Lombok** para reduzir a verbosidade do código
+- **Jsoup** para web scraping
+- **Jackson** para manipulação de dados JSON e XML
 
 ### :triangular_ruler: Wireframe do Produto
-* Wireframe do produto, diagramas e demais documentos pertinentes podem ser encontrados no repositório Porygon utilizando o caminho *Documentação > Wireframe*.
-
+* Wireframe do produto disponível pelo [Figma](https://www.figma.com/design/0BWdbmpjQpwVmLui2AUoVl/API_3SEM_PORYGON?node-id=80-618&t=pSpfCnX8lu9lPUyf-1)
+  
 ## :white_check_mark: Requisitos
 
 ### Requisitos Funcionais
