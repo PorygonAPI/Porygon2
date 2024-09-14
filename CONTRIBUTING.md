@@ -22,7 +22,7 @@
 ## Configuração do Banco de Dados
 
 1. Certifique-se de que o MySQL está instalado e em execução.
-2. Crie um banco de dados chamado `porygon` ou qualquer outro nome de sua preferência.
+2. Crie um banco de dados chamado `porygon`.
 3. Configure o arquivo `application.properties` para incluir as informações de conexão com o banco de dados:
 
     ```properties
