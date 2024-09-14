@@ -3,6 +3,7 @@
 <h1 align="center">Sumário</h1>
 
 <p align="center">
+  <a href ="#requisitos"> REQUISITOS </a>  •
   <a href ="#conventional-commits"> CONVENTIONAL COMMITS </a>  •
   <a href ="#estrutura"> ESTRUTURA </a>  •
   <a href="#tipos-e-exemplos"> TIPOS E EXEMPLOS </a> •
@@ -10,6 +11,46 @@
   <a href ="#fix-branch"> FIX BRANCH </a>  •
   <a href="#vantagens"> VANTAGENS </a> 
 </p>
+
+# REQUISITOS
+
+- **Java 22** ou superior
+- **Spring Boot 3.3.3**
+- **Maven** para gerenciamento de dependências
+- **MySQL** configurado e rodando
+
+## Configuração do Banco de Dados
+
+1. Certifique-se de que o MySQL está instalado e em execução.
+2. Crie um banco de dados chamado `porygon` ou qualquer outro nome de sua preferência.
+3. Configure o arquivo `application.properties` para incluir as informações de conexão com o banco de dados:
+
+    ```properties
+    spring.datasource.url=jdbc:mysql://localhost:3306/porygon
+    spring.datasource.username=seu_usuario
+    spring.datasource.password=sua_senha
+    spring.jpa.hibernate.ddl-auto=update
+    ```
+
+## Instalação
+
+1. Clone o repositório para o seu ambiente local:
+
+    ```bash
+    git clone [https://github.com/seu-usuario/Porygon.git](https://github.com/PorygonAPI/Porygon2.git)
+    ```
+
+2. Navegue até o diretório do projeto:
+
+    ```bash
+    cd PorygonAPI/Porygon2
+    ```
+
+3. Execute o comando Maven para construir o projeto:
+
+    ```bash
+    mvn clean install
+    ```
 
 # CONVENTIONAL COMMITS
 
