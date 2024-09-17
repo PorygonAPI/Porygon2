@@ -28,23 +28,50 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="nome" class="form-label">Nome</label>
-                    <input type="text" class="form-control" id="nome" th:field="*{nome}" required>
+                    <input type="text" class="form-control" id="nome" th:field="*{nome}" placeholder="Digite o nome do Portal"required>
                 </div>
                 <div class="col-md-6">
                     <label for="url" class="form-label">URL</label>
-                    <input type="text" class="form-control" id="url" th:field="*{url}" required>
+                    <input type="text" class="form-control" id="url" th:field="*{url}" placeholder= "Insira a URL do Portal" required>
                 </div>
             </div>
             <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="seletorNoticia" class="form-label">Seletor de Notícia</label>
-                    <input type="text" class="form-control" id="seletorNoticia" th:field="*{seletorNoticia}" required>
-                </div>
                 <div class="col-md-6">
                     <label for="agendador" class="form-label">Agendador</label>
                     <select class="form-select" id="agendador" th:field="*{agendador.id}">
                         <option th:each="agendador : ${agendadores}" th:value="${agendador.id}" th:text="${agendador.tipo}">Diário</option>
                     </select>
+                </div>
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
+                    <label class="form-check-label" for="ativo">Ativo</label>
+                </div>
+            </div>
+            <h4 class="mb-3 text-center">Cadastro de Seletores</h4>
+            <div class="row mb-6">
+                <div class="col-md-6">
+                    <label for="caminhoNoticia" class="form-label">Caminho da Lista de Notícias</label>
+                    <input type="text" class="form-control" id="caminhoNoticia" th:field="*{caminhoNoticia}" placeholder="Qual a classe HTML que o contém?" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="titulo" class="form-label">Título</label>
+                    <input type="text" class="form-control" id="titulo" th:field="*{titulo}"  placeholder="Qual a classe HTML que o contém?" required>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <div class="col-md-6">
+                    <label for="jornalista" class="form-label">Jornalista</label>
+                    <input type="text" class="form-control" id="jornalista" th:field="*{jornalista}" placeholder="Qual a classe HTML que o contém?" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="dataPublicacao" class="form-label">Data da Publicação da Notícia</label>
+                    <input type="text" class="form-control" id="dataPublicacao" th:field="*{dataPublicacao}" placeholder="Qual a classe HTML que o contém?" required>
+                </div>
+            </div>
+            <div class="row mb-6">
+                <div class="col-md-6">
+                    <label for="conteudo" class="form-label">Conteúdo</label>
+                    <input type="text" class="form-control" id="conteudo" th:field="*{conteudo}" placeholder="Qual a classe HTML que o contém?" required>
                 </div>
             </div>
             <!-- <div class="mb-3">
@@ -54,10 +81,7 @@
                 </select>
                 <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
             </div> -->
-            <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
-                <label class="form-check-label" for="ativo">Ativo</label>
-            </div>
+
             <button type="submit" class="btn btn-primary float-end">Salvar</button>
         </form>
     </div>
