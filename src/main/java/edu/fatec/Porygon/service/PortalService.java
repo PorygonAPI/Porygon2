@@ -5,6 +5,7 @@ import edu.fatec.Porygon.repository.PortalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ public class PortalService {
     }
 
     public Portal salvar(Portal portal) {
+        portal.setDataSave(LocalDate.now());
         return portalRepository.save(portal);
     }
 
