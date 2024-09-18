@@ -37,12 +37,7 @@ public class PortalController {
         return "portal";
     }
 
-    @PostMapping("/salvar")
-    public String salvarPortal(@ModelAttribute Portal portal) {
-        portal.setDataSave(LocalDate.now());
-        portalRepository.save(portal);
-        return "redirect:/portais";
-    }
+
 
 
     @GetMapping("/editar/{id}")
@@ -53,12 +48,15 @@ public class PortalController {
         model.addAttribute("portal", portal);
         model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
-        return "editar_portal";
+        model.addAttribute("tags", tagRepository.findAll());
+        return "portal";
     }
 
-    @PostMapping("/atualizar/{id}")
-    public String atualizarPortal(@PathVariable("id") Integer id, @ModelAttribute Portal portal) {
-        portal.setId(id);
+    @PostMapping("/salvar")
+    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal) {
+        if (portal.getId() == null) {
+            portal.setDataSave(LocalDate.now());
+        }
         portalRepository.save(portal);
         return "redirect:/portais";
     }
