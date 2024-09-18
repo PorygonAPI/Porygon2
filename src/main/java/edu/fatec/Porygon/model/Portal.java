@@ -12,6 +12,7 @@ public class Portal {
 
     private String nome;
     private String url;
+    private String seletorNoticia;
     @Column(length = 254)
     private String jornalista;
     @Column(length = 254)
@@ -32,9 +33,9 @@ public class Portal {
 
     @ManyToMany
     @JoinTable(
-        name = "portal_tag", 
-        joinColumns = @JoinColumn(name = "portal_id"), 
-        inverseJoinColumns = @JoinColumn(name = "tag_id") 
+            name = "portal_tag",
+            joinColumns = @JoinColumn(name = "portal_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private List<Tag> tags;
 
@@ -97,27 +98,59 @@ public class Portal {
         this.noticias = noticias;
     }
 
-    public String getJornalista(){return jornalista;}
+    public String getJornalista() {
+        return jornalista;
+    }
 
-    public void setJornalista(String jornalista){this.jornalista = jornalista;}
+    public void setJornalista(String jornalista) {
+        this.jornalista = jornalista;
+    }
 
-    public String getDataPublicacao() {return dataPublicacao;}
+    public String getDataPublicacao() {
+        return dataPublicacao;
+    }
 
-    public void setDataPublicacao(String dataPublicacao) {this.dataPublicacao = dataPublicacao;}
+    public void setDataPublicacao(String dataPublicacao) {
+        this.dataPublicacao = dataPublicacao;
+    }
 
-    public String getConteudo(){return conteudo;}
+    public String getConteudo() {
+        return conteudo;
+    }
 
-    public void setConteudo(String conteudo){this.conteudo = conteudo;}
+    public void setConteudo(String conteudo) {
+        this.conteudo = conteudo;
+    }
 
-    public String getTitulo(){return titulo;}
+    public String getTitulo() {
+        return titulo;
+    }
 
-    public void setTitulo(String titulo){this.titulo = titulo;}
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
-    public String getCaminhoNoticia(){return caminhoNoticia;}
+    public String getCaminhoNoticia() {
+        return caminhoNoticia;
+    }
 
-    public void setCaminhoNoticia(String caminhoNoticia){this.caminhoNoticia = caminhoNoticia;}
+    public void setCaminhoNoticia(String caminhoNoticia) {
+        this.caminhoNoticia = caminhoNoticia;
+    }
 
-    public LocalDate getDataSave() {return dataSave;}
+    public LocalDate getDataSave() {
+        return dataSave;
+    }
 
-    public void setDataSave(LocalDate dataSave) {this.dataSave = dataSave;}
+    public void setDataSave(LocalDate dataSave) {
+        this.dataSave = dataSave;
+    }
+
+    public String getSeletorNoticia() {
+        return seletorNoticia;
+    }
+
+    public void setSeletorNoticia(String seletorNoticia) {
+        this.seletorNoticia = seletorNoticia;
+    }
 }
