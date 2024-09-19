@@ -34,5 +34,5 @@ public class PortalService {
 
     public Portal atualizar(Portal portal) {
         return portalRepository.save(portal);
-    }
+    }    
 }
