@@ -1,5 +1,6 @@
 package edu.fatec.Porygon;
 
+import edu.fatec.Porygon.service.DataScrapper;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import static org.springframework.boot.SpringApplication.*;
