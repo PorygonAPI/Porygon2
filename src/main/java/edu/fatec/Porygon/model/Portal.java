@@ -22,7 +22,7 @@ public class Portal {
     private String seletorTitulo;
     @Column(length = 254)
     private String seletorCaminhoNoticia;
-    private LocalDate seletorDataSave;
+    private LocalDate dataCriacao;
 
     @ManyToOne
     @JoinColumn(name = "agendador_id")
@@ -117,12 +117,12 @@ public class Portal {
         return seletorConteudo;
     }
 
-    public void setSeletorConteudo(String seletorrConteudo) {
+    public void setSeletorConteudo(String seletorConteudo) {
         this.seletorConteudo = seletorConteudo;
     }
 
     public String getSeletorTitulo() {
-        return SeletorTitulo;
+        return seletorTitulo;
     }
 
     public void setSeletorTitulo(String seletorTitulo) {
@@ -134,15 +134,15 @@ public class Portal {
     }
 
     public void setSeletorCaminhoNoticia(String seletorCaminhoNoticia) {
-        this.SeletorCaminhoNoticia = seletorCaminhoNoticia;
+        this.seletorCaminhoNoticia = seletorCaminhoNoticia;
     }
 
-    public LocalDate getSeletorDataSave() {
-        return seletorDataSave;
+    public LocalDate getdataCriacao() {
+        return dataCriacao;
     }
 
-    public void setSeletorDataSave(LocalDate seletorDataSave) {
-        this.seletorDataSave = seletorDataSave;
+    public void setdataCriacao(LocalDate dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
 }

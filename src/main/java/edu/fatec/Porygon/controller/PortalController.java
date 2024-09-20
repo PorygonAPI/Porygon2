@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDate;
@@ -55,7 +54,7 @@ public class PortalController {
     @PostMapping("/salvar")
     public String salvarOuAtualizarPortal(@ModelAttribute Portal portal) {
         if (portal.getId() == null) {
-            portal.setSeletorDataSave(LocalDate.now());
+            portal.setdataCriacao(LocalDate.now());
         }
         portalRepository.save(portal);
         return "redirect:/portais";

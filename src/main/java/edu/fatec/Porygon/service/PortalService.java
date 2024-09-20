@@ -24,7 +24,7 @@ public class PortalService {
     }
 
     public Portal salvar(Portal portal) {
-        portal.setSeletorDataSave(LocalDate.now());
+        portal.setdataCriacao(LocalDate.now());
         return portalRepository.save(portal);
     }
 
