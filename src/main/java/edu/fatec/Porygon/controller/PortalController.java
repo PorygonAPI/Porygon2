@@ -55,7 +55,7 @@ public class PortalController {
     @PostMapping("/salvar")
     public String salvarOuAtualizarPortal(@ModelAttribute Portal portal) {
         if (portal.getId() == null) {
-            portal.setDataSave(LocalDate.now());
+            portal.setSeletorDataSave(LocalDate.now());
         }
         portalRepository.save(portal);
         return "redirect:/portais";
