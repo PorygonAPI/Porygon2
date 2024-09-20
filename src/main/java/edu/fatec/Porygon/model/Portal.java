@@ -12,7 +12,6 @@ public class Portal {
 
     private String nome;
     private String url;
-    private String seletorNoticia;
     @Column(length = 254)
     private String jornalista;
     @Column(length = 254)
@@ -144,13 +143,5 @@ public class Portal {
 
     public void setDataSave(LocalDate dataSave) {
         this.dataSave = dataSave;
-    }
-
-    public String getSeletorNoticia() {
-        return seletorNoticia;
-    }
-
-    public void setSeletorNoticia(String seletorNoticia) {
-        this.seletorNoticia = seletorNoticia;
     }
 }
