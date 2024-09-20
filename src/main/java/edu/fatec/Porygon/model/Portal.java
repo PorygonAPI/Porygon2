@@ -102,39 +102,39 @@ public class Portal {
     }
 
     public void setSeletorJornalista(String seletorJornalista) {
-        this.seletorJornalista = SeletorJornalista;
+        this.seletorJornalista = seletorJornalista;
     }
 
     public String getSeletorDataPublicacao() {
-        return SeletorDataPublicacao;
+        return seletorDataPublicacao;
     }
 
-    public void setSeletorDataPublicacao(String SeletorDataPublicacao) {
+    public void setSeletorDataPublicacao(String seletorDataPublicacao) {
         this.seletorDataPublicacao = seletorDataPublicacao;
     }
 
     public String getSeletorConteudo() {
-        return SeletorConteudo;
+        return seletorConteudo;
     }
 
-    public void setSeletorConteudo(String SeletorConteudo) {
-        this.SeletorConteudo = SeletorConteudo;
+    public void setSeletorConteudo(String seletorrConteudo) {
+        this.seletorConteudo = seletorConteudo;
     }
 
     public String getSeletorTitulo() {
         return SeletorTitulo;
     }
 
-    public void setSeletorTitulo(String SeletorTitulo) {
-        this.SeletorTitulo = SeletorTitulo;
+    public void setSeletorTitulo(String seletorTitulo) {
+        this.seletorTitulo = seletorTitulo;
     }
 
     public String getSeletorCaminhoNoticia() {
-        return SeletorCaminhoNoticia;
+        return seletorCaminhoNoticia;
     }
 
-    public void setSeletorCaminhoNoticia(String SeletorCaminhoNoticia) {
-        this.SeletorCaminhoNoticia = SeletorCaminhoNoticia;
+    public void setSeletorCaminhoNoticia(String seletorCaminhoNoticia) {
+        this.SeletorCaminhoNoticia = seletorCaminhoNoticia;
     }
 
     public LocalDate getSeletorDataSave() {
