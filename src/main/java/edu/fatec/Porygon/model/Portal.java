@@ -1,5 +1,6 @@
 package edu.fatec.Porygon.model;
 
+import java.time.LocalDate;
 import java.util.List;
 import jakarta.persistence.*;
 
@@ -12,6 +13,17 @@ public class Portal {
     private String nome;
     private String url;
     private String seletorNoticia;
+    @Column(length = 254)
+    private String jornalista;
+    @Column(length = 254)
+    private String dataPublicacao;
+    @Column(length = 254)
+    private String titulo;
+    @Column(length = 254)
+    private String conteudo;
+    @Column(length = 254)
+    private String caminhoNoticia;
+    private LocalDate dataSave;
 
     @ManyToOne
     @JoinColumn(name = "agendador_id")
@@ -21,9 +33,9 @@ public class Portal {
 
     @ManyToMany
     @JoinTable(
-        name = "portal_tag", 
-        joinColumns = @JoinColumn(name = "portal_id"), 
-        inverseJoinColumns = @JoinColumn(name = "tag_id") 
+            name = "portal_tag",
+            joinColumns = @JoinColumn(name = "portal_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private List<Tag> tags;
 
@@ -62,14 +74,6 @@ public class Portal {
         this.url = url;
     }
 
-    public String getSeletorNoticia() {
-        return seletorNoticia;
-    }
-
-    public void setSeletorNoticia(String seletorNoticia) {
-        this.seletorNoticia = seletorNoticia;
-    }
-
     public Agendador getAgendador() {
         return agendador;
     }
@@ -92,5 +96,61 @@ public class Portal {
 
     public void setNoticias(List<Noticia> noticias) {
         this.noticias = noticias;
+    }
+
+    public String getJornalista() {
+        return jornalista;
+    }
+
+    public void setJornalista(String jornalista) {
+        this.jornalista = jornalista;
+    }
+
+    public String getDataPublicacao() {
+        return dataPublicacao;
+    }
+
+    public void setDataPublicacao(String dataPublicacao) {
+        this.dataPublicacao = dataPublicacao;
+    }
+
+    public String getConteudo() {
+        return conteudo;
+    }
+
+    public void setConteudo(String conteudo) {
+        this.conteudo = conteudo;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getCaminhoNoticia() {
+        return caminhoNoticia;
+    }
+
+    public void setCaminhoNoticia(String caminhoNoticia) {
+        this.caminhoNoticia = caminhoNoticia;
+    }
+
+    public LocalDate getDataSave() {
+        return dataSave;
+    }
+
+    public void setDataSave(LocalDate dataSave) {
+        this.dataSave = dataSave;
+    }
+
+    public String getSeletorNoticia() {
+        return seletorNoticia;
+    }
+
+    public void setSeletorNoticia(String seletorNoticia) {
+        this.seletorNoticia = seletorNoticia;
     }
 }
