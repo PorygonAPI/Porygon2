@@ -13,16 +13,18 @@ public class Portal {
     private String nome;
     private String url;
     @Column(length = 254)
-    private String jornalista;
+    private String seletorJornalista;
     @Column(length = 254)
-    private String dataPublicacao;
+    private String seletorDataPublicacao;
     @Column(length = 254)
-    private String titulo;
+    private String seletorConteudo;
     @Column(length = 254)
-    private String conteudo;
+    private String seletorTitulo;
     @Column(length = 254)
-    private String caminhoNoticia;
-    private LocalDate dataSave;
+    private String seletorCaminhoNoticia;
+
+
+    private LocalDate dataCriacao;
 
     @ManyToOne
     @JoinColumn(name = "agendador_id")
@@ -97,51 +99,51 @@ public class Portal {
         this.noticias = noticias;
     }
 
-    public String getJornalista() {
-        return jornalista;
+    public String getSeletorJornalista() {
+        return seletorJornalista;
     }
 
-    public void setJornalista(String jornalista) {
-        this.jornalista = jornalista;
+    public void setSeletorJornalista(String seletorJornalista) {
+        this.seletorJornalista = seletorJornalista;
     }
 
-    public String getDataPublicacao() {
-        return dataPublicacao;
+    public String getSeletorDataPublicacao() {
+        return seletorDataPublicacao;
     }
 
-    public void setDataPublicacao(String dataPublicacao) {
-        this.dataPublicacao = dataPublicacao;
+    public void setSeletorDataPublicacao(String seletorDataPublicacao) {
+        this.seletorDataPublicacao = seletorDataPublicacao;
     }
 
-    public String getConteudo() {
-        return conteudo;
+    public String getSeletorConteudo() {
+        return seletorConteudo;
     }
 
-    public void setConteudo(String conteudo) {
-        this.conteudo = conteudo;
+    public void setSeletorConteudo(String seletorConteudo) {
+        this.seletorConteudo = seletorConteudo;
     }
 
-    public String getTitulo() {
-        return titulo;
+    public String getSeletorTitulo() {
+        return seletorTitulo;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public void setSeletorTitulo(String seletorTitulo) {
+        this.seletorTitulo = seletorTitulo;
     }
 
-    public String getCaminhoNoticia() {
-        return caminhoNoticia;
+    public String getSeletorCaminhoNoticia() {
+        return seletorCaminhoNoticia;
     }
 
-    public void setCaminhoNoticia(String caminhoNoticia) {
-        this.caminhoNoticia = caminhoNoticia;
+    public void setSeletorCaminhoNoticia(String seletorCaminhoNoticia) {
+        this.seletorCaminhoNoticia = seletorCaminhoNoticia;
+    }
+    public LocalDate getDataCriacao() {
+        return dataCriacao;
     }
 
-    public LocalDate getDataSave() {
-        return dataSave;
+    public void setDataCriacao(LocalDate dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
-    public void setDataSave(LocalDate dataSave) {
-        this.dataSave = dataSave;
-    }
 }
