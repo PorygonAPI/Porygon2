@@ -140,9 +140,4 @@ public class Portal {
     public LocalDate getdataCriacao() {
         return dataCriacao;
     }
-
-    public void setdataCriacao(LocalDate dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-
 }
