@@ -68,19 +68,21 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Título</th>
-                    <th>Jornalista</th>
-                    <th>Data de Publicação</th>
+                    
+                    <!-- <th>Tipo</th> -->
+                    <th>Nome/Título</th>
+                    <!-- <th>Tags</th> -->
+                    <th>Data</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="noticia : ${noticias}">
-                    <td th:text="${noticia.id}"></td>
+                    
+                    <!-- <td th:text="${api.tipo}"></td> -->
                     <td th:text="${noticia.titulo}"></td>
-                    <td th:text="${noticia.jornalista}"></td>
-                    <td th:text="${#dates.format(noticia.dataPublicacao, 'dd/MM/yyyy')}"></td>
+                    <!-- <td th:text="${api.tag}"></td> -->
+                    <!-- <td th:text="${#dates.format(noticia.data, 'dd/MM/yyyy')}"></td>2 -->
                     <td>
                         <a class="btn btn-primary" th:href="@{/noticias/detalhe/{id}(id=${noticia.id})}">Abrir</a>
                     </td>
