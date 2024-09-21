@@ -22,6 +22,8 @@ public class Portal {
     private String seletorTitulo;
     @Column(length = 254)
     private String seletorCaminhoNoticia;
+
+
     private LocalDate dataCriacao;
 
     @ManyToOne
@@ -136,8 +138,12 @@ public class Portal {
     public void setSeletorCaminhoNoticia(String seletorCaminhoNoticia) {
         this.seletorCaminhoNoticia = seletorCaminhoNoticia;
     }
-
-    public LocalDate getdataCriacao() {
+    public LocalDate getDataCriacao() {
         return dataCriacao;
     }
+
+    public void setDataCriacao(LocalDate dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
 }
