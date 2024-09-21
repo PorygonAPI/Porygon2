@@ -24,7 +24,7 @@ public class PortalService {
     }
 
     public Portal salvar(Portal portal) {
-        portal.setDataSave(LocalDate.now());
+        portal.setDataCriacao(LocalDate.now());
         return portalRepository.save(portal);
     }
 
@@ -34,5 +34,5 @@ public class PortalService {
 
     public Portal atualizar(Portal portal) {
         return portalRepository.save(portal);
-    }    
+    }
 }
