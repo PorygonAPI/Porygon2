@@ -52,28 +52,28 @@
         <h4 class="mb-3 text-center">Cadastro de Seletores</h4>
         <div class="row mb-6">
             <div class="col-md-6">
-                <label for="caminhoNoticia" class="form-label">Caminho da Lista de Notícias</label>
-                <input type="text" class="form-control" id="caminhoNoticia" th:field="*{caminhoNoticia}" placeholder="Qual a classe HTML que o contém?" required>
+                <label for="seletorCaminhoNoticia" class="form-label">Caminho da Lista de Notícias</label>
+                <input type="text" class="form-control" id="seletorCaminhoNoticia" th:field="*{seletorCaminhoNoticia}" placeholder="Qual a classe HTML que o contém?" required>
             </div>
             <div class="col-md-6">
-                <label for="titulo" class="form-label">Título</label>
-                <input type="text" class="form-control" id="titulo" th:field="*{titulo}" placeholder="Qual a classe HTML que o contém?" required>
-            </div>
-        </div>
-        <div class="row mb-6">
-            <div class="col-md-6">
-                <label for="jornalista" class="form-label">Jornalista</label>
-                <input type="text" class="form-control" id="jornalista" th:field="*{jornalista}" placeholder="Qual a classe HTML que o contém?" required>
-            </div>
-            <div class="col-md-6">
-                <label for="dataPublicacao" class="form-label">Data da Publicação da Notícia</label>
-                <input type="text" class="form-control" id="dataPublicacao" th:field="*{dataPublicacao}" placeholder="Qual a classe HTML que o contém?" required>
+                <label for="seletorTitulo" class="form-label">Título</label>
+                <input type="text" class="form-control" id="seletorTitulo" th:field="*{seletorTitulo}" placeholder="Qual a classe HTML que o contém?" required>
             </div>
         </div>
         <div class="row mb-6">
             <div class="col-md-6">
-                <label for="conteudo" class="form-label">Conteúdo</label>
-                <input type="text" class="form-control" id="conteudo" th:field="*{conteudo}" placeholder="Qual a classe HTML que o contém?" required>
+                <label for="seletorJornalista" class="form-label">Jornalista</label>
+                <input type="text" class="form-control" id="seletorJornalista" th:field="*{seletorJornalista}" placeholder="Qual a classe HTML que o contém?" required>
+            </div>
+            <div class="col-md-6">
+                <label for="seletorDataPublicacao" class="form-label">Data da Publicação da Notícia</label>
+                <input type="text" class="form-control" id="seletorDataPublicacao" th:field="*{seletorDataPublicacao}" placeholder="Qual a classe HTML que o contém?" required>
+            </div>
+        </div>
+        <div class="row mb-6">
+            <div class="col-md-6">
+                <label for="seletorConteudo" class="form-label">Conteúdo</label>
+                <input type="text" class="form-control" id="seletorConteudo" th:field="*{seletorConteudo}" placeholder="Qual a classe HTML que o contém?" required>
             </div>
         </div>
 
@@ -100,7 +100,16 @@
             <td th:text="${portal.nome}"></td>
             <td th:text="${portal.url}"></td>
             <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
-            <td th:text="${portal.ativo ? 'Ativo' : 'Desativado'}"></td>
+            <td>
+                <!-- Toggle Switch para ativar/desativar -->
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox"
+                           th:checked="${portal.ativo}"
+                           th:attr="data-id=${portal.id}"
+                           onchange="toggleStatus(this)">
+                    <label class="form-check-label" th:text="${portal.ativo ? 'Ativo' : 'Desativado'}"></label>
+                </div>
+            </td>
             <td>
                 <a class="btn btn-warning" th:href="@{/portais/editar/{id}(id=${portal.id})}">Editar</a>
             </td>
@@ -108,6 +117,39 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    function toggleStatus(checkbox) {
+        const portalId = checkbox.getAttribute('data-id');
+        const isActive = checkbox.checked;
+        const label = checkbox.nextElementSibling; // Pega o <label> do checkbox
+
+        // Atualiza o texto do label
+        label.textContent = isActive ? 'Ativo' : 'Desativado';
+
+        fetch(`/portais/alterarStatus/${portalId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ativo: isActive })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    alert("Erro ao alterar o status!");
+                    checkbox.checked = !isActive; // Reverter estado no erro
+                    label.textContent = !isActive ? 'Ativo' : 'Desativado'; // Reverter o texto também
+                }
+            })
+            .catch(error => {
+                alert("Erro na comunicação com o servidor!");
+                checkbox.checked = !isActive; // Reverter estado no erro
+                label.textContent = !isActive ? 'Ativo' : 'Desativado'; // Reverter o texto também
+            });
+    }
+</script>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
