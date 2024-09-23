@@ -9,7 +9,7 @@
   <a href="#tipos-e-exemplos"> TIPOS E EXEMPLOS </a> •
   <a href="#feature-branch"> FEATURE BRANCH </a> •
   <a href ="#fix-branch"> FIX BRANCH </a>  •
-  <a href="#vantagens"> VANTAGENS </a> 
+  <a href ="#pull-request"> PULL REQUEST </a>
 </p>
 
 # REQUISITOS
@@ -58,8 +58,15 @@ O padrão de commit mais utilizado é o Conventional Commits. Esse padrão segue
 
 ## ESTRUTURA
 
-```<tipo>(escopo opcional): <descrição>```
+#### Tudo escrito em letra minúscula, menos os IDs da User Story e task. Os IDs devem ser separados por espaço.
+##### O ideal é fazer vários commits menores rastreando a User Story e a task correspondente, do que fazer apenas 1 commit para várias tasks.  
 
+#### ID-user-story ID-task tipo(escopo opcional): descrição
+
+``git commit -m "PYG-2 PYG-5 feat(autenticacao): adiciona endpoint de login"``
+
+- **ID da User Story**: ID presente no Jira. Terá o modelo PYG-Número
+- **ID da Task**: ID presente no Jira. Terá o modelo PYG-Número
 -	**Tipo**: O tipo de mudança que o commit representa.
 -	**Escopo** (opcional): Parte do código impactada pela mudança (por exemplo, uma função ou módulo específico).
 -	**Descrição**: Uma breve descrição da mudança.
@@ -118,17 +125,27 @@ O padrão de commit mais utilizado é o Conventional Commits. Esse padrão segue
 
 Uma feature branch é uma ramificação criada para desenvolver uma nova funcionalidade (feature) ou melhoria no projeto. Essa branch é criada a partir da branch principal e tem como objetivo isolar o desenvolvimento da nova funcionalidade para que outros desenvolvedores possam continuar a trabalhar sem serem afetados por mudanças instáveis.
 
-```git checkout -b feature/nome-da-nova-funcionalidade```
+Deve ser escrito com letra minúscula, conter o ID da User Story e da task (com letra maiúscula), com todas as informações separadas por barra (/). Não deve conter espaço na branch, portanto, a descrição da funcionalidade deve ser descrita com hífen (-).
+
+```git checkout -b PYG-1/PYG-3/feature/nome-da-nova-funcionalidade```
 
 ### FIX BRANCH
 
 Uma fix branch é uma ramificação criada para corrigir um bug ou erro no código. Essa branch também é criada a partir da branch principal, mas seu foco é em correções de problemas, em vez de adicionar novas funcionalidades.
 
-```git checkout -b fix/descricao-do-bug```
+Deve ser escrito com letra minúscula, conter o ID da User Story e da task (com letra maiúscula), com todas as informações separadas por barra (/). Não deve conter espaço na branch, portanto, a descrição do reparo deve ser descrita com hífen (-).
 
-## VANTAGENS
+```git checkout -b PYG-1/PYG-3/fix/descricao-do-bug```
+
+#### VANTAGENS
 
 -	**Isolamento**: As mudanças feitas em uma feature ou fix branch não afetam o código na branch principal até que estejam completas e sejam mescladas.
 -	**Colaboração**: Várias pessoas podem trabalhar em diferentes funcionalidades ou correções ao mesmo tempo, sem interferir no trabalho umas das outras.
 -	**Controle de Qualidade**: Permite revisões de código e testes antes de integrar as mudanças na branch principal, garantindo que o código esteja estável.
 
+### PULL REQUEST
+
+Após concluir a funcionalidade ou correção, abra uma PR com todos os IDs (User Story e tasks desenvolvidas) e uma descrição das implementações realizadas.
+Essa solicitação poderá ser realizada através do Jira, na opção de solicitação de Pull Request, ou através do Github.
+
+``PYG-2 PYG-3 PYG-5: Descritivo da PR``
