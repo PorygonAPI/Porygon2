@@ -62,34 +62,33 @@
         </div>
     </form>
 
-    <!-- Lista de Notícias -->
-    <div class="mt-5">
-        <h4 class="mb-4 text-center">Lista de Notícias</h4>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    
-                    <!-- <th>Tipo</th> -->
-                    <th>Nome/Título</th>
-                    <!-- <th>Tags</th> -->
-                    <th>Data</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="noticia : ${noticias}">
-                    
-                    <!-- <td th:text="${api.tipo}"></td> -->
-                    <td th:text="${noticia.titulo}"></td>
-                    <!-- <td th:text="${api.tag}"></td> -->
-                    <td th:text="${#temporals.format(noticia.data, 'dd/MM/yyyy')}"></td>
-                    <td>
-                        <button class="btn btn-primary" th:onclick="'abrirModal(' + ${noticia.id} + ')'">Abrir</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+ <!-- Lista de Notícias -->
+ <div class="mt-5">
+    <h4 class="mb-4 text-center">Lista de Notícias</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Nome/Título</th>
+                <th>Tags</th>
+                <th>Data</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="noticia : ${noticias}">
+                <!-- Exibindo 'Inativo' para Tipo e Tags -->
+                <td th:text="'Inativo'">Inativo</td> <!-- Tipo -->
+                <td th:text="${noticia.titulo}"></td> <!-- Nome/Título -->
+                <td th:text="'Inativo'">Inativo</td> <!-- Tags -->
+                <td th:text="${#temporals.format(noticia.data, 'dd/MM/yyyy')}"></td> <!-- Data -->
+                <td>
+                    <a class="btn btn-primary" th:href="@{/noticias/detalhe/{id}(id=${noticia.id})}">Abrir</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>        
+</div>
 </div>
 <!-- Modal -->
 <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
