@@ -83,7 +83,7 @@
                 <td th:text="'Inativo'">Inativo</td> <!-- Tags -->
                 <td th:text="${#temporals.format(noticia.data, 'dd/MM/yyyy')}"></td> <!-- Data -->
                 <td>
-                    <a class="btn btn-primary" th:href="@{/noticias/detalhe/{id}(id=${noticia.id})}">Abrir</a>
+                    <button class="btn btn-primary" th:onclick="'abrirModal(' + ${noticia.id} + ')'">Abrir</button>
                 </td>
             </tr>
         </tbody>
