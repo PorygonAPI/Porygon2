@@ -12,10 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -97,7 +100,7 @@ public class DataScrapper {
         Portal portal = portalRepository.findById(id).orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
 
         //Selecionando a classe que contém as notícias na página principal
-        String classNameLink = portal.getCaminhoNoticia();
+        String classNameLink = portal.getSeletorCaminhoNoticia();
         String referenceClass = "a[href]." + classNameLink;
 
         //Extraindo a url
@@ -122,13 +125,32 @@ public class DataScrapper {
             // Uma vez extraido o array de links, iterar cada um deles e retirar as informações
             for (String link: Links) {
                 Document linkDoc = Jsoup.connect(link).get();
-                Titulo = linkDoc.select(portal.getTitulo()).first();
-                Data = linkDoc.select(portal.getDataPublicacao()).first();
-                Autor = linkDoc.select(portal.getJornalista()).first();
-                Conteudo=linkDoc.select(portal.getConteudo());
+                Titulo = linkDoc.select(portal.getSeletorTitulo()).first();
+                Data = linkDoc.select(portal.getSeletorDataPublicacao()).first();
+                Autor = linkDoc.select(portal.getSeletorJornalista()).first();
+                Conteudo=linkDoc.select(portal.getSeletorConteudo());
 
-                //Converter a data para formato aceito no banco
-                LocalDateTime dataPublicacao = convertStringToLocalDateTime(Data.attr("datetime"), "dd-MM-yyyy");
+                // Manipulação da Data
+                String verificationDate = "";
+                // Verificação se há conteudo na variável
+                if (Data != null) {
+                    // Caso possua, retira o valor do atributo "datetime"
+                    verificationDate = Data.attr("datetime");
+                } else {
+                    // Caso não possua, insere uma data genérica para indicar o erro
+                    System.err.println("No date element found for link: " + link);
+                    verificationDate = "1001-01-01T10:44:13.253Z";
+                }
+
+                //Converter a data manipulada para formato aceito no banco
+                Date dataPublicacao = convertStringToDate(verificationDate);
+
+                //Manipulação do conteúdo
+                StringBuilder contentScrapperBuilder = new StringBuilder();
+                for (Element conteudo: Conteudo){
+                    contentScrapperBuilder.append(conteudo.text()).append("\n");
+                };
+                String contentScrapper = contentScrapperBuilder.toString();
 
                 //Criando a estrutura da notícia p/salvar no banco
                 Noticia noticia = new Noticia();
@@ -136,6 +158,7 @@ public class DataScrapper {
                 noticia.setAutor(Autor != null ? Autor.text() : "Autor Desconhecido");
                 noticia.setData(dataPublicacao);
                 noticia.setPortal(portal);
+                noticia.setConteudo(contentScrapper);
 
                 //Adicionar todas as notícias à lista
                 noticias.add(noticia);
@@ -150,9 +173,17 @@ public class DataScrapper {
 
     }
 
-    private LocalDateTime convertStringToLocalDateTime(String dateStr, String pattern) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-        return LocalDateTime.parse(dateStr, formatter);
-    }
+    private Date convertStringToDate(String dateStr) {
+        try {
+            // Parse the string as an ISO 8601 date-time format
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateStr, DateTimeFormatter.ISO_DATE_TIME);
 
-}
+            // Convert ZonedDateTime to Instant and then to Date
+            Instant instant = zonedDateTime.toInstant();
+            return Date.from(instant);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to parse date: " + dateStr, e);
+        }
+
+}}
