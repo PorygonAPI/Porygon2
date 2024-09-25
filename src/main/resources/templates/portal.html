@@ -90,7 +90,7 @@
             <th>Nome</th>
             <th>URL</th>
             <th>Agendador</th>
-            <th>Status</th>
+            <th style="width: 100px; text-align: left;">Status</th>
             <th>Ações</th>
         </tr>
         </thead>
@@ -100,18 +100,18 @@
             <td th:text="${portal.nome}"></td>
             <td th:text="${portal.url}"></td>
             <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
-            <td>
+            <td style="width: 100px; text-align: left;">
                 <!-- Toggle Switch para ativar/desativar -->
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox"
                            th:checked="${portal.ativo}"
                            th:attr="data-id=${portal.id}"
                            onchange="toggleStatus(this)">
-                    <label class="form-check-label" th:text="${portal.ativo ? 'Ativo' : 'Desativado'}"></label>
+                    <label class="form-check-label" style="min-width: 75px;" th:text="${portal.ativo ? 'Ativo' : 'Desativo'}"></label>
                 </div>
             </td>
             <td>
-                <a class="btn btn-warning" th:href="@{/portais/editar/{id}(id=${portal.id})}">Editar</a>
+                <a class="btn btn-warning"  th:href="@{/portais/editar/{id}(id=${portal.id})}">Editar</a>
             </td>
         </tr>
         </tbody>
@@ -125,7 +125,7 @@
         const label = checkbox.nextElementSibling; // Pega o <label> do checkbox
 
         // Atualiza o texto do label
-        label.textContent = isActive ? 'Ativo' : 'Desativado';
+        label.textContent = isActive ? 'Ativo' : 'Desativo';
 
         fetch(`/portais/alterarStatus/${portalId}`, {
             method: 'POST',
@@ -138,13 +138,13 @@
                 if (!response.ok) {
                     alert("Erro ao alterar o status!");
                     checkbox.checked = !isActive; // Reverter estado no erro
-                    label.textContent = !isActive ? 'Ativo' : 'Desativado'; // Reverter o texto também
+                    label.textContent = !isActive ? 'Ativo' : 'Desativo'; // Reverter o texto também
                 }
             })
             .catch(error => {
                 alert("Erro na comunicação com o servidor!");
                 checkbox.checked = !isActive; // Reverter estado no erro
-                label.textContent = !isActive ? 'Ativo' : 'Desativado'; // Reverter o texto também
+                label.textContent = !isActive ? 'Ativo' : 'Desativo'; // Reverter o texto também
             });
     }
 </script>
