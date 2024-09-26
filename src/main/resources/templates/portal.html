@@ -37,18 +37,33 @@
                 <input type="text" class="form-control" id="url" th:field="*{url}" placeholder="Insira a URL do Portal" required>
             </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-3 align-items-center">
             <div class="col-md-6">
                 <label for="agendador" class="form-label">Agendador</label>
                 <select class="form-select" id="agendador" th:field="*{agendador.id}">
                     <option th:each="agendador : ${agendadores}" th:value="${agendador.id}" th:text="${agendador.tipo}">Diário</option>
                 </select>
             </div>
-            <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
-                <label class="form-check-label" for="ativo">Ativo</label>
+            <div class="col-md-6">
+                <label class="form-label">
+                    Para que o portal esteja ativo, deixe o checkbox "Ativo" marcado.
+                </label>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
+                    <label class="form-check-label" for="ativo"><strong>Ativo</strong></label>
+                </div>
+            </div>
+        </div>        
+        <div class="row mb-3">
+            <div class="mb-6">
+                <label for="tags" class="form-label">Tags</label>
+                <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}">
+                    <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
+                </select>
+                <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
             </div>
         </div>
+
         <h4 class="mb-3 text-center">Cadastro de Seletores</h4>
         <div class="row mb-6">
             <div class="col-md-6">
@@ -85,46 +100,53 @@
 <div class="container mt-5">
     <table class="table">
         <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>URL</th>
-            <th>Agendador</th>
-            <th>Status</th>
-            <th>Ações</th>
-        </tr>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>URL</th>
+                <th>Tags</th>
+                <th>Agendador</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
         </thead>
         <tbody>
-        <tr th:each="portal : ${portais}">
-            <td th:text="${portal.id}"></td>
-            <td th:text="${portal.nome}"></td>
-            <td th:text="${portal.url}"></td>
-            <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
-            <td>
-                <!-- Toggle Switch para ativar/desativar -->
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                           th:checked="${portal.ativo}"
-                           th:attr="data-id=${portal.id}"
-                           onchange="toggleStatus(this)">
-                    <label class="form-check-label" th:text="${portal.ativo ? 'Ativo' : 'Desativado'}"></label>
-                </div>
-            </td>
-            <td>
-                <a class="btn btn-warning" th:href="@{/portais/editar/{id}(id=${portal.id})}">Editar</a>
-            </td>
-        </tr>
+            <tr th:each="portal : ${portais}">
+                <td th:text="${portal.id}"></td>
+                <td th:text="${portal.nome}"></td>
+                <td th:text="${portal.url}"></td>
+                <td>
+                    <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma tag cadastrada</span>
+                    <span th:each="tag, iterStat : ${portal.tags}">
+                        <span th:text="${tag.nome}"></span>
+                        <span th:if="${!iterStat.last}">, </span>
+                    </span>
+                </td>            
+                <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
+                <td>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox"
+                               th:checked="${portal.ativo}"
+                               th:attr="data-id=${portal.id}"
+                               onchange="toggleStatus(this)">
+                        <label class="form-check-label" th:text="${portal.ativo ? 'Ativo' : 'Desativado'}"></label>
+                    </div>
+                </td>
+                <td>
+                    <a class="btn btn-warning" th:href="@{/portais/editar/{id}(id=${portal.id})}">Editar</a>
+                </td>
+            </tr>
         </tbody>
     </table>
 </div>
+
 
 <script>
     function toggleStatus(checkbox) {
         const portalId = checkbox.getAttribute('data-id');
         const isActive = checkbox.checked;
-        const label = checkbox.nextElementSibling; // Pega o <label> do checkbox
+        const label = checkbox.nextElementSibling;
 
-        // Atualiza o texto do label
         label.textContent = isActive ? 'Ativo' : 'Desativado';
 
         fetch(`/portais/alterarStatus/${portalId}`, {
@@ -137,14 +159,14 @@
             .then(response => {
                 if (!response.ok) {
                     alert("Erro ao alterar o status!");
-                    checkbox.checked = !isActive; // Reverter estado no erro
-                    label.textContent = !isActive ? 'Ativo' : 'Desativado'; // Reverter o texto também
+                    checkbox.checked = !isActive;
+                    label.textContent = !isActive ? 'Ativo' : 'Desativado'; 
                 }
             })
             .catch(error => {
                 alert("Erro na comunicação com o servidor!");
-                checkbox.checked = !isActive; // Reverter estado no erro
-                label.textContent = !isActive ? 'Ativo' : 'Desativado'; // Reverter o texto também
+                checkbox.checked = !isActive; 
+                label.textContent = !isActive ? 'Ativo' : 'Desativado'; 
             });
     }
 </script>
