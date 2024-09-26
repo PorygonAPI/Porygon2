@@ -4,7 +4,7 @@ import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.repository.AgendadorRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
 import edu.fatec.Porygon.repository.TagRepository;
-import edu.fatec.Porygon.service.DataScrapper;
+import edu.fatec.Porygon.service.DataScrapperService;
 import edu.fatec.Porygon.service.PortalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +29,10 @@ public class PortalController {
     private TagRepository tagRepository;
 
     @Autowired
-    private PortalService portalService;  // Injetando o PortalService para acessar os métodos de serviço
+    private PortalService portalService;  
 
-//    @Autowired
-//    private DataScrapper dataScrapper;
+   @Autowired
+   private DataScrapperService dataScrapperService;
 
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
@@ -65,26 +65,14 @@ public class PortalController {
             portal.setDataCriacao(portalExistente.getDataCriacao());
         }
         portalRepository.save(portal);
-        // Teste de WebScraping -> retirar comentário e clicar em salvar no frontend
-        //dataScrapper.WebScrapper();
+        dataScrapperService.WebScrapper();
         return "redirect:/portais";
     }
 
-    // Método para alterar o status (ativo/desativado) de um portal
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
         boolean novoStatus = body.get("ativo");
-        portalService.alterarStatus(id, novoStatus);  // Chama o serviço para alterar o status
+        portalService.alterarStatus(id, novoStatus); 
         return ResponseEntity.ok().build();
     }
-
-    // @GetMapping("/alternar/{id}")
-    // public  String alternarAtivo(@PathVariable("id") Integer id) {
-    //     Portal portal = portalRepository.findById(id)
-    //         .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
-
-    //     portal.setAtivo(!portal.isAtivo());
-    //     portalRepository.save(portal);
-    //     return "redirect:/portais";
-    // }
 }

@@ -1,7 +1,6 @@
 package edu.fatec.Porygon.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -12,7 +11,7 @@ public class Noticia {
 
     private String titulo;
 
-    @Temporal(TemporalType.DATE) // Specify that the field should be treated as a DATE
+    @Temporal(TemporalType.DATE)
     @Column()
     private Date data;
     @Column(length = 20000)
