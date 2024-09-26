@@ -4,6 +4,7 @@ import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.repository.AgendadorRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
 import edu.fatec.Porygon.repository.TagRepository;
+import edu.fatec.Porygon.service.DataScrapper;
 import edu.fatec.Porygon.service.PortalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,9 @@ public class PortalController {
 
     @Autowired
     private PortalService portalService;  // Injetando o PortalService para acessar os métodos de serviço
+
+//    @Autowired
+//    private DataScrapper dataScrapper;
 
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
@@ -57,6 +61,8 @@ public class PortalController {
             portal.setDataCriacao(LocalDate.now());
         }
         portalRepository.save(portal);
+        // Teste de WebScraping -> retirar comentário e clicar em salvar no frontend
+        //dataScrapper.WebScrapper();
         return "redirect:/portais";
     }
 
@@ -69,7 +75,7 @@ public class PortalController {
     }
 
     // @GetMapping("/alternar/{id}")
-    // public String alternarAtivo(@PathVariable("id") Integer id) {
+    // public  String alternarAtivo(@PathVariable("id") Integer id) {
     //     Portal portal = portalRepository.findById(id)
     //         .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
 
