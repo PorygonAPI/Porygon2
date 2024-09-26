@@ -59,6 +59,10 @@ public class PortalController {
     public String salvarOuAtualizarPortal(@ModelAttribute Portal portal) {
         if (portal.getId() == null) {
             portal.setDataCriacao(LocalDate.now());
+        } else {
+            Portal portalExistente = portalRepository.findById(portal.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
+            portal.setDataCriacao(portalExistente.getDataCriacao());
         }
         portalRepository.save(portal);
         // Teste de WebScraping -> retirar comentário e clicar em salvar no frontend
