@@ -53,7 +53,7 @@
                     <label class="form-check-label" for="ativo"><strong>Ativo</strong></label>
                 </div>
             </div>
-        </div>        
+        </div>
         <div class="row mb-3">
             <div class="mb-6">
                 <label for="tags" class="form-label">Tags</label>
@@ -100,42 +100,35 @@
 <div class="container mt-5">
     <table class="table">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>URL</th>
-                <th>Tags</th>
-                <th>Agendador</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>URL</th>
+            <th>Agendador</th>
+            <th style="width: 100px; text-align: left;">Status</th>
+            <th>Ações</th>
+        </tr>
         </thead>
         <tbody>
-            <tr th:each="portal : ${portais}">
-                <td th:text="${portal.id}"></td>
-                <td th:text="${portal.nome}"></td>
-                <td th:text="${portal.url}"></td>
-                <td>
-                    <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma tag cadastrada</span>
-                    <span th:each="tag, iterStat : ${portal.tags}">
-                        <span th:text="${tag.nome}"></span>
-                        <span th:if="${!iterStat.last}">, </span>
-                    </span>
-                </td>            
-                <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
-                <td>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox"
-                               th:checked="${portal.ativo}"
-                               th:attr="data-id=${portal.id}"
-                               onchange="toggleStatus(this)">
-                        <label class="form-check-label" th:text="${portal.ativo ? 'Ativo' : 'Desativado'}"></label>
-                    </div>
-                </td>
-                <td>
-                    <a class="btn btn-warning" th:href="@{/portais/editar/{id}(id=${portal.id})}">Editar</a>
-                </td>
-            </tr>
+        <tr th:each="portal : ${portais}">
+            <td th:text="${portal.id}"></td>
+            <td th:text="${portal.nome}"></td>
+            <td th:text="${portal.url}"></td>
+            <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
+            <td style="width: 100px; text-align: left;">
+                <!-- Toggle Switch para ativar/desativar -->
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox"
+                           th:checked="${portal.ativo}"
+                           th:attr="data-id=${portal.id}"
+                           onchange="toggleStatus(this)">
+                    <label class="form-check-label" style="min-width: 75px;" th:text="${portal.ativo ? 'Ativo' : 'Desativo'}"></label>
+                </div>
+            </td>
+            <td>
+                <a class="btn btn-warning"  th:href="@{/portais/editar/{id}(id=${portal.id})}">Editar</a>
+            </td>
+        </tr>
         </tbody>
     </table>
 </div>
@@ -147,7 +140,8 @@
         const isActive = checkbox.checked;
         const label = checkbox.nextElementSibling;
 
-        label.textContent = isActive ? 'Ativo' : 'Desativado';
+        // Atualiza o texto do label
+        label.textContent = isActive ? 'Ativo' : 'Desativo';
 
         fetch(`/portais/alterarStatus/${portalId}`, {
             method: 'POST',
@@ -159,14 +153,14 @@
             .then(response => {
                 if (!response.ok) {
                     alert("Erro ao alterar o status!");
-                    checkbox.checked = !isActive;
-                    label.textContent = !isActive ? 'Ativo' : 'Desativado'; 
+                    checkbox.checked = !isActive; // Reverter estado no erro
+                    label.textContent = !isActive ? 'Ativo' : 'Desativo'; // Reverter o texto também
                 }
             })
             .catch(error => {
                 alert("Erro na comunicação com o servidor!");
-                checkbox.checked = !isActive; 
-                label.textContent = !isActive ? 'Ativo' : 'Desativado'; 
+                checkbox.checked = !isActive; // Reverter estado no erro
+                label.textContent = !isActive ? 'Ativo' : 'Desativo'; // Reverter o texto também
             });
     }
 </script>
