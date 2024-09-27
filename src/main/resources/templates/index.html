@@ -77,11 +77,17 @@
         </thead>
         <tbody>
             <tr th:each="noticia : ${noticias}">
-                <!-- Exibindo 'Inativo' para Tipo e Tags -->
-                <td th:text="'Inativo'">Inativo</td> <!-- Tipo -->
-                <td th:text="${noticia.titulo}"></td> <!-- Nome/Título -->
-                <td th:text="'Inativo'">Inativo</td> <!-- Tags -->
-                <td th:text="${#temporals.format(noticia.data, 'dd/MM/yyyy')}"></td> <!-- Data -->
+                <td th:text="'Inativo'">Inativo</td>
+                <td th:text="${noticia.titulo}"></td>
+                <td th:text="'Inativo'">Inativo</td>
+                <!-- <td>
+                    <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma tag cadastrada</span>
+                    <span th:each="tag, iterStat : ${portal.tags}">
+                        <span th:text="${tag.nome}"></span>
+                        <span th:if="${!iterStat.last}">, </span>
+                    </span>
+                </td>    -->
+                <td th:text="${#temporals.format(noticia.data, 'dd/MM/yyyy')}"></td>
                 <td>
                     <button class="btn btn-primary" th:onclick="'abrirModal(' + ${noticia.id} + ')'">Abrir</button>
                 </td>

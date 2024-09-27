@@ -36,8 +36,10 @@ public class PortalController {
 
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
-        model.addAttribute("portal", new Portal());
-        model.addAttribute("portais", portalRepository.findAll()); // listar os portais
+        Portal novoPortal = new Portal();
+        novoPortal.setAtivo(true); 
+        model.addAttribute("portal", novoPortal);
+        model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("tags", tagRepository.findAll());
         return "portal";
