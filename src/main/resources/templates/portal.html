@@ -37,43 +37,58 @@
                 <input type="text" class="form-control" id="url" th:field="*{url}" placeholder="Insira a URL do Portal" required>
             </div>
         </div>
-        <div class="row mb-3">
+        <div class="row mb-3 align-items-center">
             <div class="col-md-6">
                 <label for="agendador" class="form-label">Agendador</label>
                 <select class="form-select" id="agendador" th:field="*{agendador.id}">
                     <option th:each="agendador : ${agendadores}" th:value="${agendador.id}" th:text="${agendador.tipo}">Diário</option>
                 </select>
             </div>
-            <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
-                <label class="form-check-label" for="ativo">Ativo</label>
+            <div class="col-md-6">
+                <label class="form-label">
+                    Para que o portal esteja ativo, deixe o checkbox "Ativo" marcado.
+                </label>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
+                    <label class="form-check-label" for="ativo"><strong>Ativo</strong></label>
+                </div>
             </div>
         </div>
+        <div class="row mb-3">
+            <div class="mb-6">
+                <label for="tags" class="form-label">Tags</label>
+                <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}">
+                    <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
+                </select>
+                <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
+            </div>
+        </div>
+
         <h4 class="mb-3 text-center">Cadastro de Seletores</h4>
         <div class="row mb-6">
             <div class="col-md-6">
-                <label for="caminhoNoticia" class="form-label">Caminho da Lista de Notícias</label>
-                <input type="text" class="form-control" id="caminhoNoticia" th:field="*{caminhoNoticia}" placeholder="Qual a classe HTML que o contém?" required>
+                <label for="seletorCaminhoNoticia" class="form-label">Caminho da Lista de Notícias</label>
+                <input type="text" class="form-control" id="seletorCaminhoNoticia" th:field="*{seletorCaminhoNoticia}" placeholder="Qual a classe HTML que o contém?" required>
             </div>
             <div class="col-md-6">
-                <label for="titulo" class="form-label">Título</label>
-                <input type="text" class="form-control" id="titulo" th:field="*{titulo}" placeholder="Qual a classe HTML que o contém?" required>
-            </div>
-        </div>
-        <div class="row mb-6">
-            <div class="col-md-6">
-                <label for="jornalista" class="form-label">Jornalista</label>
-                <input type="text" class="form-control" id="jornalista" th:field="*{jornalista}" placeholder="Qual a classe HTML que o contém?" required>
-            </div>
-            <div class="col-md-6">
-                <label for="dataPublicacao" class="form-label">Data da Publicação da Notícia</label>
-                <input type="text" class="form-control" id="dataPublicacao" th:field="*{dataPublicacao}" placeholder="Qual a classe HTML que o contém?" required>
+                <label for="seletorTitulo" class="form-label">Título</label>
+                <input type="text" class="form-control" id="seletorTitulo" th:field="*{seletorTitulo}" placeholder="Qual a classe HTML que o contém?" required>
             </div>
         </div>
         <div class="row mb-6">
             <div class="col-md-6">
-                <label for="conteudo" class="form-label">Conteúdo</label>
-                <input type="text" class="form-control" id="conteudo" th:field="*{conteudo}" placeholder="Qual a classe HTML que o contém?" required>
+                <label for="seletorJornalista" class="form-label">Jornalista</label>
+                <input type="text" class="form-control" id="seletorJornalista" th:field="*{seletorJornalista}" placeholder="Qual a classe HTML que o contém?" required>
+            </div>
+            <div class="col-md-6">
+                <label for="seletorDataPublicacao" class="form-label">Data da Publicação da Notícia</label>
+                <input type="text" class="form-control" id="seletorDataPublicacao" th:field="*{seletorDataPublicacao}" placeholder="Qual a classe HTML que o contém?" required>
+            </div>
+        </div>
+        <div class="row mb-6">
+            <div class="col-md-6">
+                <label for="seletorConteudo" class="form-label">Conteúdo</label>
+                <input type="text" class="form-control" id="seletorConteudo" th:field="*{seletorConteudo}" placeholder="Qual a classe HTML que o contém?" required>
             </div>
         </div>
 
@@ -118,11 +133,12 @@
     </table>
 </div>
 
+
 <script>
     function toggleStatus(checkbox) {
         const portalId = checkbox.getAttribute('data-id');
         const isActive = checkbox.checked;
-        const label = checkbox.nextElementSibling; // Pega o <label> do checkbox
+        const label = checkbox.nextElementSibling;
 
         // Atualiza o texto do label
         label.textContent = isActive ? 'Ativo' : 'Desativo';
