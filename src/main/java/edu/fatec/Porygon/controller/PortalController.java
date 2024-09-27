@@ -28,12 +28,13 @@ public class PortalController {
     private TagRepository tagRepository;
 
     @Autowired
-    private PortalService portalService;  // Injetando o PortalService para acessar os métodos de serviço
-
+    private PortalService portalService;  
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
-        model.addAttribute("portal", new Portal());
-        model.addAttribute("portais", portalRepository.findAll()); // listar os portais
+        Portal novoPortal = new Portal();
+        novoPortal.setAtivo(true); 
+        model.addAttribute("portal", novoPortal);
+        model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("tags", tagRepository.findAll());
         return "portal";
@@ -64,21 +65,10 @@ public class PortalController {
         return "redirect:/portais";
     }
 
-    // Método para alterar o status (ativo/desativado) de um portal
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
         boolean novoStatus = body.get("ativo");
-        portalService.alterarStatus(id, novoStatus);  // Chama o serviço para alterar o status
+        portalService.alterarStatus(id, novoStatus); 
         return ResponseEntity.ok().build();
     }
-
-    // @GetMapping("/alternar/{id}")
-    // public String alternarAtivo(@PathVariable("id") Integer id) {
-    //     Portal portal = portalRepository.findById(id)
-    //         .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
-
-    //     portal.setAtivo(!portal.isAtivo());
-    //     portalRepository.save(portal);
-    //     return "redirect:/portais";
-    // }
 }
