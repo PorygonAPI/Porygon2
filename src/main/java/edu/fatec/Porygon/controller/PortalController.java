@@ -4,6 +4,7 @@ import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.repository.AgendadorRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
 import edu.fatec.Porygon.repository.TagRepository;
+import edu.fatec.Porygon.service.DataScrapperService;
 import edu.fatec.Porygon.service.PortalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,10 @@ public class PortalController {
 
     @Autowired
     private PortalService portalService;  
+
+   @Autowired
+   private DataScrapperService dataScrapperService;
+
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
         Portal novoPortal = new Portal();
@@ -62,6 +67,7 @@ public class PortalController {
             portal.setDataCriacao(portalExistente.getDataCriacao());
         }
         portalRepository.save(portal);
+        dataScrapperService.WebScrapper();
         return "redirect:/portais";
     }
 

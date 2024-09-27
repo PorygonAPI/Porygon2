@@ -36,14 +36,13 @@ public class PortalService {
         return portalRepository.save(portal);
     }
 
-    // Método para alterar o status (ativo/desativado) do portal
     public Portal alterarStatus(Integer id, boolean novoStatus) {
         Optional<Portal> portalOptional = portalRepository.findById(id);
         if (portalOptional.isPresent()) {
             Portal portal = portalOptional.get();
-            portal.setAtivo(novoStatus); // Altera o status do portal
-            return portalRepository.save(portal); // Salva a alteração no banco de dados
+            portal.setAtivo(novoStatus); 
+            return portalRepository.save(portal); 
         }
-        return null; // Caso o portal não seja encontrado
+        return null; 
     }
 }

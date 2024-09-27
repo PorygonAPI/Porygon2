@@ -1,7 +1,7 @@
 package edu.fatec.Porygon.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 public class Noticia {
@@ -10,7 +10,11 @@ public class Noticia {
     private Integer id;
 
     private String titulo;
-    private LocalDateTime data;
+
+    @Temporal(TemporalType.DATE)
+    @Column()
+    private Date data;
+    @Column(length = 20000)
     private String conteudo;
     private String autor;
 
@@ -34,11 +38,11 @@ public class Noticia {
         this.titulo = titulo;
     }
 
-    public LocalDateTime getData() {
+    public Date getData() {
         return data;
     }
 
-    public void setData(LocalDateTime data) {
+    public void setData(Date data) {
         this.data = data;
     }
 

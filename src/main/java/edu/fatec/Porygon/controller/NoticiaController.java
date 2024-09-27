@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class NoticiaController {
 
     @Autowired
-    private NoticiaRepository noticiaRepository; // camelCase
+    private NoticiaRepository noticiaRepository;
 
     @GetMapping("/index")
     public String listarNoticias(Model model) {

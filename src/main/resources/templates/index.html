@@ -87,7 +87,7 @@
                         <span th:if="${!iterStat.last}">, </span>
                     </span>
                 </td>    -->
-                <td th:text="${#temporals.format(noticia.data, 'dd/MM/yyyy')}"></td>
+                <td th:text="${#dates.format(noticia.data, 'dd/MM/yyyy')}"></td>
                 <td>
                     <button class="btn btn-primary" th:onclick="'abrirModal(' + ${noticia.id} + ')'">Abrir</button>
                 </td>

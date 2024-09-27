@@ -1,7 +1,6 @@
 package edu.fatec.Porygon;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import static org.springframework.boot.SpringApplication.*;
 
 @SpringBootApplication
