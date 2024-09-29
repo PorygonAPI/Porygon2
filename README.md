@@ -117,9 +117,9 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 | 5 | Média| Como usuário, quero consultar notícias filtrando por tag para focar em tópicos específicos | 5 | 3 | R7, R6, RN1 e RN9 |
 | 6 | Média| Como usuário, quero consultar APIs associadas a determinadas tags para gerenciar as APIs que estou usando | 5 | 3 | R8 e RN9 |
 | 7 | Média| Como usuário, quero consultar notícias filtrando por data para revisar informações dentro de um período específico | 2 | 2 | R7, RN1 e RN9 |
-| 8 | Média| Como usuário, quero consultar APIs filtrando por data de cadastro para revisar e gerenciar o uso de APIs em um período específico | 2 | 2 | R8 e RN9 |
+| 8 | Média| Como usuário, quero consultar APIs filtrando por data de cadastro para revisar e gerenciar o uso de APIs em um período específico | 2 | 4 | R8 e RN9 |
 | 9 | Baixa| Como usuário, quero consultar notícias que contenham uma palavra específica no conteúdo para encontrar informações relevantes | 6 | 4 | R7, RN1 e RN9 |
-| 10| Baixa| Como usuário, quero poder editar ou desativar portais de notícias e APIs para gerenciar melhor as fontes de dados cadastradas | 7 | 2-3 | R1, R2, RN7 e RN9 |
+| 10| Baixa| Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. | 7 | 2 | R1, R5, RN7 e RN9 |
 
 ### :calendar: Backlog das Sprints
 
@@ -152,6 +152,14 @@ Como usuário, quero que o sistema capture notícias dos portais cadastrados par
 <details>
 <summary> SPRINT 2 </summary>
 
+### **10** - User Story: Rotina do Web Scraping dos Portais de Notícia *R1, R5, RN7 e RN9*
+Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. 
+### Critérios de Aceite: 
+- Desenvolver testes unitários que garantam o funcionamento correto dos fluxos de edição e desativação de portais. 
+- Verificar a integridade dos dados após edições e desativações de portais, garantindo que as notícias e portais estejam corretamente associados e atualizados no banco. 
+- Garantir que todos os campos obrigatórios sejam validados durante o cadastro e edição dos portais. Por padrão, novos portais devem ser cadastrados como ativos. 
+- Criar cenários de teste que validem o comportamento da rotina de web scraping em diferentes configurações de periodicidade (diária, semanal e mensal), garantindo que a raspagem ocorra conforme esperado. 
+
 ### **2** - User Story - Cadastro de APIs - *R2, RN7 e RN9*
 Como usuário, quero cadastrar APIs públicas para coleta de dados estratégicos contextualizados com a minha área de pesquisa, para que eu possa integrar essas informações nas análises.
 ### Critérios de Aceite:
@@ -166,18 +174,6 @@ Como usuário, quero consultar notícias filtrando por data para revisar informa
 ### Critérios de Aceite:
 -	O sistema deve permitir a seleção de um intervalo de datas (um dia ou mais).
 -	A consulta deve retornar todas as notícias dentro do intervalo especificado.
-
-### **8** - User Story - Consulta de APIs por Data - *R8 e RN9*
-Como usuário, quero consultar APIs filtrando por data de cadastro para revisar e gerenciar o uso de APIs em um período específico.
-### Critérios de Aceite:
--	O sistema deve permitir a filtragem de APIs cadastradas dentro de um intervalo de datas.
--	A consulta deve retornar todas as APIs cadastradas dentro do intervalo especificado.
-
-### **10** - User Story - Gestão de Portais e APIs - *R1, R2, RN7 e RN9*
-Como usuário, quero poder editar ou desativar portais de notícias e APIs para gerenciar melhor as fontes de dados cadastradas.
-### Critérios de Aceite:
--	O sistema deve permitir a edição das informações dos portais e APIs.
--	O usuário deve poder desativar portais e APIs sem excluí-los definitivamente.
 
 </details>
 
@@ -207,6 +203,12 @@ Como usuário, quero consultar APIs associadas a determinadas tags para gerencia
 
 <details>
 <summary> SPRINT 4 </summary>
+
+### **8** - User Story - Consulta de APIs por Data - *R8 e RN9*
+Como usuário, quero consultar APIs filtrando por data de cadastro para revisar e gerenciar o uso de APIs em um período específico.
+### Critérios de Aceite:
+-	O sistema deve permitir a filtragem de APIs cadastradas dentro de um intervalo de datas.
+-	A consulta deve retornar todas as APIs cadastradas dentro do intervalo especificado.
 
 ### **9** - User Story - Consulta de Notícias por Palavra Contida no Conteúdo - *R7, RN1 e RN9*
 Como usuário, quero consultar notícias que contenham uma palavra específica no conteúdo para encontrar informações relevantes.
