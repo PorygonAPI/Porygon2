@@ -1,6 +1,7 @@
 package edu.fatec.Porygon.model;
 
 import java.util.List;
+import java.time.LocalDate;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,6 +14,7 @@ public class Api {
     private String descricao;
     private String url;
     private String formato;
+    private LocalDate dataCriacao;
 
     @ManyToOne
     @JoinColumn(name = "agendador_id")
@@ -91,6 +93,15 @@ public class Api {
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
+
+    public LocalDate getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDate dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
 }
 
 
