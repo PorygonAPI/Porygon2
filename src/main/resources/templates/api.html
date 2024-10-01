@@ -25,6 +25,13 @@
     </div>
 </nav>
 
+<div class="container">
+    <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show" role="alert" style="margin: 20px auto;">
+        <span th:text="${erro}">Erro ao cadastrar API.</span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
 <div class="container mt-5">
     <h4 class="mb-4 text-center" th:text="${api.id} != null ? 'Editar API' : 'Cadastro de API'"></h4>
     <form th:action="@{/apis/salvar}" th:object="${api}" method="post">
@@ -156,6 +163,14 @@
                 label.textContent = !isActive ? 'Ativo' : 'Desativo';
             });
     }
+
+    setTimeout(function() {
+        const alert = document.querySelector('.alert');
+        if (alert) {
+            alert.classList.remove('show');
+            alert.classList.add('fade');
+        }
+    }, 5000);
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
