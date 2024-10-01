@@ -40,4 +40,14 @@ public class ApiService {
         return apiRepository.save(api);
     }
 
+    public Api alterarStatus(Integer id, boolean novoStatus) {
+        Optional<Api> apiOptional = apiRepository.findById(id);
+        if (apiOptional.isPresent()) {
+            Api api = apiOptional.get();
+            api.setAtivo(novoStatus);
+            return apiRepository.save(api);
+        }
+        return null;
+    }
+
 }

@@ -41,4 +41,11 @@ public class ApiController {
         apiService.salvarOuAtualizar(api);
         return "redirect:/apis";
     }
+
+    @PostMapping("/alterarStatus/{id}")
+    public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
+        boolean novoStatus = body.get("ativo");
+        apiService.alterarStatus(id, novoStatus);
+        return ResponseEntity.ok().build();
+    }
 }
