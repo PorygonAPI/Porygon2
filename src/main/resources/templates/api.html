@@ -68,11 +68,11 @@
             </div>
             <div class="col-md-6">
                 <label class="form-label">
-                    Para que a API esteja ativo, deixe o checkbox "Ativo" marcado.
+                    Para que a API esteja ativa, deixe o checkbox "Ativa" marcado.
                 </label>
                 <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
-                    <label class="form-check-label" for="ativo"><strong>Ativo</strong></label>
+                    <label class="form-check-label" for="ativo"><strong>Ativa</strong></label>
                 </div>
             </div>
         </div>
@@ -109,13 +109,15 @@
             <td th:text="${api.id}"></td>
             <td th:text="${api.nome}"></td>
             <td th:text="${api.url}"></td>
-            <td>
-                <span th:if="${#lists.isEmpty(api.tags)}">Nenhuma tag cadastrada</span>
-                <span th:each="tag, iterStat : ${api.tags}">
+            <td th:text="'Inativo'">Inativo</td>
+            <!-- <td>
+                <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma Tag cadastrada</span>
+                <span th:each="tag, iterStat : ${portal.tags}">
                     <span th:text="${tag.nome}"></span>
                     <span th:if="${!iterStat.last}">, </span>
+
                 </span>
-            </td>      
+            </td>       -->
             <td th:text="${api.agendador != null ? api.agendador.tipo : 'Sem Agendador'}"></td>
             <td>
                 <div class="form-check form-switch">
@@ -123,7 +125,7 @@
                            th:checked="${api.ativo}"
                            th:attr="data-id=${api.id}"
                            onchange="toggleStatus(this)">
-                    <label class="form-check-label" style="min-width: 75px;" th:text="${api.ativo ? 'Ativo' : 'Desativo'}"></label>
+                    <label class="form-check-label" style="min-width: 75px;" th:text="${api.ativo ? 'Ativa' : 'Desativa'}"></label>
                 </div>
             </td>
             <td>
