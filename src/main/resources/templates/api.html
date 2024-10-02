@@ -108,6 +108,7 @@
                 <span th:each="tag, iterStat : ${portal.tags}">
                     <span th:text="${tag.nome}"></span>
                     <span th:if="${!iterStat.last}">, </span>
+
                 </span>
             </td>       -->
             <td th:text="${api.agendador != null ? api.agendador.tipo : 'Sem Agendador'}"></td>
