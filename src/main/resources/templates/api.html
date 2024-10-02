@@ -143,7 +143,7 @@
         const isActive = checkbox.checked;
         const label = checkbox.nextElementSibling;
 
-        label.textContent = isActive ? 'Ativo' : 'Desativo';
+        label.textContent = isActive ? 'Ativa' : 'Desativa';
 
         fetch(`/apis/alterarStatus/${apiId}`, {
             method: 'POST',
@@ -156,13 +156,13 @@
                 if (!response.ok) {
                     alert("Erro ao alterar o status!");
                     checkbox.checked = !isActive;
-                    label.textContent = !isActive ? 'Ativo' : 'Desativo';
+                    label.textContent = !isActive ? 'Ativa' : 'Desativa';
                 }
             })
             .catch(error => {
                 alert("Erro na comunicação com o servidor!");
                 checkbox.checked = !isActive;
-                label.textContent = !isActive ? 'Ativo' : 'Desativo';
+                label.textContent = !isActive ? 'Ativa' : 'Desativa';
             });
     }
 
