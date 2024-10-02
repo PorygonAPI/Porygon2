@@ -11,6 +11,7 @@ public class Api {
     private Integer id;
 
     private String nome;
+    @Column(length = 1000)
     private String descricao;
     private String url;
     private String formato;
