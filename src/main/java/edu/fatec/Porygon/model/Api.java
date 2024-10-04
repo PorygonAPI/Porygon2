@@ -2,6 +2,9 @@ package edu.fatec.Porygon.model;
 
 import java.util.List;
 import jakarta.persistence.*;
+import org.springframework.cglib.core.Local;
+
+import java.time.LocalDate;
 
 @Entity
 public class Api {
@@ -13,6 +16,8 @@ public class Api {
     private String descricao;
     private String url;
     private String formato;
+    private LocalDate dataCriacao;
+    private LocalDate ultimaAtualizacao;
 
     @ManyToOne
     @JoinColumn(name = "agendador_id")
@@ -91,6 +96,23 @@ public class Api {
     public void setTags(List<Tag> tags) {
         this.tags = tags;
     }
+
+    public LocalDate getUltimaAtualizacao() {
+        return ultimaAtualizacao;
+    }
+
+    public void setUltimaAtualizacao(LocalDate ultimaAtualizacao) {
+        this.ultimaAtualizacao = ultimaAtualizacao;
+    }
+
+    public LocalDate getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDate dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
 }
+
 
 
