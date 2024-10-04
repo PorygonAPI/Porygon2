@@ -58,7 +58,7 @@ public class PortalController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal) {
+    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit) {
         if (portal.getId() == null) {
             portal.setDataCriacao(LocalDate.now());
         } else {
@@ -67,7 +67,11 @@ public class PortalController {
             portal.setDataCriacao(portalExistente.getDataCriacao());
         }
         portalRepository.save(portal);
-        dataScrapperService.WebScrapper();
+
+        if (!isEdit) {
+            dataScrapperService.WebScrapper();
+        }
+
         return "redirect:/portais";
     }
 
