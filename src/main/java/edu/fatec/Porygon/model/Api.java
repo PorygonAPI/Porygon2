@@ -1,10 +1,8 @@
 package edu.fatec.Porygon.model;
 
 import java.util.List;
-import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
-
 import java.time.LocalDate;
+import jakarta.persistence.*;
 
 @Entity
 public class Api {
@@ -13,6 +11,7 @@ public class Api {
     private Integer id;
 
     private String nome;
+    @Column(length = 1000)
     private String descricao;
     private String url;
     private String formato;
@@ -112,6 +111,7 @@ public class Api {
     public void setDataCriacao(LocalDate dataCriacao) {
         this.dataCriacao = dataCriacao;
     }
+
 }
 
 

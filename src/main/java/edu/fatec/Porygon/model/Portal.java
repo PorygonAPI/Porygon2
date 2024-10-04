@@ -22,8 +22,7 @@ public class Portal {
     private String seletorTitulo;
     @Column(length = 254)
     private String seletorCaminhoNoticia;
-
-
+    private LocalDate ultimaAtualizacao;
     private LocalDate dataCriacao;
 
     @ManyToOne
@@ -111,9 +110,7 @@ public class Portal {
         return seletorDataPublicacao;
     }
 
-    public void setSeletorDataPublicacao(String seletorDataPublicacao) {
-        this.seletorDataPublicacao = seletorDataPublicacao;
-    }
+    public void setSeletorDataPublicacao(String seletorDataPublicacao) {this.seletorDataPublicacao = seletorDataPublicacao;}
 
     public String getSeletorConteudo() {
         return seletorConteudo;
@@ -135,9 +132,8 @@ public class Portal {
         return seletorCaminhoNoticia;
     }
 
-    public void setSeletorCaminhoNoticia(String seletorCaminhoNoticia) {
-        this.seletorCaminhoNoticia = seletorCaminhoNoticia;
-    }
+    public void setSeletorCaminhoNoticia(String seletorCaminhoNoticia) {this.seletorCaminhoNoticia = seletorCaminhoNoticia;}
+
     public LocalDate getDataCriacao() {
         return dataCriacao;
     }
@@ -146,4 +142,7 @@ public class Portal {
         this.dataCriacao = dataCriacao;
     }
 
+    public LocalDate getUltimaAtualizacao() {return getUltimaAtualizacao();}
+
+    public void setUltimaAtualizacao(LocalDate ultimaAtualizacao) {this.ultimaAtualizacao = ultimaAtualizacao;}
 }
