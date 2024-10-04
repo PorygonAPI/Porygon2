@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${api.id} != null ? 'Editar API' : 'Cadastro de API'"></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Projeto</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/index}">Consulta de Notícias<span class="sr-only">(atual)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/portais}">Cadastro de Portal</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/apis}">Cadastro de API</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h4 class="mb-4 text-center" th:text="${api.id} != null ? 'Editar API' : 'Cadastro de API'"></h4>
+    <form th:action="@{/apis/salvar}" th:object="${api}" method="post">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="nome" class="form-label">Nome</label>
+                <input type="text" class="form-control" id="nome" th:field="*{nome}" placeholder="Digite o nome da API" required>
+            </div>
+            <div class="col-md-6">
+                <label for="url" class="form-label">URL</label>
+                <input type="text" class="form-control" id="url" th:field="*{url}" placeholder="Insira a URL da API" required>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="agendador" class="form-label">Agendador</label>
+                <select class="form-select" id="agendador" th:field="*{agendador.id}">
+                    <option th:each="agendador : ${agendadores}" th:value="${agendador.id}" th:text="${agendador.tipo}"></option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="formato" class="form-label">Insira o tipo de arquivo de retorno da API</label>
+                <input type="text" class="form-control" id="formato" th:field="*{formato}" placeholder="Formato da API (JSON, XML, etc.)" required>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6 mb-3">
+                <label for="descricao" class="form-label">Descrição</label>
+                <textarea class="form-control" id="descricao" th:field="*{descricao}" placeholder="Descrição da API" rows="4" required style="font-size: 16px;"></textarea>
+            </div>
+        
+            <div class="col-md-6">
+                <label for="tags" class="form-label">Tags</label>
+                <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}" size="4" style="font-size: 16px;">
+                    <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
+                </select>
+                <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
+            </div>
+        </div>
+        
+            
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <label class="form-label">
+                    Para que a API esteja ativa, deixe o checkbox "Ativa" marcado.
+                </label>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
+                    <label class="form-check-label" for="ativo"><strong>Ativa</strong></label>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary float-end">Salvar</button>
+    </form>
+</div>
+
+<br>
+
+<div class="container mt-5">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>URL</th>
+            <th>Tags</th>
+            <th>Agendador</th>
+            <th style="width: 100px; text-align: left;">Status</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="api : ${apis}">
+            <td th:text="${api.id}"></td>
+            <td th:text="${api.nome}"></td>
+            <td th:text="${api.descricao}"></td>
+            <td th:text="${api.url}"></td>
+            <td th:text="'Inativo'">Inativo</td>
+            <!-- <td>
+                <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma Tag cadastrada</span>
+                <span th:each="tag, iterStat : ${portal.tags}">
+                    <span th:text="${tag.nome}"></span>
+                    <span th:if="${!iterStat.last}">, </span>
+
+                </span>
+            </td>       -->
+            <td th:text="${api.agendador != null ? api.agendador.tipo : 'Sem Agendador'}"></td>
+            <td>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox"
+                           th:checked="${api.ativo}"
+                           th:attr="data-id=${api.id}"
+                           onchange="toggleStatus(this)">
+                    <label class="form-check-label" style="min-width: 75px;" th:text="${api.ativo ? 'Ativa' : 'Desativa'}"></label>
+                </div>
+            </td>
+            <td>
+                <a class="btn btn-warning" th:href="@{/apis/editar/{id}(id=${api.id})}">Editar</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    function toggleStatus(checkbox) {
+        const apiId = checkbox.getAttribute('data-id');
+        const isActive = checkbox.checked;
+        const label = checkbox.nextElementSibling;
+
+        label.textContent = isActive ? 'Ativa' : 'Desativa';
+
+        fetch(`/apis/alterarStatus/${apiId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ativo: isActive })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    alert("Erro ao alterar o status!");
+                    checkbox.checked = !isActive;
+                    label.textContent = !isActive ? 'Ativa' : 'Desativa';
+                }
+            })
+            .catch(error => {
+                alert("Erro na comunicação com o servidor!");
+                checkbox.checked = !isActive;
+                label.textContent = !isActive ? 'Ativa' : 'Desativa';
+            });
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
