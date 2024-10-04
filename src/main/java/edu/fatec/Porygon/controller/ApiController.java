@@ -37,10 +37,20 @@ public class ApiController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarApi(@ModelAttribute Api api) {
-        apiService.salvarOuAtualizar(api);
-        return "redirect:/apis";
+    public String salvarOuAtualizarApi(@ModelAttribute Api api, Model model) {
+        try {
+            apiService.salvarOuAtualizar(api);
+            return "redirect:/apis";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("erro", ex.getMessage());
+            model.addAttribute("api", api);
+            model.addAttribute("apis", apiService.listarTodas());
+            model.addAttribute("agendadores", agendadorRepository.findAll());
+            model.addAttribute("tags", tagRepository.findAll());
+            return "api";
+        }
     }
+    
 
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
