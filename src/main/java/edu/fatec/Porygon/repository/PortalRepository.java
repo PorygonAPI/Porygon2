@@ -6,4 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PortalRepository extends JpaRepository<Portal, Integer> {
+
+    boolean existsByUrl(String url);
+
+    boolean existsByNome(String nome);
 }
