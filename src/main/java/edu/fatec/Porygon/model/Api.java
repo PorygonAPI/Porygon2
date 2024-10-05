@@ -16,6 +16,7 @@ public class Api {
     private String url;
     private String formato;
     private LocalDate dataCriacao;
+    private LocalDate ultimaAtualizacao;
 
     @ManyToOne
     @JoinColumn(name = "agendador_id")
@@ -95,6 +96,14 @@ public class Api {
         this.tags = tags;
     }
 
+    public LocalDate getUltimaAtualizacao() {
+        return ultimaAtualizacao;
+    }
+
+    public void setUltimaAtualizacao(LocalDate ultimaAtualizacao) {
+        this.ultimaAtualizacao = ultimaAtualizacao;
+    }
+
     public LocalDate getDataCriacao() {
         return dataCriacao;
     }
@@ -104,5 +113,6 @@ public class Api {
     }
 
 }
+
 
 
