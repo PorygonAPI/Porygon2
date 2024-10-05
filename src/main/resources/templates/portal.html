@@ -29,6 +29,7 @@
     <h4 class="mb-4 text-center" th:text="${portal.id} != null ? 'Editar Portal' : 'Cadastro de Portal'"></h4>
     <form th:action="@{/portais/salvar}" th:object="${portal}" method="post">
         <input type="hidden" th:field="*{id}">
+        <input type="hidden" name="isEdit" th:value="${portal.id != null}">
 
         <div class="row mb-3">
             <div class="col-md-6">
