@@ -3,6 +3,7 @@ package edu.fatec.Porygon.model;
 import java.time.LocalDate;
 import java.util.List;
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
 public class Portal {
@@ -30,6 +31,8 @@ public class Portal {
     private Agendador agendador;
 
     private boolean ativo;
+
+    private boolean hasScrapedToday;
 
     @ManyToMany
     @JoinTable(
@@ -145,4 +148,10 @@ public class Portal {
     public LocalDate getUltimaAtualizacao() {return getUltimaAtualizacao();}
 
     public void setUltimaAtualizacao(LocalDate ultimaAtualizacao) {this.ultimaAtualizacao = ultimaAtualizacao;}
+
+    public boolean isHasScrapedToday(){return hasScrapedToday;}
+
+    public void setHasScrapedToday(boolean hasScrapedToday) {
+        this.hasScrapedToday = hasScrapedToday;
+    }
 }

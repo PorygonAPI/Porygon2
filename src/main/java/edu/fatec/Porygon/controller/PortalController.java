@@ -61,15 +61,21 @@ public class PortalController {
     public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit) {
         if (portal.getId() == null) {
             portal.setDataCriacao(LocalDate.now());
+            portal.setHasScrapedToday(false);
         } else {
             Portal portalExistente = portalRepository.findById(portal.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
             portal.setDataCriacao(portalExistente.getDataCriacao());
+            portal.setHasScrapedToday(portalExistente.isHasScrapedToday());
+            portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
         }
         portalRepository.save(portal);
 
-        if (!isEdit) {
+        if (!isEdit && !portal.isHasScrapedToday()) {
             dataScrapperService.WebScrapper();
+            portal.setHasScrapedToday(true);
+            portal.setUltimaAtualizacao(LocalDate.now());
+            portalRepository.save(portal);
         }
 
         return "redirect:/portais";

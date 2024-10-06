@@ -9,11 +9,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -85,6 +88,10 @@ public class DataScrapperService {
 
             noticiaRepository.saveAll(noticias);
 
+            portal.setHasScrapedToday(true);
+            portal.setUltimaAtualizacao(LocalDate.now());
+            portalRepository.save(portal);
+
         } catch (IOException e) {
             System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
         }
@@ -103,18 +110,58 @@ public class DataScrapperService {
 
     }
 
-    // Rotina para raspagem (usar agendador- data de criacao - data de atualização)
-    // @Scheduled(fixedRate = 1800000) 
-
     public void WebScrapper() {
         List<Portal> portais = portalRepository.findAll();
 
         for (Portal portal : portais) {
-            if (portal.isAtivo()) {
-                scrapeDatabyPortalID(portal.getId());
+            if(!portal.isHasScrapedToday()) {
+                if (portal.isAtivo()) {
+                    scrapeDatabyPortalID(portal.getId());
+                }
             }
         }
+    }
 
+    //Set to run at noon(12h00)
+    @Scheduled(cron = "0 0 12 * * *")
+    public void WebScrapingScheduledDate(){
+        List<Portal> portais = portalRepository.findAll();
+        for (Portal portal : portais) {
+
+            int updateRate = portal.getAgendador().getQuantidade();
+
+            if (updateRate == 1){
+
+                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+                    scrapeDatabyPortalID(portal.getId());
+                }
+
+            } else if (updateRate == 7 || updateRate==30) {
+                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+
+                    LocalDate today = LocalDate.now();
+                    LocalDate lastUpdate = portal.getUltimaAtualizacao();
+                    int daysBetween = (int) ChronoUnit.DAYS.between(lastUpdate, today);
+
+                    if(daysBetween>=updateRate){
+                        scrapeDatabyPortalID(portal.getId());
+                    }
+                }
+            }
+
+        }
+    }
+
+    //Set to run every day at 23h50
+    @Scheduled(cron = "0 50 23 * * *")
+    public void ResetHasScrapedToday(){
+        List<Portal> portals = portalRepository.findAll();
+        List<Portal> resetList = new ArrayList<>();
+        for (Portal portal : portals) {
+            portal.setHasScrapedToday(false);
+            resetList.add(portal);
+        }
+        portalRepository.saveAll(resetList);
     }
 
 }
