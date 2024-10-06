@@ -4,6 +4,7 @@ import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
+import jakarta.annotation.PostConstruct;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,10 +18,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class DataScrapperService {
@@ -163,5 +161,20 @@ public class DataScrapperService {
         }
         portalRepository.saveAll(resetList);
     }
+
+    //runs the function once after the DataScrappedService is created/activated
+    @PostConstruct
+    public void resetScrapedTodayVerifiedStartProgram(){
+        List<Portal> portals = portalRepository.findAll();
+        List<Portal> resetList = new ArrayList<>();
+        for (Portal portal : portals) {
+            if(!Objects.equals(portal.getUltimaAtualizacao(), LocalDate.now())) {
+                portal.setHasScrapedToday(false);
+                resetList.add(portal);
+            }
+        }
+        portalRepository.saveAll(resetList);
+    }
+
 
 }
