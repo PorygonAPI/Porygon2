@@ -77,7 +77,7 @@ public class DataScrapperService {
                 noticia.setData(dataPublicacao);
                 noticia.setPortal(portal);
                 noticia.setConteudo(contentScrapper);
-                noticia.setHref(link); // Adicione isso para armazenar o href
+                noticia.setHref(link);
 
                 // Verifica se a notícia já existe no banco
                 if (!noticiaRepository.existsByHref(noticia.getHref())) {
