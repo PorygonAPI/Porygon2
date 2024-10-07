@@ -2,6 +2,7 @@ package edu.fatec.Porygon.controller;
 
 import edu.fatec.Porygon.model.Api;
 import edu.fatec.Porygon.repository.AgendadorRepository;
+import edu.fatec.Porygon.repository.FormatoRepository;
 import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.service.ApiService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class ApiController {
     @Autowired
     private ApiService apiService;
 
+    @Autowired
+    private FormatoRepository formatoRepository;
+
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
         Api novaApi = new Api();
@@ -32,6 +36,7 @@ public class ApiController {
         model.addAttribute("api", novaApi);
         model.addAttribute("apis", apiService.listarTodas());
         model.addAttribute("agendadores", agendadorRepository.findAll());
+        model.addAttribute("formatos", formatoRepository.findAll());
         model.addAttribute("tags", tagRepository.findAll());
         return "api";
     }
@@ -46,6 +51,7 @@ public class ApiController {
             model.addAttribute("api", api);
             model.addAttribute("apis", apiService.listarTodas());
             model.addAttribute("agendadores", agendadorRepository.findAll());
+            model.addAttribute("formatos", formatoRepository.findAll());
             model.addAttribute("tags", tagRepository.findAll());
             return "api";
         }
