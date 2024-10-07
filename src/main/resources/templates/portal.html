@@ -59,6 +59,9 @@
 </nav>
 
 <div class="container mt-5">
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
     <h4 class="mb-4 text-center" th:text="${portal.id} != null ? 'Editar Portal' : 'Cadastro de Portal'"></h4>
     <form th:action="@{/portais/salvar}" th:object="${portal}" method="post">
         <input type="hidden" th:field="*{id}">
