@@ -27,9 +27,8 @@ public class DataScrapperService {
 
     @Autowired
     private PortalRepository portalRepository;
-  
 
-    public void scrapeDatabyPortalID(int id){
+    public void scrapeDatabyPortalID(int id) {
         Portal portal = portalRepository.findById(id).orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
 
         String classNameLink = portal.getSeletorCaminhoNoticia();
@@ -37,25 +36,24 @@ public class DataScrapperService {
 
         String url = portal.getUrl();
 
-        try{
+        try {
             List<Noticia> noticias = new ArrayList<>();
             Element Titulo, Data, Autor;
             Elements Conteudo;
 
             Document doc = Jsoup.connect(url).get();
-
             Elements selectPag = doc.select(referenceClass);
             HashSet<String> Links = new HashSet<>();
             for (Element selector : selectPag) {
                 Links.add(selector.absUrl("href"));
             }
 
-            for (String link: Links) {
+            for (String link : Links) {
                 Document linkDoc = Jsoup.connect(link).get();
                 Titulo = linkDoc.select(portal.getSeletorTitulo()).first();
                 Data = linkDoc.select(portal.getSeletorDataPublicacao()).first();
                 Autor = linkDoc.select(portal.getSeletorJornalista()).first();
-                Conteudo=linkDoc.select(portal.getSeletorConteudo());
+                Conteudo = linkDoc.select(portal.getSeletorConteudo());
 
                 String verificationDate = "";
                 if (Data != null) {
@@ -68,9 +66,9 @@ public class DataScrapperService {
                 Date dataPublicacao = convertStringToDate(verificationDate);
 
                 StringBuilder contentScrapperBuilder = new StringBuilder();
-                for (Element conteudo: Conteudo){
+                for (Element conteudo : Conteudo) {
                     contentScrapperBuilder.append(conteudo.text()).append("\n");
-                };
+                }
                 String contentScrapper = contentScrapperBuilder.toString();
 
                 Noticia noticia = new Noticia();
@@ -79,16 +77,24 @@ public class DataScrapperService {
                 noticia.setData(dataPublicacao);
                 noticia.setPortal(portal);
                 noticia.setConteudo(contentScrapper);
+                noticia.setHref(link); // Adicione isso para armazenar o href
 
-                noticias.add(noticia);
+                // Verifica se a notícia já existe no banco
+                if (!noticiaRepository.existsByHref(noticia.getHref())) {
+                    noticias.add(noticia); // Adiciona à lista se não existir
+                } else {
+                    System.out.println("Notícia já existente: " + noticia.getHref());
+                }
             }
 
-            noticiaRepository.saveAll(noticias);
+            // Salva as notícias não duplicadas
+            if (!noticias.isEmpty()) {
+                noticiaRepository.saveAll(noticias);
+            }
 
         } catch (IOException e) {
             System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
         }
-
     }
 
     private Date convertStringToDate(String dateStr) {
@@ -96,17 +102,17 @@ public class DataScrapperService {
             ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateStr, DateTimeFormatter.ISO_DATE_TIME);
             Instant instant = zonedDateTime.toInstant();
             return Date.from(instant);
-
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse date: " + dateStr, e);
         }
-
     }
 
     // Rotina para raspagem (usar agendador- data de criacao - data de atualização)
-    // @Scheduled(fixedRate = 1800000) 
+    // @Scheduled(fixedRate = 1800000)
 
     public void WebScrapper() {
+        showLoading(); // Exibe o loading no início
+
         List<Portal> portais = portalRepository.findAll();
 
         for (Portal portal : portais) {
@@ -115,6 +121,17 @@ public class DataScrapperService {
             }
         }
 
+        hideLoading(); // Oculta o loading no final
     }
 
+    // Métodos para exibir e ocultar a tela de carregamento
+    private void showLoading() {
+        // Aqui você pode implementar a lógica para mostrar a tela de carregamento
+        System.out.println("Carregamento iniciado...");
+    }
+
+    private void hideLoading() {
+        // Lógica para ocultar a tela de carregamento
+        System.out.println("Carregamento encerrado.");
+    }
 }

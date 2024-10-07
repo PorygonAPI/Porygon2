@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NoticiaRepository extends JpaRepository<Noticia, Integer> {
+    boolean existsByHref(String href);
 }
