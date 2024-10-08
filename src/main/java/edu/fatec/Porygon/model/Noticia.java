@@ -18,6 +18,9 @@ public class Noticia {
     private String conteudo;
     private String autor;
 
+    @Column(unique = true)
+    private String href;
+
     @ManyToOne
     @JoinColumn(name = "portal_id")
     private Portal portal;
@@ -69,4 +72,8 @@ public class Noticia {
     public void setPortal(Portal portal) {
         this.portal = portal;
     }
+
+    public String getHref() { return href; }
+
+    public void setHref(String href) { this.href = href; }
 }

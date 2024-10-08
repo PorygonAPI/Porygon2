@@ -28,9 +28,8 @@ public class DataScrapperService {
 
     @Autowired
     private PortalRepository portalRepository;
-  
 
-    public void scrapeDatabyPortalID(int id){
+    public void scrapeDatabyPortalID(int id) {
         Portal portal = portalRepository.findById(id).orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
 
         String classNameLink = portal.getSeletorCaminhoNoticia();
@@ -38,25 +37,24 @@ public class DataScrapperService {
 
         String url = portal.getUrl();
 
-        try{
+        try {
             List<Noticia> noticias = new ArrayList<>();
             Element Titulo, Data, Autor;
             Elements Conteudo;
 
             Document doc = Jsoup.connect(url).get();
-
             Elements selectPag = doc.select(referenceClass);
             HashSet<String> Links = new HashSet<>();
             for (Element selector : selectPag) {
                 Links.add(selector.absUrl("href"));
             }
 
-            for (String link: Links) {
+            for (String link : Links) {
                 Document linkDoc = Jsoup.connect(link).get();
                 Titulo = linkDoc.select(portal.getSeletorTitulo()).first();
                 Data = linkDoc.select(portal.getSeletorDataPublicacao()).first();
                 Autor = linkDoc.select(portal.getSeletorJornalista()).first();
-                Conteudo=linkDoc.select(portal.getSeletorConteudo());
+                Conteudo = linkDoc.select(portal.getSeletorConteudo());
 
                 String verificationDate = "";
                 if (Data != null) {
@@ -80,11 +78,20 @@ public class DataScrapperService {
                 noticia.setData(dataPublicacao);
                 noticia.setPortal(portal);
                 noticia.setConteudo(contentScrapper);
+                noticia.setHref(link);
 
-                noticias.add(noticia);
+                // Verifica se a notícia já existe no banco
+                if (!noticiaRepository.existsByHref(noticia.getHref())) {
+                    noticias.add(noticia); // Adiciona à lista se não existir
+                } else {
+                    System.out.println("Notícia já existente: " + noticia.getHref());
+                }
             }
 
-            noticiaRepository.saveAll(noticias);
+            // Salva as notícias não duplicadas
+            if (!noticias.isEmpty()) {
+                noticiaRepository.saveAll(noticias);
+            }
 
             portal.setHasScrapedToday(true);
             portal.setUltimaAtualizacao(LocalDate.now());
@@ -93,7 +100,6 @@ public class DataScrapperService {
         } catch (IOException e) {
             System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
         }
-
     }
 
     private Date convertStringToDate(String dateStr) {
@@ -109,6 +115,8 @@ public class DataScrapperService {
     }
 
     public void WebScrapper() {
+        showLoading(); // Exibe o loading no início
+
         List<Portal> portais = portalRepository.findAll();
 
         for (Portal portal : portais) {
@@ -118,6 +126,19 @@ public class DataScrapperService {
                 }
             }
         }
+
+        hideLoading(); // Oculta o loading no final
+    }
+
+    // Métodos para exibir e ocultar a tela de carregamento
+    private void showLoading() {
+        // Aqui você pode implementar a lógica para mostrar a tela de carregamento
+        System.out.println("Carregamento iniciado...");
+    }
+
+    private void hideLoading() {
+        // Lógica para ocultar a tela de carregamento
+        System.out.println("Carregamento encerrado.");
     }
 
     //Set to run at noon(12h00)
@@ -176,5 +197,34 @@ public class DataScrapperService {
         portalRepository.saveAll(resetList);
     }
 
+    //Runs the webscraping when the program starts
+    @PostConstruct
+    public void WebscrapingWhenStart(){
+        List<Portal> portais = portalRepository.findAll();
+        for (Portal portal : portais) {
+
+            int updateRate = portal.getAgendador().getQuantidade();
+
+            if (updateRate == 1){
+
+                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+                    scrapeDatabyPortalID(portal.getId());
+                }
+
+            } else if (updateRate == 7 || updateRate==30) {
+                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+
+                    LocalDate today = LocalDate.now();
+                    LocalDate lastUpdate = portal.getUltimaAtualizacao();
+                    int daysBetween = (int) ChronoUnit.DAYS.between(lastUpdate, today);
+
+                    if(daysBetween>=updateRate){
+                        scrapeDatabyPortalID(portal.getId());
+                    }
+                }
+            }
+
+        }
+    }
 
 }

@@ -145,7 +145,7 @@ public class Portal {
         this.dataCriacao = dataCriacao;
     }
 
-    public LocalDate getUltimaAtualizacao() {return getUltimaAtualizacao();}
+    public LocalDate getUltimaAtualizacao() {return ultimaAtualizacao;}
 
     public void setUltimaAtualizacao(LocalDate ultimaAtualizacao) {this.ultimaAtualizacao = ultimaAtualizacao;}
 
