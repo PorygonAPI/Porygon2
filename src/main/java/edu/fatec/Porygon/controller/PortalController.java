@@ -104,11 +104,14 @@ public class PortalController {
         portalRepository.save(portal);
 
         if (!isEdit) {
+            // Chama o web scraping
             dataScrapperService.WebScrapper();
         }
 
+        // Redireciona de volta para a página de portais
         return "redirect:/portais";
     }
+
 
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
