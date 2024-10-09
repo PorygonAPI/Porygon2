@@ -96,19 +96,23 @@ public class PortalController {
 
         if (portal.getId() == null) {
             portal.setDataCriacao(LocalDate.now());
+            portal.setHasScrapedToday(false);
         } else {
             Portal portalExistente = portalRepository.findById(portal.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
             portal.setDataCriacao(portalExistente.getDataCriacao());
+            portal.setHasScrapedToday(portalExistente.isHasScrapedToday());
+            portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
         }
         portalRepository.save(portal);
 
-        if (!isEdit) {
-            // Chama o web scraping
+        if (!isEdit && !portal.isHasScrapedToday()) {
             dataScrapperService.WebScrapper();
+            portal.setHasScrapedToday(true);
+            portal.setUltimaAtualizacao(LocalDate.now());
+            portalRepository.save(portal);
         }
 
-        // Redireciona de volta para a página de portais
         return "redirect:/portais";
     }
 
