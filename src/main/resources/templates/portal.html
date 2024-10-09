@@ -8,11 +8,10 @@
     <link href="https://bootswatch.com/5/cerulean/bootstrap.min.css" rel="stylesheet">
 
     <style>
-      
-        body{
+        body {
             font-size: 14px;
         }
-      
+
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -30,28 +29,34 @@
         .loading-spinner {
             border: 8px solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
-            border-top: 8px solid #007bff; /* Cor do spinner */
+            border-top: 8px solid #007bff;
+            /* Cor do spinner */
             width: 60px;
             height: 60px;
             animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
 
 <body>
 
-<div id="loadingOverlay" class="loading-overlay" style="display: none;">
-    <div class="loading-spinner"></div>
-    <p>Carregando... Aguarde um momento.</p>
-</div>
-  
-  
- <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p>Carregando... Aguarde um momento.</p>
+    </div>
+
+
+    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
         <a class="navbar-brand" href="#" style="margin-left: 10px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-newspaper"
                 viewBox="0 0 16 16">
@@ -191,7 +196,6 @@
                         <td th:text="${portal.url}"></td>
                         <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
                         <td style="width: 100px; text-align: left;">
-                            <!-- Toggle Switch para ativar/desativar -->
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" th:checked="${portal.ativo}"
                                     th:attr="data-id=${portal.id}" onchange="toggleStatus(this)">
@@ -208,85 +212,44 @@
         </div>
     </div>
 
-        <button type="submit" class="btn btn-primary float-end">Salvar</button>
-  
-    </form>
-</div>
+    <script>
+         document.querySelector('form').addEventListener('submit', function (event) {
+            showLoading();
+        });
 
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
 
-<div class="container mt-5">
-    <table class="table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>URL</th>
-            <th>Agendador</th>
-            <th style="width: 100px; text-align: left;">Status</th>
-            <th>Ações</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="portal : ${portais}">
-            <td th:text="${portal.id}"></td>
-            <td th:text="${portal.nome}"></td>
-            <td th:text="${portal.url}"></td>
-            <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
-            <td style="width: 100px; text-align: left;">
-                <!-- Toggle Switch para ativar/desativar -->
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox"
-                           th:checked="${portal.ativo}"
-                           th:attr="data-id=${portal.id}"
-                           onchange="toggleStatus(this)">
-                    <label class="form-check-label" style="min-width: 75px;" th:text="${portal.ativo ? 'Ativo' : 'Desativo'}"></label>
-                </div>
-            </td>
-            <td>
-                <a class="btn btn-warning"  th:href="@{/portais/editar/{id}(id=${portal.id})}">Editar</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
 
+        function toggleStatus(checkbox) {
+            const portalId = checkbox.getAttribute('data-id');
+            const isActive = checkbox.checked;
+            const label = checkbox.nextElementSibling;
 
-<script>
-    document.querySelector('form').addEventListener('submit', function(event) {
-        showLoading(); // Exibe o loading quando o formulário é submetido
-    });
+            label.textContent = isActive ? 'Ativo' : 'Desativo';
 
-    function showLoading() {
-        document.getElementById('loadingOverlay').style.display = 'flex';
-    }
-
-    function hideLoading() {
-        document.getElementById('loadingOverlay').style.display = 'none';
-    }
-
-    // Chame a função showLoading() quando o scraping começar
-    // E hideLoading() quando o scraping terminar
-
-    function toggleStatus(checkbox) {
-        const portalId = checkbox.getAttribute('data-id');
-        const isActive = checkbox.checked;
-        const label = checkbox.nextElementSibling;
-
-        // Atualiza o texto do label
-        label.textContent = isActive ? 'Ativo' : 'Desativo';
-
-        fetch(`/portais/alterarStatus/${portalId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ ativo: isActive })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    alert("Erro ao alterar o status!");
-                    checkbox.checked = !isActive; // Reverter estado no erro
-                    label.textContent = !isActive ? 'Ativo' : 'Desativo'; // Reverter o texto também
+            fetch(`/portais/alterarStatus/${portalId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ativo: isActive })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        alert("Erro ao alterar o status!");
+                        checkbox.checked = !isActive;
+                        label.textContent = !isActive ? 'Ativo' : 'Desativo';
+                    }
+                })
+                .catch(error => {
+                    alert("Erro na comunicação com o servidor!");
+                    checkbox.checked = !isActive;
+                    label.textContent = !isActive ? 'Ativo' : 'Desativo';
                 });
         }
     </script>
