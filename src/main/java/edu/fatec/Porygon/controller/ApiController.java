@@ -57,7 +57,6 @@ public class ApiController {
         }
     }
     
-
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
         boolean novoStatus = body.get("ativo");
