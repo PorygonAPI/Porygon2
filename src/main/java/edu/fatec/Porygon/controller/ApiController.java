@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -63,4 +63,12 @@ public class ApiController {
         apiService.alterarStatus(id, novoStatus);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/dados")
+    public String listarApiDados(Model model) {
+        List<Api> apis = apiService.listarTodas();
+        model.addAttribute("apis", apis); 
+        return "apiDados";
+    }
+    
 }
