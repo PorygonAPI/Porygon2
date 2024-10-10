@@ -1,9 +1,13 @@
 package edu.fatec.Porygon.service;
 
 import edu.fatec.Porygon.model.Api;
+import edu.fatec.Porygon.model.ApiDados;
+import edu.fatec.Porygon.repository.ApiDadosRepository;
 import edu.fatec.Porygon.repository.ApiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +18,9 @@ public class ApiService {
 
     @Autowired
     private ApiRepository apiRepository;
+
+    @Autowired
+    private ApiDadosRepository apiDadosRepository;
 
     public List<Api> listarTodas() {
         return apiRepository.findAll();
@@ -30,15 +37,37 @@ public class ApiService {
         if (apiRepository.existsByUrl(api.getUrl())) {
             throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
         }
+        
+        Api savedApi;
+    
         if (api.getId() == null) {
             api.setDataCriacao(LocalDate.now());
-        } else {
+            savedApi = apiRepository.save(api); 
+    
+            if (savedApi.isAtivo()) { 
+                RestTemplate restTemplate = new RestTemplate();
+                ResponseEntity<String> response = restTemplate.getForEntity(savedApi.getUrl(), String.class);
+                
+                ApiDados apiDados = new ApiDados();
+                apiDados.setConteudo(response.getBody());
+                apiDados.setDescricao("Dados da API: " + savedApi.getNome());
+                apiDados.setApi(savedApi);
+
+                apiDadosRepository.save(apiDados);
+
+                savedApi.setUltimaAtualizacao(LocalDate.now());
+                savedApi = apiRepository.save(savedApi); 
+            }
+        } else { 
             Api apiExistente = apiRepository.findById(api.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + api.getId()));
             api.setDataCriacao(apiExistente.getDataCriacao());
-        } 
-        return apiRepository.save(api);
+            api.setUltimaAtualizacao(apiExistente.getUltimaAtualizacao()); 
+            savedApi = apiRepository.save(api); 
+        }
+        return savedApi; 
     }
+       
 
     public Api alterarStatus(Integer id, boolean novoStatus) {
         Optional<Api> apiOptional = apiRepository.findById(id);
@@ -49,5 +78,4 @@ public class ApiService {
         }
         return null;
     }
-
 }

@@ -2,8 +2,8 @@ package edu.fatec.Porygon.model;
 
 import java.time.LocalDate;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Getter;
 
 @Entity
 public class Portal {
@@ -35,15 +35,12 @@ public class Portal {
     private boolean hasScrapedToday;
 
     @ManyToMany
-    @JoinTable(
-            name = "portal_tag",
-            joinColumns = @JoinColumn(name = "portal_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
+    @JoinTable(name = "portal_tag", joinColumns = @JoinColumn(name = "portal_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private List<Tag> tags;
 
     @OneToMany(mappedBy = "portal")
-    private List<Noticia> noticias;
+    @JsonManagedReference
+    private List<Noticia> noticias;;
 
     public List<Tag> getTags() {
         return tags;
@@ -113,7 +110,9 @@ public class Portal {
         return seletorDataPublicacao;
     }
 
-    public void setSeletorDataPublicacao(String seletorDataPublicacao) {this.seletorDataPublicacao = seletorDataPublicacao;}
+    public void setSeletorDataPublicacao(String seletorDataPublicacao) {
+        this.seletorDataPublicacao = seletorDataPublicacao;
+    }
 
     public String getSeletorConteudo() {
         return seletorConteudo;
@@ -135,7 +134,9 @@ public class Portal {
         return seletorCaminhoNoticia;
     }
 
-    public void setSeletorCaminhoNoticia(String seletorCaminhoNoticia) {this.seletorCaminhoNoticia = seletorCaminhoNoticia;}
+    public void setSeletorCaminhoNoticia(String seletorCaminhoNoticia) {
+        this.seletorCaminhoNoticia = seletorCaminhoNoticia;
+    }
 
     public LocalDate getDataCriacao() {
         return dataCriacao;
@@ -145,11 +146,17 @@ public class Portal {
         this.dataCriacao = dataCriacao;
     }
 
-    public LocalDate getUltimaAtualizacao() {return ultimaAtualizacao;}
+    public LocalDate getUltimaAtualizacao() {
+        return ultimaAtualizacao;
+    }
 
-    public void setUltimaAtualizacao(LocalDate ultimaAtualizacao) {this.ultimaAtualizacao = ultimaAtualizacao;}
+    public void setUltimaAtualizacao(LocalDate ultimaAtualizacao) {
+        this.ultimaAtualizacao = ultimaAtualizacao;
+    }
 
-    public boolean isHasScrapedToday(){return hasScrapedToday;}
+    public boolean isHasScrapedToday() {
+        return hasScrapedToday;
+    }
 
     public void setHasScrapedToday(boolean hasScrapedToday) {
         this.hasScrapedToday = hasScrapedToday;
