@@ -70,9 +70,10 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="formato" class="form-label">Insira o tipo de arquivo de retorno da API</label>
-                    <input type="text" class="form-control" id="formato" th:field="*{formato}"
-                        placeholder="Formato da API (JSON, XML, etc.)" required>
+                    <label for="formato" class="form-label">Formato da API</label>
+                    <select class="form-select" id="formato" th:field="*{formato.id}" required>
+                        <option th:each="formato : ${formatos}" th:value="${formato.id}" th:text="${formato.nome}"></option>
+                    </select>
                 </div>
             </div>
 
