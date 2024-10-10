@@ -1,5 +1,6 @@
-package edu.fatec.Porygon.model;
+package edu.fatec.Porygon.config;
 
+import edu.fatec.Porygon.model.Formato;
 import edu.fatec.Porygon.repository.FormatoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -27,7 +28,7 @@ public class FormatoDataLoader implements CommandLineRunner {
             formatoRepository.save(csv);
             formatoRepository.save(xml);
 
-            System.out.println("Formatos padrão inseridos no banco de dados.");
+            // System.out.println("Formatos padrão inseridos no banco de dados.");
         }
     }
 }
