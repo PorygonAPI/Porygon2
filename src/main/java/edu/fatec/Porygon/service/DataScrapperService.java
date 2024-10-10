@@ -4,20 +4,21 @@ import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
+import jakarta.annotation.PostConstruct;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Service
 public class DataScrapperService {
@@ -66,9 +67,9 @@ public class DataScrapperService {
                 Date dataPublicacao = convertStringToDate(verificationDate);
 
                 StringBuilder contentScrapperBuilder = new StringBuilder();
-                for (Element conteudo : Conteudo) {
+                for (Element conteudo: Conteudo){
                     contentScrapperBuilder.append(conteudo.text()).append("\n");
-                }
+                };
                 String contentScrapper = contentScrapperBuilder.toString();
 
                 Noticia noticia = new Noticia();
@@ -92,6 +93,10 @@ public class DataScrapperService {
                 noticiaRepository.saveAll(noticias);
             }
 
+            portal.setHasScrapedToday(true);
+            portal.setUltimaAtualizacao(LocalDate.now());
+            portalRepository.save(portal);
+
         } catch (IOException e) {
             System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
         }
@@ -102,13 +107,12 @@ public class DataScrapperService {
             ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateStr, DateTimeFormatter.ISO_DATE_TIME);
             Instant instant = zonedDateTime.toInstant();
             return Date.from(instant);
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse date: " + dateStr, e);
         }
-    }
 
-    // Rotina para raspagem (usar agendador- data de criacao - data de atualização)
-    // @Scheduled(fixedRate = 1800000)
+    }
 
     public void WebScrapper() {
         showLoading(); // Exibe o loading no início
@@ -116,8 +120,10 @@ public class DataScrapperService {
         List<Portal> portais = portalRepository.findAll();
 
         for (Portal portal : portais) {
-            if (portal.isAtivo()) {
-                scrapeDatabyPortalID(portal.getId());
+            if(!portal.isHasScrapedToday()) {
+                if (portal.isAtivo()) {
+                    scrapeDatabyPortalID(portal.getId());
+                }
             }
         }
 
@@ -134,4 +140,91 @@ public class DataScrapperService {
         // Lógica para ocultar a tela de carregamento
         System.out.println("Carregamento encerrado.");
     }
+
+    //Set to run at noon(12h00)
+    @Scheduled(cron = "0 0 12 * * *")
+    public void WebScrapingScheduledDate(){
+        List<Portal> portais = portalRepository.findAll();
+        for (Portal portal : portais) {
+
+            int updateRate = portal.getAgendador().getQuantidade();
+
+            if (updateRate == 1){
+
+                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+                    scrapeDatabyPortalID(portal.getId());
+                }
+
+            } else if (updateRate == 7 || updateRate==30) {
+                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+
+                    LocalDate today = LocalDate.now();
+                    LocalDate lastUpdate = portal.getUltimaAtualizacao();
+                    int daysBetween = (int) ChronoUnit.DAYS.between(lastUpdate, today);
+
+                    if(daysBetween>=updateRate){
+                        scrapeDatabyPortalID(portal.getId());
+                    }
+                }
+            }
+
+        }
+    }
+
+    //Set to run every day at 23h50
+    @Scheduled(cron = "0 50 23 * * *")
+    public void ResetHasScrapedToday(){
+        List<Portal> portals = portalRepository.findAll();
+        List<Portal> resetList = new ArrayList<>();
+        for (Portal portal : portals) {
+            portal.setHasScrapedToday(false);
+            resetList.add(portal);
+        }
+        portalRepository.saveAll(resetList);
+    }
+
+    //runs the function once after the DataScrappedService is created/activated
+    @PostConstruct
+    public void resetScrapedTodayVerifiedStartProgram(){
+        List<Portal> portals = portalRepository.findAll();
+        List<Portal> resetList = new ArrayList<>();
+        for (Portal portal : portals) {
+            if(!Objects.equals(portal.getUltimaAtualizacao(), LocalDate.now())) {
+                portal.setHasScrapedToday(false);
+                resetList.add(portal);
+            }
+        }
+        portalRepository.saveAll(resetList);
+    }
+
+    //Runs the webscraping when the program starts
+    @PostConstruct
+    public void WebscrapingWhenStart(){
+        List<Portal> portais = portalRepository.findAll();
+        for (Portal portal : portais) {
+
+            int updateRate = portal.getAgendador().getQuantidade();
+
+            if (updateRate == 1){
+
+                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+                    scrapeDatabyPortalID(portal.getId());
+                }
+
+            } else if (updateRate == 7 || updateRate==30) {
+                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+
+                    LocalDate today = LocalDate.now();
+                    LocalDate lastUpdate = portal.getUltimaAtualizacao();
+                    int daysBetween = (int) ChronoUnit.DAYS.between(lastUpdate, today);
+
+                    if(daysBetween>=updateRate){
+                        scrapeDatabyPortalID(portal.getId());
+                    }
+                }
+            }
+
+        }
+    }
+
 }
