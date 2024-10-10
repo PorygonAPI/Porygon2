@@ -80,15 +80,13 @@ public class DataScrapperService {
                 noticia.setConteudo(contentScrapper);
                 noticia.setHref(link);
 
-                // Verifica se a notícia já existe no banco
                 if (!noticiaRepository.existsByHref(noticia.getHref())) {
-                    noticias.add(noticia); // Adiciona à lista se não existir
+                    noticias.add(noticia); 
                 } else {
                     System.out.println("Notícia já existente: " + noticia.getHref());
                 }
             }
 
-            // Salva as notícias não duplicadas
             if (!noticias.isEmpty()) {
                 noticiaRepository.saveAll(noticias);
             }
@@ -115,7 +113,7 @@ public class DataScrapperService {
     }
 
     public void WebScrapper() {
-        showLoading(); // Exibe o loading no início
+        showLoading();
 
         List<Portal> portais = portalRepository.findAll();
 
@@ -127,17 +125,14 @@ public class DataScrapperService {
             }
         }
 
-        hideLoading(); // Oculta o loading no final
+        hideLoading();
     }
 
-    // Métodos para exibir e ocultar a tela de carregamento
     private void showLoading() {
-        // Aqui você pode implementar a lógica para mostrar a tela de carregamento
         System.out.println("Carregamento iniciado...");
     }
 
     private void hideLoading() {
-        // Lógica para ocultar a tela de carregamento
         System.out.println("Carregamento encerrado.");
     }
 
@@ -183,7 +178,6 @@ public class DataScrapperService {
         portalRepository.saveAll(resetList);
     }
 
-    //runs the function once after the DataScrappedService is created/activated
     @PostConstruct
     public void resetScrapedTodayVerifiedStartProgram(){
         List<Portal> portals = portalRepository.findAll();
@@ -197,7 +191,6 @@ public class DataScrapperService {
         portalRepository.saveAll(resetList);
     }
 
-    //Runs the webscraping when the program starts
     @PostConstruct
     public void WebscrapingWhenStart(){
         List<Portal> portais = portalRepository.findAll();
