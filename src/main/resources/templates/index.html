@@ -120,10 +120,17 @@
     </div>
 </div>
 <script>
-    function abrirModal(id) {
+     function abrirModal(id) {
+        console.log('Abrindo modal para notícia com ID:', id); // Log para verificar o ID
         fetch(`/noticias/detalhe/${id}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na resposta da rede');
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Dados recebidos:', data); // Log para verificar os dados recebidos
                 document.getElementById('modalTitulo').innerText = data.titulo;
                 document.getElementById('modalAutor').innerText = 'Jornalista: ' + data.autor;
                 document.getElementById('modalData').innerText = 'Data de publicação: ' + new Date(data.data).toLocaleDateString('pt-BR');
