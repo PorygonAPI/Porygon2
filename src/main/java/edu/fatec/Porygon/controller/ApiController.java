@@ -32,21 +32,8 @@ public class ApiController {
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
         Api novaApi = new Api();
-        novaApi.setAtivo(true); 
+        novaApi.setAtivo(true);
         model.addAttribute("api", novaApi);
-        model.addAttribute("apis", apiService.listarTodas());
-        model.addAttribute("agendadores", agendadorRepository.findAll());
-        model.addAttribute("formatos", formatoRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
-        return "api";
-    }
-
-    @GetMapping("/editar/{id}")
-    public String mostrarFormularioEdicao(@PathVariable("id") Integer id, Model model) {
-        Api api = apiService.buscarPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
-
-        model.addAttribute("api", api);
         model.addAttribute("apis", apiService.listarTodas());
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("formatos", formatoRepository.findAll());
@@ -69,7 +56,7 @@ public class ApiController {
             return "api";
         }
     }
-    
+
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
         boolean novoStatus = body.get("ativo");
@@ -80,8 +67,8 @@ public class ApiController {
     @GetMapping("/dados")
     public String listarApiDados(Model model) {
         List<Api> apis = apiService.listarTodas();
-        model.addAttribute("apis", apis); 
+        model.addAttribute("apis", apis);
         return "apiDados";
     }
-    
+
 }
