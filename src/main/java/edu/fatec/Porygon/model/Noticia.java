@@ -3,6 +3,8 @@ package edu.fatec.Porygon.model;
 import jakarta.persistence.*;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 public class Noticia {
     @Id
@@ -23,6 +25,7 @@ public class Noticia {
 
     @ManyToOne
     @JoinColumn(name = "portal_id")
+    @JsonBackReference
     private Portal portal;
 
     public Integer getId() {
