@@ -3,7 +3,6 @@ package edu.fatec.Porygon.model;
 import java.time.LocalDate;
 import java.util.List;
 import jakarta.persistence.*;
-import lombok.Getter;
 
 @Entity
 public class Portal {
