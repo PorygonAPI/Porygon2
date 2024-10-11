@@ -23,20 +23,35 @@ public class ApiService {
         return apiRepository.findById(id);
     }
 
+    public boolean existsByNome(String nome) {
+        return apiRepository.existsByNome(nome);
+    }
+
+    public boolean existsByUrl(String url) {
+        return apiRepository.existsByUrl(url);
+    }
+
     public Api salvarOuAtualizar(Api api) {
-        if (apiRepository.existsByNome(api.getNome())) {
-            throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
-        }
-        if (apiRepository.existsByUrl(api.getUrl())) {
-            throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
-        }
-        if (api.getId() == null) {
-            api.setDataCriacao(LocalDate.now());
-        } else {
+        if (api.getId() != null) {
             Api apiExistente = apiRepository.findById(api.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + api.getId()));
+
+            if (!api.getNome().equals(apiExistente.getNome()) && apiRepository.existsByNome(api.getNome())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
+            }
+            if (!api.getUrl().equals(apiExistente.getUrl()) && apiRepository.existsByUrl(api.getUrl())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
+            }
             api.setDataCriacao(apiExistente.getDataCriacao());
-        } 
+        } else {
+            if (apiRepository.existsByNome(api.getNome())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
+            }
+            if (apiRepository.existsByUrl(api.getUrl())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
+            }
+            api.setDataCriacao(LocalDate.now());
+        }
         return apiRepository.save(api);
     }
 
@@ -49,5 +64,4 @@ public class ApiService {
         }
         return null;
     }
-
 }

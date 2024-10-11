@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Controller
@@ -55,12 +56,28 @@ public class ApiController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarApi(@ModelAttribute Api api, Model model) {
-        try {
-            apiService.salvarOuAtualizar(api);
-            return "redirect:/apis";
-        } catch (IllegalArgumentException ex) {
-            model.addAttribute("erro", ex.getMessage());
+    public String salvarOuAtualizarApi(@ModelAttribute Api api, @RequestParam("isEdit") boolean isEdit, Model model) {
+        String errorMessage = null;
+
+        if (isEdit) {
+            Api apiExistente = apiService.buscarPorId(api.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + api.getId()));
+
+            if (!api.getNome().equals(apiExistente.getNome()) && apiService.existsByNome(api.getNome())) {
+                errorMessage = "Já existe uma API com esse nome.";
+            } else if (!api.getUrl().equals(apiExistente.getUrl()) && apiService.existsByUrl(api.getUrl())) {
+                errorMessage = "Já existe uma API com essa URL.";
+            }
+        } else {
+            if (apiService.existsByNome(api.getNome())) {
+                errorMessage = "Já existe uma API com este nome.";
+            } else if (apiService.existsByUrl(api.getUrl())) {
+                errorMessage = "Já existe uma API com esta URL.";
+            }
+        }
+
+        if (errorMessage != null) {
+            model.addAttribute("erro", errorMessage);
             model.addAttribute("api", api);
             model.addAttribute("apis", apiService.listarTodas());
             model.addAttribute("agendadores", agendadorRepository.findAll());
@@ -68,6 +85,17 @@ public class ApiController {
             model.addAttribute("tags", tagRepository.findAll());
             return "api";
         }
+
+        if (api.getId() == null) {
+            api.setDataCriacao(LocalDate.now());
+        } else {
+            Api apiExistente = apiService.buscarPorId(api.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + api.getId()));
+            api.setDataCriacao(apiExistente.getDataCriacao());
+            api.setUltimaAtualizacao(apiExistente.getUltimaAtualizacao());
+        }
+        apiService.salvarOuAtualizar(api);
+        return "redirect:/apis";
     }
     
 
