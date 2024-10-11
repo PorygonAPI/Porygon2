@@ -44,23 +44,20 @@ public class ApiController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarApi(@ModelAttribute Api api, Model model) {
+    public String salvarOuAtualizarApi(@ModelAttribute Api api, RedirectAttributes redirectAttributes, Model model) {
         try {
             String mensagemSucesso = apiService.salvarOuAtualizar(api);
-            model.addAttribute("mensagemSucesso", mensagemSucesso);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", mensagemSucesso);
             return "redirect:/apis";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("erro", ex.getMessage());
-        } catch (RuntimeException ex) {
-            model.addAttribute("erro", "Não foi possível salvar a API. Verifique se o banco de dados está disponível.");
+            model.addAttribute("api", api);
+            model.addAttribute("apis", apiService.listarTodas());
+            model.addAttribute("agendadores", agendadorRepository.findAll());
+            model.addAttribute("formatos", formatoRepository.findAll());
+            model.addAttribute("tags", tagRepository.findAll());
+            return "api";
         }
-
-        model.addAttribute("api", api);
-        model.addAttribute("apis", apiService.listarTodas());
-        model.addAttribute("agendadores", agendadorRepository.findAll());
-        model.addAttribute("formatos", formatoRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
-        return "api";
     }
     
     @PostMapping("/alterarStatus/{id}")
