@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.util.List;
 import java.util.Map;
 
@@ -42,9 +44,10 @@ public class ApiController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarApi(@ModelAttribute Api api, Model model) {
+    public String salvarOuAtualizarApi(@ModelAttribute Api api, RedirectAttributes redirectAttributes, Model model) {
         try {
-            apiService.salvarOuAtualizar(api);
+            String mensagemSucesso = apiService.salvarOuAtualizar(api);
+            redirectAttributes.addFlashAttribute("mensagemSucesso", mensagemSucesso);
             return "redirect:/apis";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("erro", ex.getMessage());
