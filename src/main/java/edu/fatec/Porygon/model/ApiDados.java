@@ -9,7 +9,9 @@ public class ApiDados {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(columnDefinition = "TEXT")
     private String conteudo;
+    
     private String descricao;
 
     @ManyToOne
@@ -47,4 +49,3 @@ public class ApiDados {
         this.id = id;
     }
 }
-

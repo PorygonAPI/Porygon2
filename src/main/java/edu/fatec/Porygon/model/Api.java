@@ -11,8 +11,10 @@ public class Api {
     private Integer id;
 
     private String nome;
+
     @Column(length = 1000)
     private String descricao;
+
     private String url;
     private LocalDate dataCriacao;
     private LocalDate ultimaAtualizacao;
@@ -34,6 +36,9 @@ public class Api {
         inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private List<Tag> tags;
+
+    @OneToMany(mappedBy = "api", cascade = CascadeType.ALL)
+    private List<ApiDados> apiDadosList;
 
     public String getNome() {
         return nome;
@@ -113,5 +118,13 @@ public class Api {
 
     public void setDataCriacao(LocalDate dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    public List<ApiDados> getApiDadosList() {
+        return apiDadosList;
+    }
+
+    public void setApiDadosList(List<ApiDados> apiDadosList) {
+        this.apiDadosList = apiDadosList;
     }
 }
