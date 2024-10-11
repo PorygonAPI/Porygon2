@@ -31,23 +31,22 @@ public class ApiService {
     }
 
     public Api salvarOuAtualizar(Api api) {
-        if (apiRepository.existsByNome(api.getNome())) {
-            throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
-        }
-        if (apiRepository.existsByUrl(api.getUrl())) {
-            throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
-        }
-        
-        Api savedApi;
-    
-        if (api.getId() == null) {
+        boolean isNew = (api.getId() == null);
+
+        if (isNew) {
+            if (apiRepository.existsByNome(api.getNome())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
+            }
+            if (apiRepository.existsByUrl(api.getUrl())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
+            }
             api.setDataCriacao(LocalDate.now());
-            savedApi = apiRepository.save(api); 
-    
-            if (savedApi.isAtivo()) { 
+            Api savedApi = apiRepository.save(api);
+
+            if (savedApi.isAtivo()) {
                 RestTemplate restTemplate = new RestTemplate();
                 ResponseEntity<String> response = restTemplate.getForEntity(savedApi.getUrl(), String.class);
-                
+
                 ApiDados apiDados = new ApiDados();
                 apiDados.setConteudo(response.getBody());
                 apiDados.setDescricao("Dados da API: " + savedApi.getNome());
@@ -56,16 +55,25 @@ public class ApiService {
                 apiDadosRepository.save(apiDados);
 
                 savedApi.setUltimaAtualizacao(LocalDate.now());
-                savedApi = apiRepository.save(savedApi); 
+                savedApi = apiRepository.save(savedApi);
             }
-        } else { 
+
+            return savedApi;
+        } else {
             Api apiExistente = apiRepository.findById(api.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + api.getId()));
+
+            if (!apiExistente.getNome().equals(api.getNome()) && apiRepository.existsByNome(api.getNome())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
+            }
+            if (!apiExistente.getUrl().equals(api.getUrl()) && apiRepository.existsByUrl(api.getUrl())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
+            }
+
             api.setDataCriacao(apiExistente.getDataCriacao());
-            api.setUltimaAtualizacao(apiExistente.getUltimaAtualizacao()); 
-            savedApi = apiRepository.save(api); 
+            api.setUltimaAtualizacao(LocalDate.now());
+            return apiRepository.save(api);
         }
-        return savedApi; 
     }
        
 
