@@ -50,17 +50,18 @@
         <h4 class="mb-4 text-center" th:text="${api.id} != null ? 'Editar API' : 'Cadastro de API'"></h4>
         <form th:action="@{/apis/salvar}" th:object="${api}" method="post">
             <input type="hidden" th:field="*{id}">
+            <input type="hidden" name="isEdit" th:value="${api.id != null}">
 
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="nome" class="form-label">Nome</label>
                     <input type="text" class="form-control" id="nome" th:field="*{nome}"
-                        placeholder="Digite o nome da API" required>
+                           placeholder="Digite o nome da API" required>
                 </div>
                 <div class="col-md-6">
                     <label for="url" class="form-label">URL</label>
                     <input type="text" class="form-control" id="url" th:field="*{url}" placeholder="Insira a URL da API"
-                        required>
+                           required>
                 </div>
             </div>
 
@@ -69,7 +70,7 @@
                     <label for="agendador" class="form-label">Agendador</label>
                     <select class="form-select" id="agendador" th:field="*{agendador.id}">
                         <option th:each="agendador : ${agendadores}" th:value="${agendador.id}"
-                            th:text="${agendador.tipo}"></option>
+                                th:text="${agendador.tipo}"></option>
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -84,20 +85,19 @@
                 <div class="col-md-6 mb-3">
                     <label for="descricao" class="form-label">Descrição</label>
                     <textarea class="form-control" id="descricao" th:field="*{descricao}" placeholder="Descrição da API"
-                        rows="4" required></textarea>
+                              rows="4" required></textarea>
                 </div>
 
                 <div class="col-md-6">
                     <label for="tags" class="form-label">Tags</label>
-                    <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}" size="4"
-                        style="font-size: 16px;">
+                    <select id="tags" class="form-select" multiple th:field="*{tags}" th:disabled="${tags.size() == 0}" size="4"
+                            style="font-size: 16px;">
                         <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
                     </select>
                     <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
                         opções.</small>
                 </div>
             </div>
-
 
             <div class="row mb-3">
                 <div class="col-md-12">
