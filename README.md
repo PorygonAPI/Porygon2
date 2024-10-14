@@ -217,7 +217,7 @@ Como usuário, quero consultar notícias que contenham uma palavra específica n
 </details>
 
 **Acesse o board do produto disponível no [Jira](https://porygon.atlassian.net/jira/software/c/projects/PYG/boards/5)**  
-**Acesse a página da projeto disponível no [Confluence](https://porygon.atlassian.net/wiki/x/cAAC)**
+**Acesse a página do projeto disponível no [Confluence](https://porygon.atlassian.net/wiki/x/cAAC)**
 
 
 ## 🚀 Desempenho da Equipe | Burndown
