@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <nav class="navbar bg-dark border-bottom border-body fixed-top" data-bs-theme="dark">
         <a class="navbar-brand" href="#" style="margin-left: 10px;">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -37,6 +37,8 @@
             </ul>
         </div>
     </nav>
+    
+    <br>
 
     <div class="container mt-5">
 
@@ -45,7 +47,7 @@
         </div>
         <div th:if="${erro}" id="alertErro" class="alert alert-danger" role="alert">
             <p th:text="${erro}"></p>
-        </div>
+        </div>        
 
         <h4 class="mb-4 text-center" th:text="${api.id} != null ? 'Editar API' : 'Cadastro de API'"></h4>
         <form th:action="@{/apis/salvar}" th:object="${api}" method="post">

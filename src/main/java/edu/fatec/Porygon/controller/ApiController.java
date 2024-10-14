@@ -48,9 +48,17 @@ public class ApiController {
         try {
             String mensagemSucesso = apiService.salvarOuAtualizar(api);
             redirectAttributes.addFlashAttribute("mensagemSucesso", mensagemSucesso);
-            return "redirect:/apis";
+            return "redirect:/apis"; 
         } catch (IllegalArgumentException ex) {
             model.addAttribute("erro", ex.getMessage());
+            model.addAttribute("api", api);
+            model.addAttribute("apis", apiService.listarTodas());
+            model.addAttribute("agendadores", agendadorRepository.findAll());
+            model.addAttribute("formatos", formatoRepository.findAll());
+            model.addAttribute("tags", tagRepository.findAll());
+            return "api"; 
+        } catch (RuntimeException ex) {
+            model.addAttribute("erro", " " + ex.getMessage());
             model.addAttribute("api", api);
             model.addAttribute("apis", apiService.listarTodas());
             model.addAttribute("agendadores", agendadorRepository.findAll());
@@ -59,6 +67,7 @@ public class ApiController {
             return "api";
         }
     }
+    
     
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
