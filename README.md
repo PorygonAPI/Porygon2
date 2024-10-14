@@ -215,3 +215,65 @@ Como usuário, quero consultar notícias que contenham uma palavra específica n
 -	A consulta deve retornar notícias que contenham a palavra digitada.
 
 </details>
+
+
+## 🚀 Desempenho da Equipe | Burndown
+
+
+<details>
+<summary> SPRINT 1 </summary>
+
+<br>
+
+  Nesta sprint, usamos usando points por histórias para medir nosso progresso em relação às entregas propostas.  
+  Pontuação total: 29
+<br>
+
+![Burndown - Sprint 1 (3)](https://github.com/user-attachments/assets/3ffedea1-7bf2-473f-b26b-34c44f52c85c)
+
+Última Atualização: 01/10/2024
+
+
+</details>
+
+<details>
+<summary> SPRINT 2 | 30/09/2024 até 20/10/2024 </summary>
+<br>
+
+  Nesta sprint, usamos points por tarefa para medir nosso progresso em relação às entregas propostas.  
+  Pontuação total: 145
+<br>
+<br>
+
+![Burndown - Sprint 2](https://github.com/user-attachments/assets/49ecf558-cf97-42b1-a227-f74930b985e5)
+<br>
+##### Tabela de Tarefas Realizadas
+
+| Tarefa Finalizada                                      | Task Points | Data de Finalização |
+|--------------------------------------------------------|--------------|---------------------|
+| [PYG-47](https://porygon.atlassian.net/browse/PYG-47)  | 5            | 04/10/2024          |
+| [PYG-35](https://porygon.atlassian.net/browse/PYG-35)  | 8            | 04/10/2024          |
+| [PYG-33](https://porygon.atlassian.net/browse/PYG-33)  | 5            | 04/10/2024          |
+| [PYG-38](https://porygon.atlassian.net/browse/PYG-38)  | 5            | 04/10/2024          |
+| [PYG-41](https://porygon.atlassian.net/browse/PYG-41)  | 5            | 04/10/2024          |
+| [PYG-46](https://porygon.atlassian.net/browse/PYG-46)  | 5            | 05/10/2024          |
+| [PYG-48](https://porygon.atlassian.net/browse/PYG-48)  | 8            | 05/10/2024          |
+| [PYG-50](https://porygon.atlassian.net/browse/PYG-50)  | 5            | 07/10/2024          |
+| [PYG-51](https://porygon.atlassian.net/browse/PYG-51)  | 8            | 08/10/2024          |
+| [PYG-54](https://porygon.atlassian.net/browse/PYG-54)  | 0            | 08/10/2024          |
+| [PYG-49](https://porygon.atlassian.net/browse/PYG-49)  | 21           | 09/10/2024          |
+| [PYG-53](https://porygon.atlassian.net/browse/PYG-53)  | 13           | 11/10/2024          |
+| [PYG-37](https://porygon.atlassian.net/browse/PYG-37)  | 5            | 11/10/2024          |
+
+<br>
+Última Atualização: 13/10/2024
+
+</details>
+
+
+
+
+
+
+
+
