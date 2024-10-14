@@ -49,15 +49,15 @@
         <h4 class="mb-4 text-center">Portal de Consultas</h4>
 
         <!-- Formulário de Filtros (Desativado) -->
-        <form>
+        <form id="filterForm">
             <div class="row mb-3">
                 <div class="col">
                     <label for="dataInicio" class="form-label">Data Início</label>
-                    <input type="date" class="form-control" id="dataInicio" disabled>
+                    <input type="date" class="form-control" id="dataInicio">
                 </div>
                 <div class="col">
                     <label for="dataFim" class="form-label">Data Fim</label>
-                    <input type="date" class="form-control" id="dataFim" disabled>
+                    <input type="date" class="form-control" id="dataFim">
                 </div>
             </div>
 
@@ -78,7 +78,7 @@
             </div>
 
             <div class="d-grid gap-2 col-2 mx-auto">
-                <button type="button" class="btn btn-primary" disabled>Consultar</button>
+                <button type="button" class="btn btn-primary" id="consultar">Consultar</button>
             </div>
         </form>
 
@@ -161,6 +161,30 @@
                 })
                 .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
         }
+        document.getElementById('consultar').addEventListener('click', function () {
+            const dataInicio = document.getElementById('dataInicio').value;
+            const dataFim = document.getElementById('dataFim').value;
+
+            fetch(`/noticias?dataInicio=${dataInicio}&dataFim=${dataFim}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Atualize a tabela de notícias com os dados filtrados
+                    const tbody = document.querySelector('tbody.table-group-divider');
+                    tbody.innerHTML = '';
+                    data.forEach(noticia => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>Inativo</td>
+                            <td>${noticia.titulo}</td>
+                            <td>Inativo</td>
+                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR')}</td>
+                            <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
+                            `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar as notícias:', error));
+        });
     </script>
 
     <!-- Bootstrap JS e dependências -->
