@@ -14,5 +14,9 @@ public class NoticiaService {
 
     public List<Noticia> listarNoticias() {
         return noticiaRepository.findAll();
-    }    
+    }
+    
+    // public List<Noticia> listarNoticiasPorData(java.util.Date dataInicio, java.util.Date dataFim) {
+    //     return noticiaRepository.acharDataEntre(dataInicio, dataFim);
+    // }
 }
