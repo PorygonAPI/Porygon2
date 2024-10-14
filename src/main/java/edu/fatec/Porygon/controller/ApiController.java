@@ -43,6 +43,17 @@ public class ApiController {
         return "api";
     }
 
+    @GetMapping("/editar/{id}")
+    public String editarApi(@PathVariable Integer id, Model model) {
+        Api api = apiService.buscarPorId(id).orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
+        model.addAttribute("api", api);
+        model.addAttribute("apis", apiService.listarTodas());
+        model.addAttribute("agendadores", agendadorRepository.findAll());
+        model.addAttribute("formatos", formatoRepository.findAll());
+        model.addAttribute("tags", tagRepository.findAll());
+        return "api";
+    }
+
     @PostMapping("/salvar")
     public String salvarOuAtualizarApi(@ModelAttribute Api api, RedirectAttributes redirectAttributes, Model model) {
         try {
