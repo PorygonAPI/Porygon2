@@ -32,25 +32,38 @@ public class ApiService {
         return apiRepository.findById(id);
     }
 
-    public String salvarOuAtualizar(Api api) {
-
+        public String salvarOuAtualizar(Api api) {
+        boolean isNew = (api.getId() == null);
+    
         if (api.getUrl() == null || api.getUrl().contains(" ")) {
             throw new IllegalArgumentException("A URL não pode conter espaços.");
         }
     
-        if (apiRepository.existsByNome(api.getNome())) {
-            throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
-        }
+        if (isNew) {
+            if (apiRepository.existsByNome(api.getNome())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
+            }
+            if (apiRepository.existsByUrl(api.getUrl())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
+            }
+            api.setDataCriacao(LocalDate.now());
+        } else {
+            Api apiExistente = apiRepository.findById(api.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + api.getId()));
     
-        if (apiRepository.existsByUrl(api.getUrl())) {
-            throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
+            if (!apiExistente.getNome().equals(api.getNome()) && apiRepository.existsByNome(api.getNome())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
+            }
+            if (!apiExistente.getUrl().equals(api.getUrl()) && apiRepository.existsByUrl(api.getUrl())) {
+                throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
+            }
+
+            api.setDataCriacao(apiExistente.getDataCriacao());
+            api.setUltimaAtualizacao(LocalDate.now());
         }
-    
-        Api savedApi;
     
         try {
             RestTemplate restTemplate = new RestTemplate();
-    
             try {
                 restTemplate.getForEntity(api.getUrl(), String.class);
             } catch (HttpClientErrorException | HttpServerErrorException e) {
@@ -59,43 +72,33 @@ public class ApiService {
                 throw new IllegalArgumentException("Não foi possível acessar a URL fornecida. Verifique se ela está ativa: " + e.getMessage());
             }
     
-            if (api.getId() == null) {
-                api.setDataCriacao(LocalDate.now());
-                savedApi = apiRepository.save(api);
+            Api savedApi = apiRepository.save(api);
     
-                if (savedApi.isAtivo()) {
-                    RestTemplate restTemplateForData = new RestTemplate();
-                    ResponseEntity<String> response = restTemplateForData.getForEntity(savedApi.getUrl(), String.class);
+            if (isNew && savedApi.isAtivo()) {
+                RestTemplate restTemplateForData = new RestTemplate();
+                ResponseEntity<String> response = restTemplateForData.getForEntity(savedApi.getUrl(), String.class);
     
-                    ApiDados apiDados = new ApiDados();
-                    apiDados.setConteudo(response.getBody());
-                    apiDados.setDescricao("Dados da API: " + savedApi.getNome());
-                    apiDados.setApi(savedApi);
-                    apiDadosRepository.save(apiDados);
+                ApiDados apiDados = new ApiDados();
+                apiDados.setConteudo(response.getBody());
+                apiDados.setDescricao("Dados da API: " + savedApi.getNome());
+                apiDados.setApi(savedApi);
     
-                    savedApi.setUltimaAtualizacao(LocalDate.now());
-                    apiRepository.save(savedApi);
+                apiDadosRepository.save(apiDados);
     
-                    return "Cadastro de API e coleta REST realizada com sucesso!";
-                } else {
-                    return "Cadastro de API realizado, mas sem coleta REST pois a API está desativada.";
-                }
+                savedApi.setUltimaAtualizacao(LocalDate.now());
+                apiRepository.save(savedApi);
     
+                return "Cadastro de API e coleta REST realizada com sucesso!";
+            } else if (isNew) {
+                return "Cadastro de API realizado, mas sem coleta REST pois a API está desativada.";
             } else {
-                Api apiExistente = apiRepository.findById(api.getId())
-                        .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + api.getId()));
-    
-                api.setDataCriacao(apiExistente.getDataCriacao());
-                api.setUltimaAtualizacao(apiExistente.getUltimaAtualizacao());
-                savedApi = apiRepository.save(api);
-    
                 return "Atualização de API realizada com sucesso.";
             }
     
         } catch (Exception e) {
             throw new RuntimeException("Erro ao salvar a API: " + e.getMessage());
         }
-    }    
+    }
 
        
     public Api alterarStatus(Integer id, boolean novoStatus) {
