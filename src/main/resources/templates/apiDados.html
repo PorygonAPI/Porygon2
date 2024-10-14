@@ -10,109 +10,146 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://bootswatch.com/5/cerulean/bootstrap.min.css" rel="stylesheet">
     <style>
-        body{
+        body {
             font-size: 14px;
         }
     </style>
 </head>
 
 <body>
-    <!-- Navbar no index.html -->
-    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-        <a class="navbar-brand" href="#" style="margin-left: 10px;">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+<!-- Navbar no index.html -->
+<nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <a class="navbar-brand" href="#" style="margin-left: 10px;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/index}">Consulta de Notícias</a>
-                </li>
-                <li class="nav-item ">
-                    <a class="nav-link" th:href="@{/apis/dados}">Consulta de Dados das Api's<span class="sr-only">(atual)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/portais}">Cadastro de Portal</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/apis}">Cadastro de API</a>
-                </li>
-            </ul>
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/index}">Consulta de Notícias</a>
+            </li>
+            <li class="nav-item ">
+                <a class="nav-link" th:href="@{/apis/dados}">Consulta de Dados das Api's<span class="sr-only">(atual)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/portais}">Cadastro de Portal</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/apis}">Cadastro de API</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h4 class="mb-4 text-center">Portal de Consultas</h4>
+
+    <!-- Formulário de Filtros (Desativado) -->
+    <form>
+        <div class="row mb-3">
+            <div class="col">
+                <label for="dataInicio" class="form-label">Data Início</label>
+                <input type="date" class="form-control" id="dataInicio" disabled>
+            </div>
+            <div class="col">
+                <label for="dataFim" class="form-label">Data Fim</label>
+                <input type="date" class="form-control" id="dataFim" disabled>
+            </div>
         </div>
-    </nav>
 
-    <div class="container mt-5">
-        <h4 class="mb-4 text-center">Portal de Consultas</h4>
+        <div class="mb-3">
+            <label for="tags" class="form-label">Tags</label>
+            <select id="tags" class="form-select" multiple disabled>
+                <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
+            </select>
+            <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
+                opções.</small>
+        </div>
 
-        <!-- Formulário de Filtros (Desativado) -->
-        <form>
-            <div class="row mb-3">
-                <div class="col">
-                    <label for="dataInicio" class="form-label">Data Início</label>
-                    <input type="date" class="form-control" id="dataInicio" disabled>
-                </div>
-                <div class="col">
-                    <label for="dataFim" class="form-label">Data Fim</label>
-                    <input type="date" class="form-control" id="dataFim" disabled>
-                </div>
-            </div>
+        <div class="mb-3">
+            <label for="palavraChave" class="form-label">Palavras no Conteúdo</label>
+            <input type="text" class="form-control" id="palavraChave"
+                   placeholder="Digite palavras separadas por vírgula" disabled>
+            <small class="form-text text-muted">Exemplo: cavalo, cachorro</small>
+        </div>
 
-            <div class="mb-3">
-                <label for="tags" class="form-label">Tags</label>
-                <select id="tags" class="form-select" multiple disabled>
-                    <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
-                </select>
-                <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
-                    opções.</small>
-            </div>
+        <div class="d-grid gap-2 col-2 mx-auto">
+            <button type="button" class="btn btn-primary" disabled>Consultar</button>
+        </div>
+    </form>
 
-            <div class="mb-3">
-                <label for="palavraChave" class="form-label">Palavras no Conteúdo</label>
-                <input type="text" class="form-control" id="palavraChave"
-                    placeholder="Digite palavras separadas por vírgula" disabled>
-                <small class="form-text text-muted">Exemplo: cavalo, cachorro</small>
-            </div>
-
-            <div class="d-grid gap-2 col-2 mx-auto">
-                <button type="button" class="btn btn-primary" disabled>Consultar</button>
-            </div>
-        </form>
-
-        <!-- Lista de Ddos das Api's -->
-        <div class="mt-5">
-            <h4 class="mb-4 text-center">Lista de Dados das Api's</h4>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
+    <!-- Lista de Dados das Api's -->
+    <div class="mt-5">
+        <h4 class="mb-4 text-center">Lista de Dados das Api's</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
                 <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Tags</th>
-                        <th>Descrição</th>
-                        <th>Ação</th>
-                    </tr>
+                <tr>
+                    <th>Nome</th>
+                    <th>Tags</th>
+                    <th>Descrição</th>
+                    <th>Ação</th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="api : ${apis}">
-                        <td th:text="${api.nome}"></td>
-                        <td th:text="'Inativo'"></td>
-                        <td>
-                            <span th:if="${api.apiDadosList.size() > 0}"
-                                th:text="${api.apiDadosList[0].descricao}"></span>
-                            <span th:if="${api.apiDadosList.size() == 0}">Sem dados disponíveis</span>
-                        </td>
-                        <td>
-                            <button class="btn btn-primary" disabled>Abrir</button> 
-                        </td>
-                    </tr>
+                <tr th:each="api : ${apis}">
+                    <td th:text="${api.nome}"></td>
+                    <td th:text="'Inativo'"></td>
+                    <td>
+                                <span th:if="${api.apiDadosList.size() > 0}"
+                                      th:text="${api.apiDadosList[0].descricao}"></span>
+                        <span th:if="${api.apiDadosList.size() == 0}">Sem dados disponíveis</span>
+                    </td>
+                    <td>
+                        <!-- Ativar o botão e passar o ID correto da API -->
+                        <button class="btn btn-primary" th:attr="data-id=${api.id}" onclick="abrirModal(this)">Abrir</button>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
     </div>
 
+    <!-- Modal para exibir os dados -->
+    <div class="modal fade" id="apiModal" tabindex="-1" aria-labelledby="apiModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="apiModalLabel">Dados da API</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <pre id="conteudoApi"></pre>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS e dependências -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function abrirModal(button) {
+            var apiId = button.getAttribute('data-id');
+
+            fetch(`/api/dados/${apiId}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('conteudoApi').textContent = data;
+                    var modal = new bootstrap.Modal(document.getElementById('apiModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar os dados da API:', error);
+                    document.getElementById('conteudoApi').textContent = 'Erro ao carregar os dados.';
+                });
+        }
+    </script>
 </body>
 
 </html>
