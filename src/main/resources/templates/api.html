@@ -77,6 +77,8 @@
                     <select class="form-select" id="formato" th:field="*{formato.id}" required>
                         <option th:each="formato : ${formatos}" th:value="${formato.id}" th:text="${formato.nome}"></option>
                     </select>
+                    <small class="form-text text-muted">Selecione o tipo de arquivo retornado pela API REST corretamente.
+                        A seleção incorreta pode desconfigurarar a leitura.</small>
                 </div>
             </div>
 

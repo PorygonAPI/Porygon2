@@ -23,15 +23,29 @@ public class ApiDadosController {
         if (apiDadosOptional.isPresent()) {
             ApiDados apiDados = apiDadosOptional.get();
             String conteudo = apiDados.getConteudo();
-            String descricao = apiDados.getDescricao();
 
-            String tipo = descricao.toLowerCase();
+            Integer formatoId = apiDados.getApi().getFormato().getId();  // < Pegando o formato pela api
+
+            String tipo = getTipoFormato(formatoId);
             String conteudoFormatado = formatarConteudo(conteudo, tipo);
 
             return ResponseEntity.ok(conteudoFormatado);
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dados não encontrados");
+    }
+
+    private String getTipoFormato(Integer formatoId) {
+        switch (formatoId) {
+            case 1:
+                return "json";
+            case 2:
+                return "csv";
+            case 3:
+                return "xml";
+            default:
+                return "desconhecido";
+        }
     }
 
     private String formatarConteudo(String conteudo, String tipo) {
