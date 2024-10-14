@@ -221,7 +221,7 @@ Como usuário, quero consultar notícias que contenham uma palavra específica n
 
 
 <details>
-<summary> SPRINT 1 </summary>
+<summary> SPRINT 1 | 09/09/2024 até 29/10/2024</summary>
 
 <br>
 
