@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ApiDadosRepository extends JpaRepository<ApiDados, Integer> {
+    boolean existsByConteudo(String conteudo);
 }

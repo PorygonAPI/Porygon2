@@ -18,7 +18,7 @@
 
 <body>
     <!-- Navbar no index.html -->
-    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <nav class="navbar bg-dark border-bottom border-body absolute-top" data-bs-theme="dark">
         <a class="navbar-brand" href="#" style="margin-left: 10px;">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -26,22 +26,24 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" th:href="@{/index}">Consulta de Notícias<span class="sr-only">(atual)</span></a>
-                </li>
-                <li class="nav-item ">
-                    <a class="nav-link" th:href="@{/apis/dados}">Consulta de Dados das Api's</a>
+            <ul class="nav justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link text-light" th:href="@{/index}">Consulta de Notícias<span class="sr-only">(atual)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/portais}">Cadastro de Portal</a>
+                    <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das Api's</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/apis}">Cadastro de API</a>
+                    <a class="nav-link text-light" th:href="@{/portais}">Cadastro de Portal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" th:href="@{/apis}">Cadastro de API</a>
                 </li>
             </ul>
         </div>
     </nav>
+
+    <br>
 
     <div class="container mt-5">
         <h4 class="mb-4 text-center">Portal de Consultas</h4>
@@ -138,6 +140,13 @@
             </div>
         </div>
     </div>
+
+    <footer class="bg-dark text-light py-4">
+        <div class="container text-center">
+          <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+        </div>
+    </footer> 
+    
     <script>
         function abrirModal(id) {
             fetch(`/noticias/detalhe/${id}`)
