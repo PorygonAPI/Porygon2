@@ -178,7 +178,7 @@ public class DataScrapperService {
         portalRepository.saveAll(resetList);
     }
 
-    @PostConstruct
+    //@PostConstruct
     public void resetScrapedTodayVerifiedStartProgram(){
         List<Portal> portals = portalRepository.findAll();
         List<Portal> resetList = new ArrayList<>();
@@ -191,7 +191,7 @@ public class DataScrapperService {
         portalRepository.saveAll(resetList);
     }
 
-    @PostConstruct
+    //@PostConstruct
     public void WebscrapingWhenStart(){
         List<Portal> portais = portalRepository.findAll();
         for (Portal portal : portais) {
@@ -218,6 +218,12 @@ public class DataScrapperService {
             }
 
         }
+    }
+
+    @PostConstruct
+    public void resetAndScrapeWhenStart() {
+        resetScrapedTodayVerifiedStartProgram();
+        WebscrapingWhenStart();
     }
 
 }
