@@ -30,32 +30,33 @@ public class DataScrapperService {
     private PortalRepository portalRepository;
 
     public void scrapeDatabyPortalID(int id) {
-        Portal portal = portalRepository.findById(id).orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
-
+        Portal portal = portalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
+    
         String classNameLink = portal.getSeletorCaminhoNoticia();
         String referenceClass = "a[href]." + classNameLink;
-
+    
         String url = portal.getUrl();
-
+    
         try {
             List<Noticia> noticias = new ArrayList<>();
             Element Titulo, Data, Autor;
             Elements Conteudo;
-
+    
             Document doc = Jsoup.connect(url).get();
             Elements selectPag = doc.select(referenceClass);
             HashSet<String> Links = new HashSet<>();
             for (Element selector : selectPag) {
                 Links.add(selector.absUrl("href"));
             }
-
+    
             for (String link : Links) {
                 Document linkDoc = Jsoup.connect(link).get();
                 Titulo = linkDoc.select(portal.getSeletorTitulo()).first();
                 Data = linkDoc.select(portal.getSeletorDataPublicacao()).first();
                 Autor = linkDoc.select(portal.getSeletorJornalista()).first();
                 Conteudo = linkDoc.select(portal.getSeletorConteudo());
-
+    
                 String verificationDate = "";
                 if (Data != null) {
                     verificationDate = Data.attr("datetime");
@@ -63,42 +64,47 @@ public class DataScrapperService {
                     System.err.println("No date element found for link: " + link);
                     verificationDate = "1001-01-01T10:44:13.253Z";
                 }
-
+    
                 Date dataPublicacao = convertStringToDate(verificationDate);
-
+    
                 StringBuilder contentScrapperBuilder = new StringBuilder();
-                for (Element conteudo: Conteudo){
+                for (Element conteudo : Conteudo) {
                     contentScrapperBuilder.append(conteudo.text()).append("\n");
-                };
+                }
                 String contentScrapper = contentScrapperBuilder.toString();
-
+    
+                if (Titulo == null || Autor == null || contentScrapper.trim().isEmpty()) {
+                    System.err.println("Notícia não salva. Título ou autor ou conteúdo não pode estar vazio para o link: " + link);
+                    continue;
+                }
+    
                 Noticia noticia = new Noticia();
-                noticia.setTitulo(Titulo != null ? Titulo.text() : "Titulo Desconhecido");
-                noticia.setAutor(Autor != null ? Autor.text() : "Autor Desconhecido");
+                noticia.setTitulo(Titulo.text());
+                noticia.setAutor(Autor.text());
                 noticia.setData(dataPublicacao);
                 noticia.setPortal(portal);
                 noticia.setConteudo(contentScrapper);
                 noticia.setHref(link);
-
+    
                 if (!noticiaRepository.existsByHref(noticia.getHref())) {
-                    noticias.add(noticia); 
+                    noticias.add(noticia);
                 } else {
                     System.out.println("Notícia já existente: " + noticia.getHref());
                 }
             }
-
+    
             if (!noticias.isEmpty()) {
                 noticiaRepository.saveAll(noticias);
             }
-
+    
             portal.setHasScrapedToday(true);
             portal.setUltimaAtualizacao(LocalDate.now());
             portalRepository.save(portal);
-
+    
         } catch (IOException e) {
             System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
         }
-    }
+    }    
 
     private Date convertStringToDate(String dateStr) {
         try {
