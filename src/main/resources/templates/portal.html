@@ -55,6 +55,13 @@
         <p>Carregando... Aguarde um momento.</p>
     </div>
 
+    <!-- Alerta -->
+    <div id="alertContainer" class="alert alert-success alert-dismissible fade show" role="alert"
+        style="display: none; position: fixed; top: 20px; right: 20px; z-index: 1051;">
+        <span id="alertMessage"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
 
     <nav class="navbar bg-dark border-bottom border-body absolute-top" data-bs-theme="dark">
         <a class="navbar-brand" href="#" style="margin-left: 10px; ">
@@ -216,6 +223,34 @@
     </footer> 
 
     <script>
+
+function showAlert(message, alertType = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertMessage = document.getElementById('alertMessage');
+
+            alertMessage.textContent = message;
+            alertContainer.classList.remove('alert-success', 'alert-danger', 'alert-warning', 'alert-info');
+            alertContainer.classList.add(`alert-${alertType}`);
+
+            alertContainer.style.display = 'block';
+
+            setTimeout(() => {
+                alertContainer.style.display = 'none';
+            }, 3000);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const successMessage = urlParams.get('successMessage');
+        const errorMessage = urlParams.get('errorMessage');
+
+        if (successMessage) {
+            showAlert(successMessage, 'success');
+        }
+
+        if (errorMessage) {
+            showAlert(errorMessage, 'danger');
+        }
+        
          document.querySelector('form').addEventListener('submit', function (event) {
             showLoading();
         });
