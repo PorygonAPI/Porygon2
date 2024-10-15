@@ -13,7 +13,7 @@
 </head>
 
 <body>
-    <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <nav class="navbar bg-dark border-bottom border-body absolute-top" data-bs-theme="dark">
         <a class="navbar-brand" href="#" style="margin-left: 10px;">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -21,32 +21,34 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item ">
-                    <a class="nav-link" th:href="@{/index}">Consulta de Notícias</a>
-                </li>
-                <li class="nav-item ">
-                    <a class="nav-link" th:href="@{/apis/dados}">Consulta de Dados das Api's</a>
+            <ul class="nav justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link text-light" th:href="@{/index}">Consulta de Notícias</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/portais}">Cadastro de Portal</a>
+                    <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das Api's</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/apis}">Cadastro de API<span class="sr-only">(atual)</span></a>
+                    <a class="nav-link text-light" th:href="@{/portais}">Cadastro de Portal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" th:href="@{/apis}">Cadastro de API<span class="sr-only">(atual)</span></a>
                 </li>
             </ul>
         </div>
     </nav>
-
-    <div class="container">
-        <div th:if="${erro}" class="alert alert-danger alert-dismissible fade show" role="alert"
-            style="margin: 20px auto;">
-            <span th:text="${erro}">Erro ao cadastrar API.</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    </div>
+    
+    <br>
 
     <div class="container mt-5">
+
+        <div th:if="${mensagemSucesso}" id="alertSucesso" class="alert alert-success" role="alert">
+            <p th:text="${mensagemSucesso}"></p>
+        </div>
+        <div th:if="${erro}" id="alertErro" class="alert alert-danger" role="alert">
+            <p th:text="${erro}"></p>
+        </div>        
+
         <h4 class="mb-4 text-center" th:text="${api.id} != null ? 'Editar API' : 'Cadastro de API'"></h4>
         <form th:action="@{/apis/salvar}" th:object="${api}" method="post">
             <input type="hidden" th:field="*{id}">
@@ -169,8 +171,33 @@
         </div>
     </div>
 
+    <footer class="bg-dark text-light py-4">
+        <div class="container text-center">
+          <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+        </div>
+    </footer> 
+
 
     <script>
+
+        function esconderAlerta() {
+            const alertSucesso = document.getElementById('alertSucesso');
+            const alertErro = document.getElementById('alertErro');
+
+            if (alertSucesso) {
+                setTimeout(() => {
+                    alertSucesso.style.display = 'none'; 
+                }, 10000);
+            }
+            
+            if (alertErro) {
+                setTimeout(() => {
+                    alertErro.style.display = 'none'; 
+                }, 5000);
+            }
+        }
+        window.onload = esconderAlerta;
+
         function toggleStatus(checkbox) {
             const apiId = checkbox.getAttribute('data-id');
             const isActive = checkbox.checked;
@@ -199,13 +226,6 @@
                 });
         }
 
-        setTimeout(function () {
-            const alert = document.querySelector('.alert');
-            if (alert) {
-                alert.classList.remove('show');
-                alert.classList.add('fade');
-            }
-        }, 5000);
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
