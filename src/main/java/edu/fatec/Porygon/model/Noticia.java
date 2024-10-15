@@ -2,7 +2,6 @@ package edu.fatec.Porygon.model;
 
 import jakarta.persistence.*;
 import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
@@ -16,8 +15,10 @@ public class Noticia {
     @Temporal(TemporalType.DATE)
     @Column()
     private Date data;
+
     @Column(length = 20000)
     private String conteudo;
+
     private String autor;
 
     @Column(unique = true)
@@ -27,6 +28,11 @@ public class Noticia {
     @JoinColumn(name = "portal_id")
     @JsonBackReference
     private Portal portal;
+
+    @ManyToOne
+    @JoinColumn(name = "jornalista_id") 
+    @JsonBackReference
+    private Jornalista jornalista;;    
 
     public Integer getId() {
         return id;
@@ -76,7 +82,19 @@ public class Noticia {
         this.portal = portal;
     }
 
-    public String getHref() { return href; }
+    public String getHref() {
+        return href;
+    }
 
-    public void setHref(String href) { this.href = href; }
+    public void setHref(String href) {
+        this.href = href;
+    }
+
+    public Jornalista getJornalista() {
+        return jornalista;
+    }
+
+    public void setJornalista(Jornalista jornalista) {
+        this.jornalista = jornalista;
+    }
 }
