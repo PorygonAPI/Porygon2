@@ -177,7 +177,7 @@
                             <td>Inativo</td>
                             <td>${noticia.titulo}</td>
                             <td>Inativo</td>
-                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR')}</td>
+                            <td>${noticia.data.split('T')[0].split('-').reverse().join('/')}</td>
                             <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
                             `;
                         tbody.appendChild(row);
