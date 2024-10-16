@@ -111,26 +111,6 @@ public class ApiService {
         }
     }
 
-    public void verificarEAtualizarApis() {
-        List<Api> apis = apiRepository.findAll();
-    
-        for (Api api : apis) {
-            if (api.isAtivo() && api.getAgendador() != null) {
-                Agendador agendador = api.getAgendador();
-                LocalDate hoje = LocalDate.now();
-                LocalDate ultimaAtualizacao = api.getUltimaAtualizacao();
-                
-                int intervaloDias = agendador.getQuantidade();
-    
-                if (ultimaAtualizacao == null || 
-                    hoje.isEqual(ultimaAtualizacao.plusDays(intervaloDias)) || 
-                    hoje.isAfter(ultimaAtualizacao.plusDays(intervaloDias))) {
-                    salvarOuAtualizar(api);
-                }
-            }
-        }
-    }
-
        
     public Api alterarStatus(Integer id, boolean novoStatus) {
         Optional<Api> apiOptional = apiRepository.findById(id);
