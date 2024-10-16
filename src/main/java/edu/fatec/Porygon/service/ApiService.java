@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class ApiService {
 
@@ -38,13 +37,13 @@ public class ApiService {
         return apiRepository.findById(id);
     }
 
-    public String salvarOuAtualizar(Api api) {
+        public String salvarOuAtualizar(Api api) {
         boolean isNew = (api.getId() == null);
-        
+    
         if (api.getUrl() == null || api.getUrl().contains(" ")) {
             throw new IllegalArgumentException("A URL não pode conter espaços.");
         }
-        
+    
         if (isNew) {
             if (apiRepository.existsByNome(api.getNome())) {
                 throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
@@ -62,18 +61,18 @@ public class ApiService {
         } else {
             Api apiExistente = apiRepository.findById(api.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + api.getId()));
-            
+    
             if (!apiExistente.getNome().equals(api.getNome()) && apiRepository.existsByNome(api.getNome())) {
                 throw new IllegalArgumentException("Já existe uma API cadastrada com este nome.");
             }
             if (!apiExistente.getUrl().equals(api.getUrl()) && apiRepository.existsByUrl(api.getUrl())) {
                 throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
             }
-            
+
             api.setDataCriacao(apiExistente.getDataCriacao());
             api.setUltimaAtualizacao(LocalDate.now());
         }
-        
+    
         try {
             RestTemplate restTemplate = new RestTemplate();
             try {
@@ -83,30 +82,30 @@ public class ApiService {
             } catch (ResourceAccessException e) {
                 throw new IllegalArgumentException("Não foi possível acessar a URL fornecida. Verifique se ela está ativa: " + e.getMessage());
             }
-            
+    
             Api savedApi = apiRepository.save(api);
-            
+    
             if (isNew && savedApi.isAtivo()) {
                 RestTemplate restTemplateForData = new RestTemplate();
                 ResponseEntity<String> response = restTemplateForData.getForEntity(savedApi.getUrl(), String.class);
-        
+    
                 ApiDados apiDados = new ApiDados();
                 apiDados.setConteudo(response.getBody());
                 apiDados.setDescricao("Dados da API: " + savedApi.getNome());
                 apiDados.setApi(savedApi);
-        
+    
                 apiDadosRepository.save(apiDados);
-        
+    
                 savedApi.setUltimaAtualizacao(LocalDate.now());
                 apiRepository.save(savedApi);
-        
+    
                 return "Cadastro de API e coleta REST realizada com sucesso!";
             } else if (isNew) {
                 return "Cadastro de API realizado, mas sem coleta REST pois a API está desativada.";
             } else {
                 return "Atualização de API realizada com sucesso.";
             }
-
+    
         } catch (Exception e) {
             throw new RuntimeException("Erro ao salvar a API: " + e.getMessage());
         }
@@ -121,14 +120,11 @@ public class ApiService {
                 LocalDate hoje = LocalDate.now();
                 LocalDate ultimaAtualizacao = api.getUltimaAtualizacao();
                 
-                // Calcular o intervalo de atualização baseado na periodicidade
-                int intervaloDias = agendador.getQuantidade(); // A quantidade representa o intervalo em dias
+                int intervaloDias = agendador.getQuantidade();
     
-                // Verificar se é hora de atualizar a API
                 if (ultimaAtualizacao == null || 
                     hoje.isEqual(ultimaAtualizacao.plusDays(intervaloDias)) || 
                     hoje.isAfter(ultimaAtualizacao.plusDays(intervaloDias))) {
-                    // Chamar o método para salvar ou atualizar a API
                     salvarOuAtualizar(api);
                 }
             }
