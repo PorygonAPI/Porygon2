@@ -29,9 +29,6 @@ public class DataScrapperService {
     @Autowired
     private PortalRepository portalRepository;
 
-    @Autowired
-    private JornalistaService jornalistaService;
-
     public void scrapeDatabyPortalID(int id) {
         Portal portal = portalRepository.findById(id).orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
 
@@ -84,8 +81,7 @@ public class DataScrapperService {
                 noticia.setHref(link);
 
                 if (!noticiaRepository.existsByHref(noticia.getHref())) {
-                    jornalistaService.salvarOuAtualizarJornalista(noticia);
-                    noticias.add(noticia);
+                    noticias.add(noticia); 
                 } else {
                     System.out.println("Notícia já existente: " + noticia.getHref());
                 }
