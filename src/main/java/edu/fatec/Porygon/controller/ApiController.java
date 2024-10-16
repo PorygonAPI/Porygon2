@@ -89,9 +89,8 @@ public class ApiController {
 
     @GetMapping("/dados")
     public String listarApiDados(Model model) {
-        List<Api> apis = apiService.listarTodas();
-        model.addAttribute("apis", apis); 
+        List<Api> apisAtivas = apiService.listarAtivas();
+        model.addAttribute("apis", apisAtivas); 
         return "apiDados";
     }
-    
 }

@@ -28,6 +28,11 @@ public class ApiService {
         return apiRepository.findAll();
     }
 
+    // Método para buscar APIs ativas e facilitar a çistagem dos dados
+    public List<Api> listarAtivas() {
+        return apiRepository.findByAtivo(true);
+    }
+
     public Optional<Api> buscarPorId(Integer id) {
         return apiRepository.findById(id);
     }

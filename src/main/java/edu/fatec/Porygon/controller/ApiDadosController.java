@@ -1,6 +1,7 @@
 package edu.fatec.Porygon.controller;
-
+import edu.fatec.Porygon.repository.ApiRepository;
 import edu.fatec.Porygon.model.ApiDados;
+import edu.fatec.Porygon.model.Api;
 import edu.fatec.Porygon.repository.ApiDadosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,26 +11,39 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/dados")
+@RequestMapping("/api")
 public class ApiDadosController {
 
     @Autowired
     private ApiDadosRepository apiDadosRepository;
 
-    @GetMapping("/{id}")
+    @Autowired
+    private ApiRepository apiRepository;
+
+    @GetMapping("/dados/{id}")
     public ResponseEntity<String> abrirDados(@PathVariable Integer id) {
-        Optional<ApiDados> apiDadosOptional = apiDadosRepository.findById(id);
+        Optional<Api> apiOptional = apiRepository.findById(id);
 
-        if (apiDadosOptional.isPresent()) {
-            ApiDados apiDados = apiDadosOptional.get();
-            String conteudo = apiDados.getConteudo();
+        if (apiOptional.isPresent()) {
+            Api api = apiOptional.get();
 
-            Integer formatoId = apiDados.getApi().getFormato().getId();  // < Pegando o formato pela api
+            if (!api.isAtivo()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dados não encontrados");
+            }
 
-            String tipo = getTipoFormato(formatoId);
-            String conteudoFormatado = formatarConteudo(conteudo, tipo);
+            Optional<ApiDados> apiDadosOptional = apiDadosRepository.findByApiId(id);
 
-            return ResponseEntity.ok(conteudoFormatado);
+            if (apiDadosOptional.isPresent()) {
+                ApiDados apiDados = apiDadosOptional.get();
+                String conteudo = apiDados.getConteudo();
+
+                Integer formatoId = apiDados.getApi().getFormato().getId();  // Pegando o formato pela api
+
+                String tipo = getTipoFormato(formatoId);
+                String conteudoFormatado = formatarConteudo(conteudo, tipo);
+
+                return ResponseEntity.ok(conteudoFormatado);
+            }
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dados não encontrados");
