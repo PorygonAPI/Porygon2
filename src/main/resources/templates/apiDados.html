@@ -97,21 +97,21 @@
                     <th>Ação</th>
                 </tr>
                 </thead>
-                <tbody>
                 <tr th:each="api : ${apis}">
                     <td th:text="${api.nome}"></td>
                     <td th:text="'Inativo'"></td>
                     <td>
-                            <span th:if="${api.apiDadosList.size() > 0}"
-                                  th:text="${api.apiDadosList[0].descricao}"></span>
+        <span th:if="${api.apiDadosList.size() > 0}"
+              th:text="${api.apiDadosList[0].descricao}"></span>
                         <span th:if="${api.apiDadosList.size() == 0}">Sem dados disponíveis</span>
                     </td>
                     <td>
-                        <!-- Ativar o botão e passar o ID correto da API -->
-                        <button class="btn btn-primary" th:if="${api.id != null}" th:attr="data-id=${api.id}" onclick="abrirModal(this)">Abrir</button>
+                        <!-- Verifique se a API tem dados associados e habilite o botão -->
+                        <button class="btn btn-primary" th:if="${api.apiDadosList.size() > 0}"
+                                th:attr="data-id=${api.apiDadosList[0].id}"
+                                onclick="abrirModal(this)">Abrir</button>
                     </td>
                 </tr>
-                </tbody>
             </table>
         </div>
     </div>
@@ -146,9 +146,9 @@
 
     <script>
         function abrirModal(button) {
-            var apiId = button.getAttribute('data-id');
+            var apiDadosId = button.getAttribute('data-id');
 
-            fetch(`/api/dados/${apiId}`)
+            fetch(`/api/dados/${apiDadosId}`)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('conteudoApi').textContent = data;
