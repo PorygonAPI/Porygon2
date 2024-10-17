@@ -57,23 +57,65 @@ public class PortalController {
         return "portal";
     }
 
+    @GetMapping("/verificarNome")
+    @ResponseBody
+    public Map<String, Boolean> verificarNome(@RequestParam String nome) {
+        boolean existe = portalRepository.existsByNome(nome);
+        return Map.of("existe", existe);
+    }
+
     @PostMapping("/salvar")
-    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit) {
+    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit, Model model) {
+        String errorMessage = null;
+
+        if (isEdit) {
+            Portal portalExistente = portalRepository.findById(portal.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
+
+            if (!portal.getNome().equals(portalExistente.getNome()) && portalRepository.existsByNome(portal.getNome())) {
+                errorMessage = "Já existe um portal com esse nome.";
+            } else if (!portal.getUrl().equals(portalExistente.getUrl()) && portalRepository.existsByUrl(portal.getUrl())) {
+                errorMessage = "Já existe um portal com essa URL.";
+            }
+        } else {
+            if (portalRepository.existsByNome(portal.getNome())) {
+                errorMessage = "Já existe um portal com este nome.";
+            } else if (portalRepository.existsByUrl(portal.getUrl())) {
+                errorMessage = "Já existe um portal com esta URL.";
+            }
+        }
+
+        if (errorMessage != null) {
+            model.addAttribute("errorMessage", errorMessage);
+            model.addAttribute("portal", portal); 
+            model.addAttribute("portais", portalRepository.findAll());
+            model.addAttribute("agendadores", agendadorRepository.findAll());
+            model.addAttribute("tags", tagRepository.findAll());
+            return "portal";
+        }
+
         if (portal.getId() == null) {
             portal.setDataCriacao(LocalDate.now());
+            portal.setHasScrapedToday(false);
         } else {
             Portal portalExistente = portalRepository.findById(portal.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
             portal.setDataCriacao(portalExistente.getDataCriacao());
+            portal.setHasScrapedToday(portalExistente.isHasScrapedToday());
+            portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
         }
         portalRepository.save(portal);
 
-        if (!isEdit) {
+        if (!isEdit && !portal.isHasScrapedToday()) {
             dataScrapperService.WebScrapper();
+            portal.setHasScrapedToday(true);
+            portal.setUltimaAtualizacao(LocalDate.now());
+            portalRepository.save(portal);
         }
 
         return "redirect:/portais";
     }
+
 
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {

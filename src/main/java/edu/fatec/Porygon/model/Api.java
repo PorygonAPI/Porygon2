@@ -11,10 +11,11 @@ public class Api {
     private Integer id;
 
     private String nome;
+
     @Column(length = 1000)
     private String descricao;
+
     private String url;
-    private String formato;
     private LocalDate dataCriacao;
     private LocalDate ultimaAtualizacao;
 
@@ -24,13 +25,20 @@ public class Api {
 
     private boolean ativo;
 
+    @ManyToOne
+    @JoinColumn(name = "formato_id")
+    private Formato formato;
+
     @ManyToMany
     @JoinTable(
-        name = "api_tag", 
-        joinColumns = @JoinColumn(name = "api_id"), 
-        inverseJoinColumns = @JoinColumn(name = "tag_id") 
+        name = "api_tag",
+        joinColumns = @JoinColumn(name = "api_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private List<Tag> tags;
+
+    @OneToMany(mappedBy = "api", cascade = CascadeType.ALL)
+    private List<ApiDados> apiDadosList;
 
     public String getNome() {
         return nome;
@@ -64,11 +72,11 @@ public class Api {
         this.url = url;
     }
 
-    public String getFormato() {
+    public Formato getFormato() {
         return formato;
     }
 
-    public void setFormato(String formato) {
+    public void setFormato(Formato formato) {
         this.formato = formato;
     }
 
@@ -112,7 +120,11 @@ public class Api {
         this.dataCriacao = dataCriacao;
     }
 
+    public List<ApiDados> getApiDadosList() {
+        return apiDadosList;
+    }
+
+    public void setApiDadosList(List<ApiDados> apiDadosList) {
+        this.apiDadosList = apiDadosList;
+    }
 }
-
-
-
