@@ -97,17 +97,13 @@
                     <th>Ação</th>
                 </tr>
                 </thead>
-                <tr th:each="api : ${apis}">
+                <!-- Apenas exibir a linha se a API tiver dados associados -->
+                <tr th:each="api : ${apis}" th:if="${api.apiDadosList.size() > 0}">
                     <td th:text="${api.nome}"></td>
                     <td th:text="'Inativo'"></td>
+                    <td th:text="${api.apiDadosList[0].descricao}"></td>
                     <td>
-        <span th:if="${api.apiDadosList.size() > 0}"
-              th:text="${api.apiDadosList[0].descricao}"></span>
-                        <span th:if="${api.apiDadosList.size() == 0}">Sem dados disponíveis</span>
-                    </td>
-                    <td>
-                        <!-- Verifique se a API tem dados associados e habilite o botão -->
-                        <button class="btn btn-primary" th:if="${api.apiDadosList.size() > 0}"
+                        <button class="btn btn-primary"
                                 th:attr="data-id=${api.apiDadosList[0].id}"
                                 onclick="abrirModal(this)">Abrir</button>
                     </td>
