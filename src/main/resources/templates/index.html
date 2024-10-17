@@ -116,9 +116,24 @@
                         </tr>
                     </tbody>
                 </table>
+
+                <!-- Paginação -->
+                <nav aria-label="Navegação de página">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${paginaAtual == 1} ? 'disabled'">
+                            <a class="page-link" th:href="@{/index(page=${paginaAtual - 1})}">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPaginas)}"
+                            th:classappend="${i == paginaAtual} ? 'active'">
+                            <a class="page-link" th:href="@{/index(page=${i - 1})}" th:text="${i}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${paginaAtual == totalPaginas} ? 'disabled'">
+                            <a class="page-link" th:href="@{/index(page=${paginaAtual})}">Próximo</a>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
-
     </div>
     <!-- Modal -->
     <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
