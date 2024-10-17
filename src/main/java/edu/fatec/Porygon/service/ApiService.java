@@ -1,9 +1,7 @@
 package edu.fatec.Porygon.service;
 
-import edu.fatec.Porygon.model.Agendador;
 import edu.fatec.Porygon.model.Api;
 import edu.fatec.Porygon.model.ApiDados;
-import edu.fatec.Porygon.repository.AgendadorRepository;
 import edu.fatec.Porygon.repository.ApiDadosRepository;
 import edu.fatec.Porygon.repository.ApiRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +23,6 @@ public class ApiService {
 
     @Autowired
     private ApiDadosRepository apiDadosRepository;
-
-    @Autowired
-    private AgendadorRepository agendadorRepository;
 
     public List<Api> listarTodas() {
         return apiRepository.findAll();
@@ -51,13 +46,7 @@ public class ApiService {
             if (apiRepository.existsByUrl(api.getUrl())) {
                 throw new IllegalArgumentException("Já existe uma API cadastrada com esta URL.");
             }
-            if (api.getAgendador() == null) {
-                Agendador agendadorDiario = agendadorRepository.findById(1)
-                        .orElseThrow(() -> new IllegalArgumentException("Agendador diário não encontrado."));
-                api.setAgendador(agendadorDiario);
-            }
             api.setDataCriacao(LocalDate.now());
-            api.setUltimaAtualizacao(LocalDate.now());
         } else {
             Api apiExistente = apiRepository.findById(api.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + api.getId()));
