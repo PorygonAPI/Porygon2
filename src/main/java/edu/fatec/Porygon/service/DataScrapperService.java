@@ -1,5 +1,6 @@
 package edu.fatec.Porygon.service;
 
+import edu.fatec.Porygon.model.Jornalista;
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.repository.NoticiaRepository;
@@ -12,6 +13,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -33,7 +35,8 @@ public class DataScrapperService {
     private JornalistaService jornalistaService;
 
     public void scrapeDatabyPortalID(int id) {
-        Portal portal = portalRepository.findById(id).orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
+        Portal portal = portalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
 
         String classNameLink = portal.getSeletorCaminhoNoticia();
         String referenceClass = "a[href]." + classNameLink;
@@ -63,28 +66,30 @@ public class DataScrapperService {
                 if (Data != null) {
                     verificationDate = Data.attr("datetime");
                 } else {
-                    System.err.println("No date element found for link: " + link);
                     verificationDate = "1001-01-01T10:44:13.253Z";
                 }
 
                 Date dataPublicacao = convertStringToDate(verificationDate);
 
                 StringBuilder contentScrapperBuilder = new StringBuilder();
-                for (Element conteudo: Conteudo){
+                for (Element conteudo : Conteudo) {
                     contentScrapperBuilder.append(conteudo.text()).append("\n");
-                };
+                }
+                ;
                 String contentScrapper = contentScrapperBuilder.toString();
+
+                Jornalista jornalista = jornalistaService
+                        .salvarOuAtualizarJornalista(Autor != null ? Autor.text() : "Jornalista Desconhecido");
 
                 Noticia noticia = new Noticia();
                 noticia.setTitulo(Titulo != null ? Titulo.text() : "Titulo Desconhecido");
-                noticia.setAutor(Autor != null ? Autor.text() : "Autor Desconhecido");
                 noticia.setData(dataPublicacao);
                 noticia.setPortal(portal);
                 noticia.setConteudo(contentScrapper);
                 noticia.setHref(link);
+                noticia.setJornalista(jornalista);
 
                 if (!noticiaRepository.existsByHref(noticia.getHref())) {
-                    jornalistaService.salvarOuAtualizarJornalista(noticia);
                     noticias.add(noticia);
                 } else {
                     System.out.println("Notícia já existente: " + noticia.getHref());
@@ -113,7 +118,6 @@ public class DataScrapperService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse date: " + dateStr, e);
         }
-
     }
 
     public void WebScrapper() {
@@ -122,7 +126,7 @@ public class DataScrapperService {
         List<Portal> portais = portalRepository.findAll();
 
         for (Portal portal : portais) {
-            if(!portal.isHasScrapedToday()) {
+            if (!portal.isHasScrapedToday()) {
                 if (portal.isAtivo()) {
                     scrapeDatabyPortalID(portal.getId());
                 }
@@ -140,39 +144,38 @@ public class DataScrapperService {
         System.out.println("Carregamento encerrado.");
     }
 
-    //Set to run at noon(12h00)
+    // Set to run at noon (12h00)
     @Scheduled(cron = "0 0 12 * * *")
-    public void WebScrapingScheduledDate(){
+    public void WebScrapingScheduledDate() {
         List<Portal> portais = portalRepository.findAll();
         for (Portal portal : portais) {
 
             int updateRate = portal.getAgendador().getQuantidade();
 
-            if (updateRate == 1){
+            if (updateRate == 1) {
 
-                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+                if (!portal.isHasScrapedToday() && portal.isAtivo()) {
                     scrapeDatabyPortalID(portal.getId());
                 }
 
-            } else if (updateRate == 7 || updateRate==30) {
-                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+            } else if (updateRate == 7 || updateRate == 30) {
+                if (!portal.isHasScrapedToday() && portal.isAtivo()) {
 
                     LocalDate today = LocalDate.now();
                     LocalDate lastUpdate = portal.getUltimaAtualizacao();
                     int daysBetween = (int) ChronoUnit.DAYS.between(lastUpdate, today);
 
-                    if(daysBetween>=updateRate){
+                    if (daysBetween >= updateRate) {
                         scrapeDatabyPortalID(portal.getId());
                     }
                 }
             }
-
         }
     }
 
-    //Set to run every day at 23h50
+    // Set to run every day at 23h50
     @Scheduled(cron = "0 50 23 * * *")
-    public void ResetHasScrapedToday(){
+    public void ResetHasScrapedToday() {
         List<Portal> portals = portalRepository.findAll();
         List<Portal> resetList = new ArrayList<>();
         for (Portal portal : portals) {
@@ -183,11 +186,11 @@ public class DataScrapperService {
     }
 
     @PostConstruct
-    public void resetScrapedTodayVerifiedStartProgram(){
+    public void resetScrapedTodayVerifiedStartProgram() {
         List<Portal> portals = portalRepository.findAll();
         List<Portal> resetList = new ArrayList<>();
         for (Portal portal : portals) {
-            if(!Objects.equals(portal.getUltimaAtualizacao(), LocalDate.now())) {
+            if (!Objects.equals(portal.getUltimaAtualizacao(), LocalDate.now())) {
                 portal.setHasScrapedToday(false);
                 resetList.add(portal);
             }
@@ -196,32 +199,30 @@ public class DataScrapperService {
     }
 
     @PostConstruct
-    public void WebscrapingWhenStart(){
+    public void WebscrapingWhenStart() {
         List<Portal> portais = portalRepository.findAll();
         for (Portal portal : portais) {
 
             int updateRate = portal.getAgendador().getQuantidade();
 
-            if (updateRate == 1){
+            if (updateRate == 1) {
 
-                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+                if (!portal.isHasScrapedToday() && portal.isAtivo()) {
                     scrapeDatabyPortalID(portal.getId());
                 }
 
-            } else if (updateRate == 7 || updateRate==30) {
-                if(!portal.isHasScrapedToday() && portal.isAtivo()) {
+            } else if (updateRate == 7 || updateRate == 30) {
+                if (!portal.isHasScrapedToday() && portal.isAtivo()) {
 
                     LocalDate today = LocalDate.now();
                     LocalDate lastUpdate = portal.getUltimaAtualizacao();
                     int daysBetween = (int) ChronoUnit.DAYS.between(lastUpdate, today);
 
-                    if(daysBetween>=updateRate){
+                    if (daysBetween >= updateRate) {
                         scrapeDatabyPortalID(portal.getId());
                     }
                 }
             }
-
         }
     }
-
 }

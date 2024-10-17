@@ -2,34 +2,23 @@ package edu.fatec.Porygon.controller;
 
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
-// import edu.fatec.Porygon.service.NoticiaService;
-
 import java.util.List;
 import java.util.Optional;
-
-// import org.slf4j.LoggerFactory;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-// import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-// import ch.qos.logback.classic.Logger;
 
 @Controller
 public class NoticiaController {
 
     @Autowired
     private NoticiaRepository noticiaRepository;
-    // @Autowired
-    // private NoticiaService noticiaService;
-
-    // private static final Logger logger = (Logger) LoggerFactory.getLogger(NoticiaController.class);
 
     @GetMapping("/index")
     public String listarNoticias(Model model) {
@@ -37,24 +26,20 @@ public class NoticiaController {
         model.addAttribute("noticias", noticias);
         return "index";
     }
+
     @GetMapping("/noticias/detalhe/{id}")
     @ResponseBody
     public ResponseEntity<Noticia> detalheNoticiaJson(@PathVariable Integer id) {
         Optional<Noticia> noticiaOptional = noticiaRepository.findById(id);
-        return noticiaOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        
+        if (noticiaOptional.isPresent()) {
+            Noticia noticia = noticiaOptional.get();
+            if (noticia.getJornalista() != null) {
+                Hibernate.initialize(noticia.getJornalista());
+            }
+            return ResponseEntity.ok(noticia);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
-
-    // @GetMapping("/noticias")
-    // @ResponseBody
-    // public List<Noticia> listarNoticiasPorData(
-    //         @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date dataInicio,
-    //         @RequestParam("dataFim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date dataFim) {
-
-    //     logger.info("Data Início: " + dataInicio);
-    //     logger.info("Data Fim: " + dataFim);
-
-    //     return noticiaService.listarNoticiasPorData(dataInicio, dataFim);
-    // }
 }
-
-

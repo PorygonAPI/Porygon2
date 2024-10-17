@@ -19,7 +19,6 @@ public class Noticia {
     @Column(length = 20000)
     private String conteudo;
 
-    private String autor;
 
     @Column(unique = true)
     private String href;
@@ -29,7 +28,7 @@ public class Noticia {
     @JsonBackReference
     private Portal portal;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jornalista_id") 
     @JsonBackReference
     private Jornalista jornalista;;    
@@ -66,13 +65,6 @@ public class Noticia {
         this.conteudo = conteudo;
     }
 
-    public String getAutor() {
-        return autor;
-    }
-
-    public void setAutor(String autor) {
-        this.autor = autor;
-    }
 
     public Portal getPortal() {
         return portal;

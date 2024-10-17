@@ -1,13 +1,11 @@
 package edu.fatec.Porygon.service;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import edu.fatec.Porygon.model.Jornalista;
-import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.JornalistaRepository;
-import edu.fatec.Porygon.repository.NoticiaRepository;
+import java.util.Optional;
 
 @Service
 public class JornalistaService {
@@ -15,27 +13,20 @@ public class JornalistaService {
     @Autowired
     private JornalistaRepository jornalistaRepository;
 
-    @Autowired
-    private NoticiaRepository noticiaRepository;
-
-    public void salvarOuAtualizarJornalista(Noticia noticia) {
-        String nomeAutor = noticia.getAutor();
+    @Transactional
+    public Jornalista salvarOuAtualizarJornalista(String nomeAutor) {
         if (nomeAutor.toLowerCase().startsWith("por ")) {
-            nomeAutor = nomeAutor.substring(4).trim(); // Remove "Por" e os espaços em branco
+            nomeAutor = nomeAutor.substring(4).trim();
         }
 
         Optional<Jornalista> jornalistaExistente = jornalistaRepository.findByNome(nomeAutor);
 
-        Jornalista jornalista;
         if (jornalistaExistente.isPresent()) {
-            jornalista = jornalistaExistente.get();
-        } else {
-            jornalista = new Jornalista();
-            jornalista.setNome(nomeAutor);
-            jornalista = jornalistaRepository.save(jornalista); // Salva o jornalista antes de associá-lo
+            return jornalistaExistente.get();
         }
 
-        noticia.setJornalista(jornalista);
-        noticiaRepository.save(noticia);
+        Jornalista novoJornalista = new Jornalista();
+        novoJornalista.setNome(nomeAutor);
+        return jornalistaRepository.save(novoJornalista);
     }
 }
