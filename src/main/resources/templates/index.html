@@ -28,7 +28,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/index}">Consulta de Notícias<span class="sr-only">(atual)</span></a>
+                    <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias<span class="sr-only">(atual)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das Api's</a>
@@ -77,9 +77,15 @@
                 <small class="form-text text-muted">Exemplo: cavalo, cachorro</small>
             </div>
 
-            <div class="d-grid gap-2 col-2 mx-auto">
-                <button type="button" class="btn btn-primary" id="consultar">Consultar</button>
+            <div class="row mb-3 justify-content-center">
+                <div class="d-grid col-2">
+                    <a href="/" class="btn btn-secondary">Limpar Filtros</a>
+                </div>
+                <div class="d-grid col-2 ">
+                    <button type="button" class="btn btn-primary" id="consultar">Consultar</button>
+                </div>
             </div>
+
         </form>
 
         <!-- Lista de Notícias -->
