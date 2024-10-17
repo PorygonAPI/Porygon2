@@ -10,14 +10,13 @@ import java.util.Optional;
 // import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 // import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 // import ch.qos.logback.classic.Logger;
 
@@ -44,17 +43,19 @@ public class NoticiaController {
         return noticiaOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    // @GetMapping("/noticias")
-    // @ResponseBody
-    // public List<Noticia> listarNoticiasPorData(
-    //         @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date dataInicio,
-    //         @RequestParam("dataFim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date dataFim) {
+    @PostMapping("/validarIntervalo")
+    public ResponseEntity<String> validarIntervalo(
+            @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date dataInicio,
+            @RequestParam("dataFim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) java.util.Date dataFim) {
 
-    //     logger.info("Data Início: " + dataInicio);
-    //     logger.info("Data Fim: " + dataFim);
+        if (dataFim.before(dataInicio)) {
+            return ResponseEntity.badRequest().body("A data final não pode ser anterior à data inicial.");
+        }
 
-    //     return noticiaService.listarNoticiasPorData(dataInicio, dataFim);
-    // }
+        // Lógica adicional para processar o intervalo válido
+        return ResponseEntity.ok("Intervalo de datas válido.");
+    }
+
 }
 
 
