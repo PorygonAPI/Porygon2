@@ -180,8 +180,16 @@
             if (dataFim < dataInicio) {
                 errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
                 errorMessage.style.display = 'block'; // Exibe a mensagem de erro
+
+                // Definir timeout para sumir o alerta após 10 segundos
+                setTimeout(function() {
+                    errorMessage.textContent = ''; // Limpa a mensagem de erro
+                    errorMessage.style.display = 'none'; // Oculta a mensagem de erro
+                }, 5000);
+
                 return; // Não continua com a consulta
             }
+
 
             // Se a validação passar, faça a consulta
             fetch(`/noticias?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T')[0]}`)
