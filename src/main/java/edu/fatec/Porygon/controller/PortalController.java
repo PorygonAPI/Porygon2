@@ -67,11 +67,12 @@ public class PortalController {
     @PostMapping("/salvar")
     public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit, Model model) {
         String errorMessage = null;
-
+        String successMessage = null;
+    
         if (isEdit) {
             Portal portalExistente = portalRepository.findById(portal.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
-
+    
             if (!portal.getNome().equals(portalExistente.getNome()) && portalRepository.existsByNome(portal.getNome())) {
                 errorMessage = "Já existe um portal com esse nome.";
             } else if (!portal.getUrl().equals(portalExistente.getUrl()) && portalRepository.existsByUrl(portal.getUrl())) {
@@ -84,36 +85,42 @@ public class PortalController {
                 errorMessage = "Já existe um portal com esta URL.";
             }
         }
-
+    
         if (errorMessage != null) {
-            model.addAttribute("errorMessage", errorMessage);
-            model.addAttribute("portal", portal); 
+            model.addAttribute("portal", portal);
             model.addAttribute("portais", portalRepository.findAll());
             model.addAttribute("agendadores", agendadorRepository.findAll());
             model.addAttribute("tags", tagRepository.findAll());
+            model.addAttribute("errorMessage", errorMessage);
             return "portal";
         }
-
+    
         if (portal.getId() == null) {
             portal.setDataCriacao(LocalDate.now());
-            portal.setHasScrapedToday(false);
         } else {
             Portal portalExistente = portalRepository.findById(portal.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
             portal.setDataCriacao(portalExistente.getDataCriacao());
-            portal.setHasScrapedToday(portalExistente.isHasScrapedToday());
-            portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
         }
+    
         portalRepository.save(portal);
-
-        if (!isEdit && !portal.isHasScrapedToday()) {
+    
+        if (!isEdit && portal.isAtivo()) {
             dataScrapperService.WebScrapper();
-            portal.setHasScrapedToday(true);
-            portal.setUltimaAtualizacao(LocalDate.now());
-            portalRepository.save(portal);
+            successMessage = "Cadastro de portal e primeira coleta de notícias realizada com sucesso!";
+        } else if (!portal.isAtivo()) {
+            successMessage = "Cadastro de portal realizado, mas a coleta não foi feita pois o portal está desativado.";
+        } else {
+            successMessage = "Portal editado com sucesso!";
         }
-
-        return "redirect:/portais";
+    
+        model.addAttribute("successMessage", successMessage); 
+        model.addAttribute("portal", portal);
+        model.addAttribute("portais", portalRepository.findAll());
+        model.addAttribute("agendadores", agendadorRepository.findAll());
+        model.addAttribute("tags", tagRepository.findAll());
+    
+        return "redirect:/portais?successMessage=" + successMessage;
     }
 
 
