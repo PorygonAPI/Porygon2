@@ -1,29 +1,89 @@
-# Arquivo de Informações para Testes de Raspagem
+<h1 align="center">Arquivo de Informações para Testes de Raspagem</h1>
+
+<h1 align="center">Sumário</h1>
+
+<p align="center">
+  <a href ="#requisitos"> REQUISITOS </a>  •
+  <a href ="#configuração-do-banco-de-dados"> CONFIGURAÇÃO DO BANCO DE DADOS </a>  •
+  <a href ="#instalaçao"> INSTALAÇÃO </a>  •
+  <a href="#inspeção-da-página"> INSPEÇÃO DA PÁGINA </a> •
+  <a href="#exemplos-de-cadastro"> EXEMPLOS DE CADASTRO </a>
+</p>
 
 Este documento contém informações de teste para a configuração do sistema de raspagem de portais e APIs. As informações incluem os seletores HTML necessários para extrair os dados dos portais de notícias e os endpoints das requisições das APIs. 
 
+# REQUISITOS
+
+- **Java 22** ou superior
+- **Spring Boot 3.3.3**
+- **Maven** para gerenciamento de dependências
+- **MySQL** configurado e rodando
+
+## Configuração do Banco de Dados
+
+1. Certifique-se de que o MySQL está instalado e em execução.
+
+2. Crie um banco de dados chamado **porygon**.
+
+`create database porygon;`
+
+3. Configure o arquivo `application.properties` para incluir as informações de conexão com o banco de dados:
+
+    ```properties
+    spring.datasource.url=jdbc:mysql://localhost:3306/porygon
+    spring.datasource.username=seu_usuario
+    spring.datasource.password=sua_senha
+    spring.jpa.hibernate.ddl-auto=update
+    ```
+
+## Instalação
+
+1. Clone o repositório para o seu ambiente local:
+
+    ```bash
+    git clone https://github.com/PorygonAPI/Porygon2.git
+    ```
+
+2. Navegue até o diretório do projeto:
+
+    ```bash
+    cd PorygonAPI/Porygon2
+    ```
+
+3. Execute o comando Maven para construir o projeto:
+
+    ```bash
+    mvn clean install
+    ```
+
+## Inspeção da Página
 
 ### _O usuário deve cadastrar cada portal com os seletores corretos para que a raspagem funcione corretamente._
 
 Primeiramente, escolha o portal de sua preferência e digite sua URL no navegador. Ao carregar a página inicial, clique simuntâneamente nas teclas Ctrl + Shift + I ou Ctrl + Shift + C para inspecionar a página. 
 
-Uma tela vai aparecer no lado direito e contém algumas informações que precisamos. Para localizá-las com mais facilidade, precisamos clicar no ícone ![icone](image-2.png)
+Uma tela vai aparecer no lado direito e contém algumas informações que precisamos. Para localizá-las com mais facilidade, precisamos clicar no ícone ![icone](https://github.com/user-attachments/assets/88b3a2d4-8035-47a1-a8f7-629305684880)
 
-![tela_inspecao](image-3.png)
+
+![html](https://github.com/user-attachments/assets/45431b41-a08a-49b5-a117-ec4d71a3077e)
 
 Para a inspeção dos elementos que precisamos, basta passar o mouse sobre cada um deles e verificar qual seletor retorna. Observe abaixo o exemplo, passando o mouse sobre o título da notícia:
 
-![titulo](image.png)
+![titulo](https://github.com/user-attachments/assets/25a53362-6507-4ee8-923e-766c82d48fb6)
 
 Ou seja, para o cadastro de seletor de título, será `h1.content-head__title`
 
-![seletor](image-4.png)
+![seletor](https://github.com/user-attachments/assets/6ae4d897-a59b-4a27-999e-1c8ecb90a62d)
 
 Mais um exemplo é o seletor de Conteúdo que, ao inspecionar, nos mostra `p.content-text__container`
 
-![conteudo](image-1.png)
+![conteudo](https://github.com/user-attachments/assets/d9773d7c-5094-4797-8f63-e5f744167ab5)
 
 # Exemplos de Cadastro
+
+## Portais de Notícia
+
+Para facilitar os testes do sistema, utilize os exemplos abaixo para popular o banco com portais e notícias
 
 ## 1. Canal Rural
 
@@ -62,59 +122,74 @@ Mais um exemplo é o seletor de Conteúdo que, ao inspecionar, nos mostra `p.con
 3. Utilize os exemplos de URLs para validar se a extração dos dados está ocorrendo conforme esperado.
 
 
-APIs de Teste
+## APIs
+
 Aqui estão algumas APIs REST de exemplo que podem ser utilizadas para testar o sistema. Cada uma delas é acessível sem necessidade de autenticação.
 
-APIs em XML
-IBGE - Localidades
+## _APIs em XML_
 
-Endpoint: https://servicodados.ibge.gov.br/api/v1/localidades/estados/RR/municipios?formato=xml
-Descrição: Retorna uma lista de municípios do estado de Roraima em formato XML.
-Tipo de Arquivo: XML
+### IBGE - Localidades
 
-ViaCEP - Consulta de CEP
+- **Endpoint**: https://servicodados.ibge.gov.br/api/v1/localidades/estados/RR/municipios?formato=xml
+- **Descrição**: Retorna uma lista de municípios do estado de Roraima em formato XML.
+- **Tipo de Arquivo**: XML
 
-Endpoint: https://viacep.com.br/ws/12247014/xml/
-Descrição: Consulta de endereço a partir do CEP informado. Neste exemplo, é usado o CEP da FATEC.
-Tipo de Arquivo: XML
+### ViaCEP - Consulta de CEP
 
-W3Schools - XML Note
+- **Endpoint**: https://viacep.com.br/ws/12247014/xml/
+- **Descrição**: Consulta de endereço a partir do CEP informado. Neste exemplo, é usado o CEP da FATEC.
+- **Tipo de Arquivo**: XML
 
-Endpoint: https://www.w3schools.com/xml/note.xml
-Descrição: Exemplo de um documento XML simples contendo uma nota.
-Tipo de Arquivo: XML
-OpenWeatherMap - Dados Climáticos (XML)
+### W3Schools - XML Note
 
-Endpoint: https://samples.openweathermap.org/data/2.5/weather?q=London&mode=xml&appid=b1b15e88fa797225412429c1c50c122a1
-Descrição: Retorna dados climáticos básicos para a cidade de Londres em formato XML.
-Tipo de Arquivo: XML
-NBP - Taxas de Câmbio (Tabela A)
+- **Endpoint**: https://www.w3schools.com/xml/note.xml
+- **Descrição**: Exemplo de um documento XML simples contendo uma nota.
+- **Tipo** de Arquivo: XML
 
-Endpoint: http://api.nbp.pl/api/exchangerates/tables/A?format=xml
-Descrição: Retorna as taxas de câmbio do Banco Nacional da Polônia em formato XML.
-Tipo de Arquivo: XML
-APIs em CSV
-IPCA Mensal - Banco Central
+### OpenWeatherMap - Dados Climáticos (XML)
 
-Endpoint: https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=csv
-Descrição: Retorna o Índice de Preços ao Consumidor Amplo (IPCA) de um mês específico em formato CSV.
-Tipo de Arquivo: CSV
-Sample Data - Weight and Height
+- **Endpoint**: https://samples.openweathermap.org/data/2.5/weather?q=London&mode=xml&appid=b1b15e88fa797225412429c1c50c122a1
+- **Descrição**: Retorna dados climáticos básicos para a cidade de Londres em formato XML.
+- **Tipo de Arquivo**: XML
 
-Endpoint: https://people.sc.fsu.edu/~jburkardt/data/csv/hw_200.csv
-Descrição: Exemplo de arquivo CSV com dados de altura e peso.
-Tipo de Arquivo: CSV
-APIs em JSON
-PokeAPI - Pokémon Data
+### NBP - Taxas de Câmbio (Tabela A)
 
-Endpoint: https://pokeapi.co/api/v2/pokemon
-Descrição: Retorna dados sobre diversos Pokémon, como nome, tipos e habilidades, em formato JSON.
-Tipo de Arquivo: JSON
-JSONPlaceholder - Posts
+- **Endpoint**: http://api.nbp.pl/api/exchangerates/tables/A?format=xml
+- **Descrição**: Retorna as taxas de câmbio do Banco Nacional da Polônia em formato XML.
+- **Tipo de Arquivo**: XML
 
-Endpoint: https://jsonplaceholder.typicode.com/posts
-Descrição: API de testes que retorna uma lista de posts fictícios em formato JSON.
-Tipo de Arquivo: JSON
+## _APIs em CSV_
 
+### IPCA Mensal - Banco Central
 
-PYG-17/PYG-39/fix/consulta-noticias-por-data-com-fuso
+- **Endpoint**: https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=csv
+- **Descrição**: Retorna o Índice de Preços ao Consumidor Amplo (IPCA) de um mês específico em formato CSV.
+- **Tipo de Arquivo**: CSV
+
+### Sample Data - Weight and Height
+
+- **Endpoint**: https://people.sc.fsu.edu/~jburkardt/data/csv/hw_200.csv
+- **Descrição**: Exemplo de arquivo CSV com dados de altura e peso.
+- **Tipo de Arquivo**: CSV
+
+## _APIs em JSON_
+
+### PokeAPI - Pokémon Data
+
+- **Endpoint**: https://pokeapi.co/api/v2/pokemon
+- **Descrição**: Retorna dados sobre diversos Pokémon, como nome, tipos e habilidades, em formato JSON.
+- **Tipo de Arquivo**: JSON
+
+### JSONPlaceholder - Posts
+
+- **Endpoint**: https://jsonplaceholder.typicode.com/posts
+- **Descrição**: API de testes que retorna uma lista de posts fictícios em formato JSON.
+- **Tipo de Arquivo**: JSON
+
+---
+
+**Instruções para uso**:
+
+1. Copie as informações acima para configurar os endpoints das APIs.
+2. Certifique-se de que os tipos de arquivos estão corretos na caixa de seleção para garantir a formatação correta dos dados.
+3. Utilize os exemplos de URLs para validar se a extração dos dados está ocorrendo conforme esperado.

@@ -7,6 +7,7 @@
   <a href ="#pushpin-projeto-api"> Projeto API </a>  •
   <a href="#hammer_and_wrench-produto"> Produto </a> •
   <a href="#computer-tecnologias-utilizadas"> Tecnologias Utilizadas </a> •
+  <a href="#gear-configurar-o-ambiente"> Configurar o Ambiente </a> •
   <a href ="#triangular_ruler-wireframe-do-produto"> Wireframe do Produto </a>  •
   <a href="#white_check_mark-requisitos"> Requisitos </a> •
   <a href="#card_file_box-backlog-do-produto"> Backlog do Produto </a> •
@@ -73,6 +74,10 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 - **Lombok** para reduzir a verbosidade do código
 - **Jsoup** para web scraping
 - **Jackson** para manipulação de dados JSON e XML
+
+## :gear: Configurar o Ambiente 
+
+Para instalar configurar o banco, atualizar o Maven e demais informações importantes para a utlização do sistema, consulte o [Arquivo de Teste](doc/TEST.md).
 
 ### :triangular_ruler: Wireframe do Produto
 * Wireframe do produto disponível pelo [Figma](https://www.figma.com/design/0BWdbmpjQpwVmLui2AUoVl/API_3SEM_PORYGON?node-id=80-618&t=pSpfCnX8lu9lPUyf-1)
@@ -176,6 +181,8 @@ Como usuário, quero consultar notícias filtrando por data para revisar informa
 -	O sistema deve permitir a seleção de um intervalo de datas (um dia ou mais).
 -	A consulta deve retornar todas as notícias dentro do intervalo especificado.
 
+Visualizar o [Wireframe da Sprint 2](doc/images/wireframe2.png).
+
 </details>
 
 <details>
@@ -225,9 +232,12 @@ Como usuário, quero consultar APIs que contenham uma palavra específica no con
 
 </details>
 
+---
+
 **Acesse o board do produto disponível no [Jira](https://porygon.atlassian.net/jira/software/c/projects/PYG/boards/5)**  
 **Acesse a página do projeto disponível no [Confluence](https://porygon.atlassian.net/wiki/x/cAAC)**
 
+**Acesse a documentação de Contribuição do Projeto no arquivo [CONTRIBUTING](doc/CONTRIBUTING.md)**
 
 ## 🚀 Desempenho da Equipe | Burndown
 
