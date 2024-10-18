@@ -188,6 +188,7 @@
                         <th>ID</th>
                         <th>Nome</th>
                         <th>URL</th>
+                        <th>Tags</th>
                         <th>Agendador</th>
                         <th style="width: 100px; text-align: left;">Status</th>
                         <th>Ações</th>
@@ -198,6 +199,7 @@
                         <td th:text="${portal.id}"></td>
                         <td th:text="${portal.nome}"></td>
                         <td th:text="${portal.url}"></td>
+                        <td th:text="'Inativo'">Inativo</td>
                         <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
                         <td style="width: 100px; text-align: left;">
                             <div class="form-check form-switch">
