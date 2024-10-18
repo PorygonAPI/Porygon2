@@ -170,16 +170,23 @@ Como usuário, quero configurar e validar o funcionamento dos portais de notíci
 Como usuário, quero cadastrar APIs públicas para coleta de dados estratégicos contextualizados com a minha área de pesquisa, para que eu possa integrar essas informações nas análises.
 ### Critérios de Aceite:
 -	O sistema deve permitir a inserção de detalhes da API, como nome, URL, tipo de dados e período de alimentação do banco (diário, semanal ou mensal).
+- Validar os campos para garantir que todas as informações obrigatórias sejam fornecidas (default ativo).
 -	O período de alimentação padrão é “diário”, caso não seja definido pelo cliente. 
 -	A data de cadastro da API precisa ser armazenada no banco. Essa informação determina a sucessão de alimentação do banco para os agendamentos semanais e mensais. 
 -	O usuário deve poder editar e desativar APIs cadastradas. 
--	A interface deve ser simples e fácil de usar. 
+-	O dia do cadastro da API não deve ser alterado durante a edição.  
+- Criar testes para garantir que a lógica de cadastro e salvamento de APIs funcione corretamente.  
+- Incluir cenários de teste para diferentes periodicidades.  
+- Incluir cenários de teste para verificar a integridade dos dados após a edição e desativação.  
+- Atualizar o estado da API para indicar que estão desativados. 
 
 ### **7** - User Story - Consulta de Notícias por Data - *R7, RN1 e RN9*
 Como usuário, quero consultar notícias filtrando por data para revisar informações dentro de um período específico.
 ### Critérios de Aceite:
--	O sistema deve permitir a seleção de um intervalo de datas (um dia ou mais).
--	A consulta deve retornar todas as notícias dentro do intervalo especificado.
+- O sistema deve permitir a seleção de um intervalo de datas (um dia ou mais). 
+- A consulta deve retornar todas as notícias dentro do intervalo especificado. 
+- Criar testes unitários e de integração para validar a funcionalidade de consulta de notícias por data. 
+- Garantir que as notícias retornadas estejam dentro do intervalo especificado. 
 
 Visualizar o [Wireframe da Sprint 2](doc/images/wireframe2.png).
 
@@ -191,21 +198,31 @@ Visualizar o [Wireframe da Sprint 2](doc/images/wireframe2.png).
 ### **4** - User Story - Cadastro de Tags - *R3, R6, RN3, RN7 e RN9*
 Como usuário, quero cadastrar tags que serão usadas para categorizar e filtrar notícias para melhorar a organização e a busca de dados.
 ### Critérios de Aceite:
--	O sistema deve permitir a criação de tags no momento do cadastro do portal/API.
--	O sistema deve suportar tags com regionalismos.
--	As tags devem ser aplicáveis a notícias e APIs.
+- O sistema deve permitir a criação de tags em uma interface independente, com validação para evitar duplicidade.  
+- O sistema deve suportar tags com regionalismos, vinculando palavras com significados iguais automaticamente.  
+- Uma tabela alimentada por APIs de sinônimos será utilizada no relacionamento entre tags e sinônimos.   
+- Palavras compostas ou pequenas frases devem ser separadas por hífen.  
+- O usuário deverá ser capaz de editar uma tag cadastrada, com validação de consistência e duplicidade.  
+- As tags devem ser aplicáveis a portais e APIs.  
+- O cliente será capaz de aplicar uma tag no cadastramento de um portal ou API, por meio de input com busca elástica, onde aparecem as tags salvas no banco com o começo igual a palavra que está sendo digitada. 
 
 ### **5** - User Story - Consulta de Notícias por Tag - *R7, R6, RN1 e RN9*
 Como usuário, quero consultar notícias filtrando por tag para focar em tópicos específicos.
 ### Critérios de Aceite:
--	O sistema deve permitir a seleção de uma ou mais tags cadastradas.
--	A consulta deve retornar notícias associadas a pelo menos uma das tags selecionadas.
+- O usuário utilizará um input com busca elástica, onde aparecem as tags salvas no banco com o começo igual a palavra que está sendo digitada, para facilitar a localização da tag considerando uma quantidade grande de registros. 
+- Ao clicar na tag escolhida, ficará disponível em uma caixa inferior. 
+- O sistema deve permitir a seleção de uma ou mais tags cadastradas.  
+- A consulta deve retornar notícias associadas a portais com pelo menos uma das tags selecionadas.  
+- Verificar diferentes cenários, como múltiplas tags e ausência de resultados.
 
 ### **6** - User Story - Consulta de APIs por Tag - *R8 e RN9*
 Como usuário, quero consultar APIs associadas a determinadas tags para gerenciar as APIs que estou usando.
 ### Critérios de Aceite:
--	O sistema deve permitir a seleção de uma ou mais tags.
--	A consulta deve retornar todas as APIs associadas a pelo menos uma das tags selecionadas.
+- O usuário utilizará um input com busca elástica, onde aparecem as tags salvas no banco com o começo igual a palavra que está sendo digitada, para facilitar a localização da tag considerando uma quantidade grande de registros. 
+- Ao clicar na tag escolhida, ficará disponível em uma caixa inferior. 
+- O sistema deve permitir a seleção de uma ou mais tags cadastradas.  
+- A consulta deve retornar dados de APIs associadas a pelo menos uma das tags selecionadas.  
+- Verificar diferentes cenários, como múltiplas tags e ausência de resultados. 
 
 </details>
 
