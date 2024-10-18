@@ -2,11 +2,9 @@ package edu.fatec.Porygon.controller;
 
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-
 import edu.fatec.Porygon.service.NoticiaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,18 +17,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 @Controller
 public class NoticiaController {
 
     @Autowired
     private NoticiaRepository noticiaRepository;
+
     @Autowired
     private NoticiaService noticiaService;
 
-    // private static final Logger logger = (Logger) LoggerFactory.getLogger(NoticiaController.class);
-
-    @GetMapping("/index")
+    @GetMapping("/")
     public String listarNoticias(Model model) {
         List<Noticia> noticias = noticiaRepository.findAll();
         model.addAttribute("noticias", noticias);
