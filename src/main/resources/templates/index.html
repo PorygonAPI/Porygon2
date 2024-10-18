@@ -154,19 +154,24 @@
     </footer> 
     
     <script>
-        function abrirModal(id) {
-            fetch(`/noticias/detalhe/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('modalTitulo').innerText = data.titulo;
-                    document.getElementById('modalAutor').innerText = 'Jornalista: ' + data.autor;
-                    document.getElementById('modalData').innerText = 'Data de publicação: ' + new Date(data.data).toLocaleDateString('pt-BR');
-                    document.getElementById('modalConteudo').innerText = data.conteudo;
-                    var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
-                    myModal.show();
-                })
-                .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
-        }
+    function abrirModal(id) {
+    fetch(`/noticias/detalhe/${id}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('modalTitulo').innerText = data.titulo;
+            document.getElementById('modalAutor').innerText = 'Jornalista: ' + data.autor;
+
+            // Ajustar a data para UTC
+            const dataPublicacao = new Date(data.data);
+            const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
+
+            document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacaoUTC.toLocaleDateString('pt-BR');
+            document.getElementById('modalConteudo').innerText = data.conteudo;
+            var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
+            myModal.show();
+        })
+        .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
+    }
         document.getElementById('consultar').addEventListener('click', function () {
             const dataInicio = document.getElementById('dataInicio').value;
             const dataFim = document.getElementById('dataFim').value;
@@ -183,7 +188,7 @@
                             <td>Inativo</td>
                             <td>${noticia.titulo}</td>
                             <td>Inativo</td>
-                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR')}</td>
+                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                             <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
                             `;
                         tbody.appendChild(row);
