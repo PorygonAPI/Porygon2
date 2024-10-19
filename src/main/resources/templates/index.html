@@ -13,6 +13,9 @@
         body{
             font-size: 14px;
         }
+        .modal-body p {
+            font-size: 1rem;
+        }
     </style>
 </head>
 
@@ -128,7 +131,7 @@
     </div>
     <!-- Modal -->
     <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="noticiaModalLabel">Detalhes da Notícia</h5>
@@ -138,7 +141,7 @@
                     <h5 id="modalTitulo"></h5>
                     <h6 id="modalAutor" class="text-muted"></h6>
                     <p id="modalData"></p>
-                    <p id="modalConteudo"></p>
+                    <p id="modalConteudo" class="modal-conteudo"></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
