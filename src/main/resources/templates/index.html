@@ -124,7 +124,7 @@
                 <nav aria-label="Navegação de página">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:classappend="${paginaAtual == 1} ? 'disabled'">
-                            <a class="page-link" th:href="@{/index(page=${paginaAtual - 1})}">Anterior</a>
+                            <a class="page-link" th:href="@{/index(page=${paginaAnterior})}">Anterior</a>
                         </li>
                         <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPaginas)}"
                             th:classappend="${i == paginaAtual} ? 'active'">
