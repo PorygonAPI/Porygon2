@@ -64,6 +64,8 @@
                 </div>
             </div>
 
+            <div class="alert alert-danger" id="error-message" style="display:none;"></div>
+
             <div class="mb-3">
                 <label for="tags" class="form-label">Tags</label>
                 <select id="tags" class="form-select" multiple disabled>
@@ -170,10 +172,30 @@
         .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
     }
         document.getElementById('consultar').addEventListener('click', function () {
-            const dataInicio = document.getElementById('dataInicio').value;
-            const dataFim = document.getElementById('dataFim').value;
+            const dataInicio = new Date(document.getElementById('dataInicio').value);
+            const dataFim = new Date(document.getElementById('dataFim').value);
 
-            fetch(`/noticias?dataInicio=${dataInicio}&dataFim=${dataFim}`)
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = ''; // Limpa a mensagem de erro
+            errorMessage.style.display = 'none'; // Oculta a mensagem de erro
+
+            // Valida se a dataFim é anterior a dataInicio
+            if (dataFim < dataInicio) {
+                errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
+                errorMessage.style.display = 'block'; // Exibe a mensagem de erro
+
+                // Definir timeout para sumir o alerta após 10 segundos
+                setTimeout(function() {
+                    errorMessage.textContent = ''; // Limpa a mensagem de erro
+                    errorMessage.style.display = 'none'; // Oculta a mensagem de erro
+                }, 5000);
+
+                return; // Não continua com a consulta
+            }
+
+
+            // Se a validação passar, faça a consulta
+            fetch(`/noticias?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T')[0]}`)
                 .then(response => response.json())
                 .then(data => {
                     // Atualize a tabela de notícias com os dados filtrados
