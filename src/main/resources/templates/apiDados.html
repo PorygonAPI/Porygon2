@@ -28,7 +28,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="nav justify-content-center">
             <li class="nav-item">
-                <a class="nav-link text-light" th:href="@{/index}">Consulta de Notícias</a>
+                <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das Api's<span
@@ -104,7 +104,7 @@
                     <td th:text="'Inativo'"></td>
                     <td th:text="${api.apiDadosList[0].descricao}"></td>
                     <td>
-                        <button class="btn btn-primary"
+                        <button class="btn btn-info"
                                 th:attr="data-id=${api.apiDadosList[0].id}"
                                 onclick="abrirModal(this)">Abrir</button>
                     </td>
