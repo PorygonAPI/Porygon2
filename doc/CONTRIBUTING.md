@@ -22,7 +22,10 @@
 ## Configuração do Banco de Dados
 
 1. Certifique-se de que o MySQL está instalado e em execução.
-2. Crie um banco de dados chamado `porygon`.
+2. Crie um banco de dados chamado **porygon**.
+
+`create database porygon`
+
 3. Configure o arquivo `application.properties` para incluir as informações de conexão com o banco de dados:
 
     ```properties
@@ -37,7 +40,7 @@
 1. Clone o repositório para o seu ambiente local:
 
     ```bash
-    git clone [https://github.com/seu-usuario/Porygon.git](https://github.com/PorygonAPI/Porygon2.git)
+    git clone https://github.com/PorygonAPI/Porygon2.git
     ```
 
 2. Navegue até o diretório do projeto:
