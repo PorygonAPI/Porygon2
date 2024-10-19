@@ -107,9 +107,9 @@ public class PortalController {
     
         if (!isEdit && portal.isAtivo()) {
             dataScrapperService.WebScrapper();
-            successMessage = "Cadastro de portal e primeira coleta de notícias realizada com sucesso!";
+            successMessage = "Cadastro de portal e primeira coleta realizada com sucesso!";
         } else if (!portal.isAtivo()) {
-            successMessage = "Cadastro de portal realizado, mas a coleta não foi feita pois o portal está desativado.";
+            successMessage = "Cadastro de portal realizado sem coleta por estar desativo.";
         } else {
             successMessage = "Portal editado com sucesso!";
         }
