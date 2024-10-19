@@ -5,6 +5,7 @@ import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Comparator;
 import edu.fatec.Porygon.service.NoticiaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ public class NoticiaController {
     @GetMapping("/")
     public String listarNoticias(Model model) {
         List<Noticia> noticias = noticiaRepository.findAll();
+        noticias.sort(Comparator.comparing(Noticia::getTitulo));
         model.addAttribute("noticias", noticias);
         return "index";
     }
@@ -54,6 +56,7 @@ public class NoticiaController {
         }
 
         List<Noticia> noticias = noticiaService.listarNoticiasPorData(dataInicio, dataFim);
+        noticias.sort(Comparator.comparing(Noticia::getData));
         return ResponseEntity.ok(noticias);
     }
 }
