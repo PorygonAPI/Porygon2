@@ -62,6 +62,8 @@
             </div>
         </div>
 
+        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+
         <div class="mb-3">
             <label for="tags" class="form-label">Tags</label>
             <select id="tags" class="form-select" multiple disabled>
@@ -79,7 +81,7 @@
         </div>
 
         <div class="d-grid gap-2 col-2 mx-auto">
-            <button type="button" class="btn btn-primary" disabled>Consultar</button>
+            <button id="consultarApi" type="button" class="btn btn-primary" disabled>Consultar</button>
         </div>
     </form>
 
@@ -156,7 +158,46 @@
                     document.getElementById('conteudoApi').textContent = 'Erro ao carregar os dados.';
                 });
         }
-    </script>
+
+            // Adiciona o evento de clique no botão "Consultar"
+            document.getElementById('consultarApi').addEventListener('click', function () {
+            const dataInicio = new Date(document.getElementById('dataInicio').value);
+            const dataFim = new Date(document.getElementById('dataFim').value);
+
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = ''; // Limpa a mensagem de erro
+            errorMessage.style.display = 'none'; // Oculta a mensagem de erro
+
+            // Valida se a dataFim é anterior a dataInicio
+            if (dataFim < dataInicio) {
+            errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
+            errorMessage.style.display = 'block'; // Exibe a mensagem de erro
+            return; // Não continua com a consulta
+        }
+
+            // Se a validação passar, faça a consulta (ajuste a URL conforme necessário)
+            fetch(`/api/dados?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T')[0]}`)
+            .then(response => response.json())
+            .then(data => {
+            // Atualize a tabela de dados com os dados filtrados
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = '';
+            data.forEach(api => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                        <td>${api.nome}</td>
+                        <td>'Inativo'</td>
+                        <td>${api.descricao}</td>
+                        <td>
+                            <button class="btn btn-primary" data-id="${api.id}" onclick="abrirModal(this)">Abrir</button>
+                        </td>
+                    `;
+            tbody.appendChild(row);
+        });
+        })
+            .catch(error => console.error('Erro ao carregar os dados da API:', error));
+        });
+</script>
 
 </body>
 
