@@ -47,8 +47,8 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 > - Implementar manutenção de dados utilizando DML. 
 
 ### :mag: Tríade da API
-> - Programacao de Banco de Dados - *Prof.ª Juliana Forin Pasquini Martinez*
-> - Linguagem de Programacao II - *Prof. Lucas Gonçalves Nadalete*
+> - Programação de Banco de Dados - *Prof.ª Juliana Forin Pasquini Martinez*
+> - Linguagem de Programação II - *Prof. Lucas Gonçalves Nadalete*
 > - Laboratório de Desenvolvimento em Banco de Dados III - *Prof. Giuliano Araújo Bertoti*
 
 ### :hourglass_flowing_sand: Prazos
@@ -77,7 +77,7 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 
 ## :gear: Configurar o Ambiente 
 
-Para instalar configurar o banco, atualizar o Maven e demais informações importantes para a utlização do sistema, consulte o [Arquivo de Teste](doc/TEST.md).
+Para instalar configurar o banco, atualizar o Maven e demais informações importantes para a utilização do sistema, consulte o [Arquivo de Teste](doc/TEST.md).
 
 ### :triangular_ruler: Wireframe do Produto
 * Wireframe do produto disponível pelo [Figma](https://www.figma.com/design/0BWdbmpjQpwVmLui2AUoVl/API_3SEM_PORYGON?node-id=80-618&t=pSpfCnX8lu9lPUyf-1)
