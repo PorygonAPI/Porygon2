@@ -158,6 +158,7 @@ Como usuário, quero que o sistema capture notícias dos portais cadastrados par
 <details>
 <summary> SPRINT 2 </summary>
 
+
 ### **11** - User Story: Rotina do Web Scraping dos Portais de Notícia *R1, R5, RN7 e RN9*
 Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. 
 ### Critérios de Aceite: 
