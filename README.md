@@ -283,29 +283,35 @@ Como usuário, quero consultar APIs que contenham uma palavra específica no con
   Pontuação total: 145
 <br>
 <br>
-
-![Burndown - Sprint 2](https://github.com/user-attachments/assets/49ecf558-cf97-42b1-a227-f74930b985e5)
+![Burndown - Sprint 2 (1)](https://github.com/user-attachments/assets/56112d28-8240-4d07-929f-c7cb82e06201)
 <br>
-##### Tabela de Tarefas Realizadas
+##### Tarefas Realizadas
 
-| Tarefa Finalizada                                      | Task Points | Data de Finalização |
-|--------------------------------------------------------|--------------|---------------------|
-| [PYG-47](https://porygon.atlassian.net/browse/PYG-47)  | 5            | 04/10/2024          |
-| [PYG-35](https://porygon.atlassian.net/browse/PYG-35)  | 8            | 04/10/2024          |
-| [PYG-33](https://porygon.atlassian.net/browse/PYG-33)  | 5            | 04/10/2024          |
-| [PYG-38](https://porygon.atlassian.net/browse/PYG-38)  | 5            | 04/10/2024          |
-| [PYG-41](https://porygon.atlassian.net/browse/PYG-41)  | 5            | 04/10/2024          |
-| [PYG-46](https://porygon.atlassian.net/browse/PYG-46)  | 5            | 05/10/2024          |
-| [PYG-48](https://porygon.atlassian.net/browse/PYG-48)  | 8            | 05/10/2024          |
-| [PYG-50](https://porygon.atlassian.net/browse/PYG-50)  | 5            | 07/10/2024          |
-| [PYG-51](https://porygon.atlassian.net/browse/PYG-51)  | 8            | 08/10/2024          |
-| [PYG-54](https://porygon.atlassian.net/browse/PYG-54)  | 0            | 08/10/2024          |
-| [PYG-49](https://porygon.atlassian.net/browse/PYG-49)  | 21           | 09/10/2024          |
-| [PYG-53](https://porygon.atlassian.net/browse/PYG-53)  | 13           | 11/10/2024          |
-| [PYG-37](https://porygon.atlassian.net/browse/PYG-37)  | 5            | 11/10/2024          |
+| História | Tarefa finalizada | Story Points | Data de Finalização |
+|----------|-------------------|--------------|---------------------|
+| PYG-36   | [PYG-47](https://porygon.atlassian.net/browse/PYG-47) | 5  | 04/10/2024 |
+| PYG-3    | [PYG-35](https://porygon.atlassian.net/browse/PYG-35) | 8  | 04/10/2024 |
+| PYG-3    | [PYG-33](https://porygon.atlassian.net/browse/PYG-33) | 5  | 04/10/2024 |
+| PYG-3    | [PYG-38](https://porygon.atlassian.net/browse/PYG-38) | 5  | 04/10/2024 |
+| PYG-3    | [PYG-41](https://porygon.atlassian.net/browse/PYG-41) | 5  | 04/10/2024 |
+| PYG-36   | [PYG-46](https://porygon.atlassian.net/browse/PYG-46) | 5  | 05/10/2024 |
+| PYG-36   | [PYG-48](https://porygon.atlassian.net/browse/PYG-48) | 8  | 05/10/2024 |
+| PYG-36   | [PYG-50](https://porygon.atlassian.net/browse/PYG-50) | 5  | 07/10/2024 |
+| PYG-36   | [PYG-51](https://porygon.atlassian.net/browse/PYG-51) | 8  | 08/10/2024 |
+| PYG-3    | [PYG-54](https://porygon.atlassian.net/browse/PYG-54) | 0  | 08/10/2024 |
+| PYG-36   | [PYG-49](https://porygon.atlassian.net/browse/PYG-49) | 21 | 09/10/2024 |
+| PYG-3    | [PYG-53](https://porygon.atlassian.net/browse/PYG-53) | 13 | 11/10/2024 |
+| PYG-3    | [PYG-37](https://porygon.atlassian.net/browse/PYG-37) | 5  | 11/10/2024 |
+| PYG-3    | [PYG-55](https://porygon.atlassian.net/browse/PYG-55) | 5  | 14/10/2024 |
+| PYG-17   | [PYG-44](https://porygon.atlassian.net/browse/PYG-44) | 7  | 14/10/2024 |
+| PYG-17   | [PYG-39](https://porygon.atlassian.net/browse/PYG-39) | 8  | 16/10/2024 |
+| PYG-3    | [PYG-52](https://porygon.atlassian.net/browse/PYG-52) | 8  | 17/10/2024 |
+| PYG-3    | [PYG-34](https://porygon.atlassian.net/browse/PYG-34) | 16 | 17/10/2024 |
+| PYG-17   | [PYG-42](https://porygon.atlassian.net/browse/PYG-42) | 3  | 17/10/2024 |
+| PYG-17   | [PYG-43](https://porygon.atlassian.net/browse/PYG-43) | 5  | 19/10/2024 |
 
 <br>
-Última Atualização: 13/10/2024
+Última Atualização: 20/10/2024
 
 </details>
 
