@@ -18,26 +18,26 @@ public class ApiDadosController {
     @Autowired
     private ApiDadosRepository apiDadosRepository;
 
-    // Endpoint para listar os dados da API
     @GetMapping("/apis/dados")
     public String listarApiDados(Model model) {
-        List<ApiDados> apiDadosList = apiDadosRepository.findAll(); // Presumindo que você tenha um método para encontrar todos os dados
-        model.addAttribute("apiDadosList", apiDadosList); // Corrigido o nome para apiDadosList
-        return "apiDados"; // Nome da sua view para exibir os dados
+        List<ApiDados> apiDadosList = apiDadosRepository.findAll(); 
+                                                                    
+        model.addAttribute("apiDadosList", apiDadosList); 
+        return "apiDados";
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<String> abrirDados(@PathVariable Integer id) {
+    @GetMapping("/dados/{id}")
+    public ResponseEntity<String> abrirDados(@PathVariable Long id) {
         Optional<ApiDados> apiDadosOptional = apiDadosRepository.findById(id);
 
         if (apiDadosOptional.isPresent()) {
             ApiDados apiDados = apiDadosOptional.get();
             String conteudo = apiDados.getConteudo();
 
-            Integer formatoId = apiDados.getApi().getFormato().getId();  // < Pegando o formato pela api
+            Integer formatoId = apiDados.getApi().getFormato().getId();
 
-            String tipo = getTipoFormato(formatoId);
-            String conteudoFormatado = formatarConteudo(conteudo, tipo);
+            String tipoFormato = getTipoFormato(formatoId);
+            String conteudoFormatado = formatarConteudo(conteudo, tipoFormato);
 
             return ResponseEntity.ok(conteudoFormatado);
         }
@@ -58,27 +58,40 @@ public class ApiDadosController {
         }
     }
 
-    private String formatarConteudo(String conteudo, String tipo) {
-        switch (tipo) {
+    private String formatarConteudo(String conteudo, String tipoFormato) {
+        switch (tipoFormato) {
             case "json":
-                return conteudo
-                        .replace("{", "\n{")
-                        .replace("}", "}\n")
-                        .replace("[", "\n[")
-                        .replace("]", "]\n")
-                        .replace(",", ",\n")
-                        .replace(":", ": ");
+                return formatarComoJson(conteudo);
             case "xml":
-                return conteudo
-                        .replace("<", "\n<")
-                        .replace(">", ">\n")
-                        .replace("<rate>", "\n<rate>")
-                        .replace("</rate>", "</rate>\n")
-                        .replace("\n\n", "\n");
+                return formatarComoXml(conteudo);
             case "csv":
-                return conteudo.replace(";", ";\n");
+                return formatarComoCsv(conteudo);
             default:
                 return conteudo;
         }
     }
+
+    private String formatarComoJson(String conteudo) {
+        return conteudo
+                .replace("{", "\n{")
+                .replace("}", "}\n")
+                .replace("[", "\n[")
+                .replace("]", "]\n")
+                .replace(",", ",\n")
+                .replace(":", ": ");
+    }
+
+    private String formatarComoCsv(String conteudo) {
+        return conteudo.replace(";", ";\n");
+    }
+
+    private String formatarComoXml(String conteudo) {
+        return conteudo
+                .replace("<", "\n<")
+                .replace(">", ">\n")
+                .replace("<rate>", "\n<rate>")
+                .replace("</rate>", "</rate>\n")
+                .replace("\n\n", "\n");
+    }
+
 }

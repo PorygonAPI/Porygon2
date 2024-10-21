@@ -142,7 +142,7 @@
         function abrirModal(button) {
             var apiDadosId = button.getAttribute('data-id');
 
-            fetch(`/api/dados/${apiDadosId}`)
+            fetch("api/dados/${id}")
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Erro ao buscar os dados da API');
@@ -161,6 +161,7 @@
                     modal.show();
                 });
         }
+
     </script>
 
 </body>
