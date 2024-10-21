@@ -7,6 +7,7 @@
   <a href ="#pushpin-projeto-api"> Projeto API </a>  •
   <a href="#hammer_and_wrench-produto"> Produto </a> •
   <a href="#computer-tecnologias-utilizadas"> Tecnologias Utilizadas </a> •
+  <a href="#gear-configurar-o-ambiente"> Configurar o Ambiente </a> •
   <a href ="#triangular_ruler-wireframe-do-produto"> Wireframe do Produto </a>  •
   <a href="#white_check_mark-requisitos"> Requisitos </a> •
   <a href="#card_file_box-backlog-do-produto"> Backlog do Produto </a> •
@@ -46,17 +47,17 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 > - Implementar manutenção de dados utilizando DML. 
 
 ### :mag: Tríade da API
-> - Programacao de Banco de Dados - *Prof.ª Juliana Forin Pasquini Martinez*
-> - Linguagem de Programacao II - *Prof. Lucas Gonçalves Nadalete*
+> - Programação de Banco de Dados - *Prof.ª Juliana Forin Pasquini Martinez*
+> - Linguagem de Programação II - *Prof. Lucas Gonçalves Nadalete*
 > - Laboratório de Desenvolvimento em Banco de Dados III - *Prof. Giuliano Araújo Bertoti*
 
 ### :hourglass_flowing_sand: Prazos
 - [x] 26/08 a 30/08 - Kick-off
 - [x] 09/09 a 29/09 - Primeira Sprint
-- [ ] 30/09 a 20/10 - Segunda Sprint
+- [x] 30/09 a 20/10 - Segunda Sprint
 - [ ] 21/10 a 10/11 - Terceira Sprint
 - [ ] 11/11 a 01/12 - Quarta Sprint
-- [ ] 27/06 - Feira de Soluções e Apresentação Final API
+- [ ] 12/12 - Feira de Soluções e Apresentação Final API
 
 *****
 
@@ -73,6 +74,10 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 - **Lombok** para reduzir a verbosidade do código
 - **Jsoup** para web scraping
 - **Jackson** para manipulação de dados JSON e XML
+
+## :gear: Configurar o Ambiente 
+
+Para instalar configurar o banco, atualizar o Maven e demais informações importantes para a utilização do sistema, consulte o [Arquivo de Teste](doc/TEST.md).
 
 ### :triangular_ruler: Wireframe do Produto
 * Wireframe do produto disponível pelo [Figma](https://www.figma.com/design/0BWdbmpjQpwVmLui2AUoVl/API_3SEM_PORYGON?node-id=80-618&t=pSpfCnX8lu9lPUyf-1)
@@ -119,7 +124,8 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 | 7 | Média| Como usuário, quero consultar notícias filtrando por data para revisar informações dentro de um período específico | 2 | 2 | R7, RN1 e RN9 |
 | 8 | Média| Como usuário, quero consultar APIs filtrando por data de cadastro para revisar e gerenciar o uso de APIs em um período específico | 2 | 4 | R8 e RN9 |
 | 9 | Baixa| Como usuário, quero consultar notícias que contenham uma palavra específica no conteúdo para encontrar informações relevantes | 6 | 4 | R7, RN1 e RN9 |
-| 10| Baixa| Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. | 7 | 2 | R1, R5, RN7 e RN9 |
+| 10| Baixa| Como usuário, quero consultar APIs que contenham uma palavra específica no conteúdo ou na descrição cadastrada por mim para filtrar informações relevantes. | 6 | 4 | R8 e RN9 |
+| 11| Baixa| Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. | 7 | 2 | R1, R5, RN7 e RN9 |
 
 ### :calendar: Backlog das Sprints
 
@@ -152,7 +158,8 @@ Como usuário, quero que o sistema capture notícias dos portais cadastrados par
 <details>
 <summary> SPRINT 2 </summary>
 
-### **10** - User Story: Rotina do Web Scraping dos Portais de Notícia *R1, R5, RN7 e RN9*
+
+### **11** - User Story: Rotina do Web Scraping dos Portais de Notícia *R1, R5, RN7 e RN9*
 Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. 
 ### Critérios de Aceite: 
 - Desenvolver testes unitários que garantam o funcionamento correto dos fluxos de edição e desativação de portais. 
@@ -164,16 +171,25 @@ Como usuário, quero configurar e validar o funcionamento dos portais de notíci
 Como usuário, quero cadastrar APIs públicas para coleta de dados estratégicos contextualizados com a minha área de pesquisa, para que eu possa integrar essas informações nas análises.
 ### Critérios de Aceite:
 -	O sistema deve permitir a inserção de detalhes da API, como nome, URL, tipo de dados e período de alimentação do banco (diário, semanal ou mensal).
+- Validar os campos para garantir que todas as informações obrigatórias sejam fornecidas (default ativo).
 -	O período de alimentação padrão é “diário”, caso não seja definido pelo cliente. 
 -	A data de cadastro da API precisa ser armazenada no banco. Essa informação determina a sucessão de alimentação do banco para os agendamentos semanais e mensais. 
 -	O usuário deve poder editar e desativar APIs cadastradas. 
--	A interface deve ser simples e fácil de usar. 
+-	O dia do cadastro da API não deve ser alterado durante a edição.  
+- Criar testes para garantir que a lógica de cadastro e salvamento de APIs funcione corretamente.  
+- Incluir cenários de teste para diferentes periodicidades.  
+- Incluir cenários de teste para verificar a integridade dos dados após a edição e desativação.  
+- Atualizar o estado da API para indicar que estão desativados. 
 
 ### **7** - User Story - Consulta de Notícias por Data - *R7, RN1 e RN9*
 Como usuário, quero consultar notícias filtrando por data para revisar informações dentro de um período específico.
 ### Critérios de Aceite:
--	O sistema deve permitir a seleção de um intervalo de datas (um dia ou mais).
--	A consulta deve retornar todas as notícias dentro do intervalo especificado.
+- O sistema deve permitir a seleção de um intervalo de datas (um dia ou mais). 
+- A consulta deve retornar todas as notícias dentro do intervalo especificado. 
+- Criar testes unitários e de integração para validar a funcionalidade de consulta de notícias por data. 
+- Garantir que as notícias retornadas estejam dentro do intervalo especificado. 
+
+Visualizar o [Wireframe da Sprint 2](doc/images/wireframe2.png).
 
 </details>
 
@@ -183,21 +199,31 @@ Como usuário, quero consultar notícias filtrando por data para revisar informa
 ### **4** - User Story - Cadastro de Tags - *R3, R6, RN3, RN7 e RN9*
 Como usuário, quero cadastrar tags que serão usadas para categorizar e filtrar notícias para melhorar a organização e a busca de dados.
 ### Critérios de Aceite:
--	O sistema deve permitir a criação de tags no momento do cadastro do portal/API.
--	O sistema deve suportar tags com regionalismos.
--	As tags devem ser aplicáveis a notícias e APIs.
+- O sistema deve permitir a criação de tags em uma interface independente, com validação para evitar duplicidade.  
+- O sistema deve suportar tags com regionalismos, vinculando palavras com significados iguais automaticamente.  
+- Uma tabela alimentada por APIs de sinônimos será utilizada no relacionamento entre tags e sinônimos.   
+- Palavras compostas ou pequenas frases devem ser separadas por hífen.  
+- O usuário deverá ser capaz de editar uma tag cadastrada, com validação de consistência e duplicidade.  
+- As tags devem ser aplicáveis a portais e APIs.  
+- O cliente será capaz de aplicar uma tag no cadastramento de um portal ou API, por meio de input com busca elástica, onde aparecem as tags salvas no banco com o começo igual a palavra que está sendo digitada. 
 
 ### **5** - User Story - Consulta de Notícias por Tag - *R7, R6, RN1 e RN9*
 Como usuário, quero consultar notícias filtrando por tag para focar em tópicos específicos.
 ### Critérios de Aceite:
--	O sistema deve permitir a seleção de uma ou mais tags cadastradas.
--	A consulta deve retornar notícias associadas a pelo menos uma das tags selecionadas.
+- O usuário utilizará um input com busca elástica, onde aparecem as tags salvas no banco com o começo igual a palavra que está sendo digitada, para facilitar a localização da tag considerando uma quantidade grande de registros. 
+- Ao clicar na tag escolhida, ficará disponível em uma caixa inferior. 
+- O sistema deve permitir a seleção de uma ou mais tags cadastradas.  
+- A consulta deve retornar notícias associadas a portais com pelo menos uma das tags selecionadas.  
+- Verificar diferentes cenários, como múltiplas tags e ausência de resultados.
 
 ### **6** - User Story - Consulta de APIs por Tag - *R8 e RN9*
 Como usuário, quero consultar APIs associadas a determinadas tags para gerenciar as APIs que estou usando.
 ### Critérios de Aceite:
--	O sistema deve permitir a seleção de uma ou mais tags.
--	A consulta deve retornar todas as APIs associadas a pelo menos uma das tags selecionadas.
+- O usuário utilizará um input com busca elástica, onde aparecem as tags salvas no banco com o começo igual a palavra que está sendo digitada, para facilitar a localização da tag considerando uma quantidade grande de registros. 
+- Ao clicar na tag escolhida, ficará disponível em uma caixa inferior. 
+- O sistema deve permitir a seleção de uma ou mais tags cadastradas.  
+- A consulta deve retornar dados de APIs associadas a pelo menos uma das tags selecionadas.  
+- Verificar diferentes cenários, como múltiplas tags e ausência de resultados. 
 
 </details>
 
@@ -216,4 +242,84 @@ Como usuário, quero consultar notícias que contenham uma palavra específica n
 -	O sistema deve permitir a busca por palavras específicas no conteúdo da notícia.
 -	A consulta deve retornar notícias que contenham a palavra digitada.
 
+### **10** - User Story - Consulta de APIs por Palavra Contida no Conteúdo - *R8 e RN9*
+Como usuário, quero consultar APIs que contenham uma palavra específica no conteúdo ou na descrição cadastrada por mim para filtrar informações relevantes.
+### Critérios de Aceite:
+-	O sistema deve permitir a busca por palavras específicas na descrição da API, informada pelo usuário no cadastro da API, e pelo conteúdo da API.
+-	A consulta deve retornar APIs que contenham a palavra digitada.
+
 </details>
+
+---
+
+**Acesse o board do produto disponível no [Jira](https://porygon.atlassian.net/jira/software/c/projects/PYG/boards/5)**  
+**Acesse a página do projeto disponível no [Confluence](https://porygon.atlassian.net/wiki/x/cAAC)**
+
+**Acesse a documentação de Contribuição do Projeto no arquivo [CONTRIBUTING](doc/CONTRIBUTING.md)**
+
+## 🚀 Desempenho da Equipe | Burndown
+
+
+<details>
+<summary> SPRINT 1 | 09/09/2024 até 29/10/2024</summary>
+
+<br>
+
+  Nesta sprint, usamos usando points por histórias para medir nosso progresso em relação às entregas propostas.  
+  Pontuação total: 29
+<br>
+
+![Burndown - Sprint 1 (3)](https://github.com/user-attachments/assets/3ffedea1-7bf2-473f-b26b-34c44f52c85c)
+
+Última Atualização: 01/10/2024
+
+
+</details>
+
+<details>
+<summary> SPRINT 2 | 30/09/2024 até 20/10/2024 </summary>
+<br>
+
+  Nesta sprint, usamos points por tarefa para medir nosso progresso em relação às entregas propostas.  
+  Pontuação total: 145
+<br>
+<br>
+![Burndown - Sprint 2 (1)](https://github.com/user-attachments/assets/56112d28-8240-4d07-929f-c7cb82e06201)
+<br>
+##### Tarefas Realizadas
+
+| História | Tarefa finalizada | Story Points | Data de Finalização |
+|----------|-------------------|--------------|---------------------|
+| PYG-36   | [PYG-47](https://porygon.atlassian.net/browse/PYG-47) | 5  | 04/10/2024 |
+| PYG-3    | [PYG-35](https://porygon.atlassian.net/browse/PYG-35) | 8  | 04/10/2024 |
+| PYG-3    | [PYG-33](https://porygon.atlassian.net/browse/PYG-33) | 5  | 04/10/2024 |
+| PYG-3    | [PYG-38](https://porygon.atlassian.net/browse/PYG-38) | 5  | 04/10/2024 |
+| PYG-3    | [PYG-41](https://porygon.atlassian.net/browse/PYG-41) | 5  | 04/10/2024 |
+| PYG-36   | [PYG-46](https://porygon.atlassian.net/browse/PYG-46) | 5  | 05/10/2024 |
+| PYG-36   | [PYG-48](https://porygon.atlassian.net/browse/PYG-48) | 8  | 05/10/2024 |
+| PYG-36   | [PYG-50](https://porygon.atlassian.net/browse/PYG-50) | 5  | 07/10/2024 |
+| PYG-36   | [PYG-51](https://porygon.atlassian.net/browse/PYG-51) | 8  | 08/10/2024 |
+| PYG-3    | [PYG-54](https://porygon.atlassian.net/browse/PYG-54) | 0  | 08/10/2024 |
+| PYG-36   | [PYG-49](https://porygon.atlassian.net/browse/PYG-49) | 21 | 09/10/2024 |
+| PYG-3    | [PYG-53](https://porygon.atlassian.net/browse/PYG-53) | 13 | 11/10/2024 |
+| PYG-3    | [PYG-37](https://porygon.atlassian.net/browse/PYG-37) | 5  | 11/10/2024 |
+| PYG-3    | [PYG-55](https://porygon.atlassian.net/browse/PYG-55) | 5  | 14/10/2024 |
+| PYG-17   | [PYG-44](https://porygon.atlassian.net/browse/PYG-44) | 7  | 14/10/2024 |
+| PYG-17   | [PYG-39](https://porygon.atlassian.net/browse/PYG-39) | 8  | 16/10/2024 |
+| PYG-3    | [PYG-52](https://porygon.atlassian.net/browse/PYG-52) | 8  | 17/10/2024 |
+| PYG-3    | [PYG-34](https://porygon.atlassian.net/browse/PYG-34) | 16 | 17/10/2024 |
+| PYG-17   | [PYG-42](https://porygon.atlassian.net/browse/PYG-42) | 3  | 17/10/2024 |
+| PYG-17   | [PYG-43](https://porygon.atlassian.net/browse/PYG-43) | 5  | 19/10/2024 |
+
+<br>
+Última Atualização: 20/10/2024
+
+</details>
+
+
+
+
+
+
+
+

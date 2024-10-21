@@ -1,5 +1,6 @@
 package edu.fatec.Porygon.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,5 +15,9 @@ public class NoticiaService {
 
     public List<Noticia> listarNoticias() {
         return noticiaRepository.findAll();
-    }    
+    }
+
+    public List<Noticia> listarNoticiasPorData(LocalDate dataInicio, LocalDate dataFim) {
+         return noticiaRepository.searchNewsByData(dataInicio, dataFim);
+    }
 }

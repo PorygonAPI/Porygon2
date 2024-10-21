@@ -1,5 +1,6 @@
-package edu.fatec.Porygon.model;
+package edu.fatec.Porygon.config;
 
+import edu.fatec.Porygon.model.Agendador;
 import edu.fatec.Porygon.repository.AgendadorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -30,7 +31,7 @@ public class AgendadorDataLoader implements CommandLineRunner {
             agendadorRepository.save(semanal);
             agendadorRepository.save(mensal);
 
-            System.out.println("Agendadores padrão inseridos no banco de dados.");
+            // System.out.println("Agendadores padrão inseridos no banco de dados.");
         }
     }
 }
