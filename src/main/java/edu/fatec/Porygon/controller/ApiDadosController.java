@@ -5,16 +5,26 @@ import edu.fatec.Porygon.repository.ApiDadosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/api/dados")
+@Controller
 public class ApiDadosController {
 
     @Autowired
     private ApiDadosRepository apiDadosRepository;
+
+    // Endpoint para listar os dados da API
+    @GetMapping("/apis/dados")
+    public String listarApiDados(Model model) {
+        List<ApiDados> apiDadosList = apiDadosRepository.findAll(); // Presumindo que você tenha um método para encontrar todos os dados
+        model.addAttribute("apiDadosList", apiDadosList); // Corrigido o nome para apiDadosList
+        return "apiDados"; // Nome da sua view para exibir os dados
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<String> abrirDados(@PathVariable Integer id) {
