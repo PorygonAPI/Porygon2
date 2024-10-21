@@ -89,7 +89,6 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Nome da API</th>
                             <th>Tags</th>
                             <!-- <th>Data</th> -->
@@ -98,7 +97,6 @@
                     </thead>
                     <tbody>
                         <tr th:each="dados : ${apiDadosList}">
-                            <td th:text="${dados.id}"></td>
                             <td th:text="${dados.api.nome}"></td>
                             <td th:text="'Inativo'">Inativo</td>
                             <!-- <td th:text="${#dates.format(dados.data, 'dd/MM/yyyy')}"></td> Ajuste no formato da data -->
