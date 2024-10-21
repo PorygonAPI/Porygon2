@@ -8,9 +8,12 @@ public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    
+    @Column(unique = true) 
     private String nome;
-    private String nomeSinonimo;
+
+    @OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Sinonimo> sinonimos;
 
     @ManyToMany(mappedBy = "tags")
     private List<Api> apis;
@@ -34,12 +37,12 @@ public class Tag {
         this.nome = nome;
     }
 
-    public String getNomeSinonimo() {
-        return nomeSinonimo;
+    public List<Sinonimo> getSinonimos() {
+        return sinonimos;
     }
 
-    public void setNomeSinonimo(String nomeSinonimo) {
-        this.nomeSinonimo = nomeSinonimo;
+    public void setSinonimos(List<Sinonimo> sinonimos) {
+        this.sinonimos = sinonimos;
     }
 
     public List<Portal> getPortais() {
