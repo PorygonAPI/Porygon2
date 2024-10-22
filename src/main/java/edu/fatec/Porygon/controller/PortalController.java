@@ -78,6 +78,8 @@ public class PortalController {
             } else if (!portal.getUrl().equals(portalExistente.getUrl()) && portalRepository.existsByUrl(portal.getUrl())) {
                 errorMessage = "Já existe um portal com essa URL.";
             }
+            portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
+            portal.setDataCriacao(portalExistente.getDataCriacao());
         } else {
             if (portalRepository.existsByNome(portal.getNome())) {
                 errorMessage = "Já existe um portal com este nome.";
@@ -111,7 +113,7 @@ public class PortalController {
             portal.setUltimaAtualizacao(LocalDate.now());
             portalRepository.save(portal);
             successMessage = "Cadastro de portal e primeira coleta realizada com sucesso!";
-        } else if (!portal.isAtivo()) {
+        } else if (!isEdit && !portal.isAtivo()) {
             successMessage = "Cadastro de portal realizado sem coleta por estar desativo.";
         } else {
             successMessage = "Portal editado com sucesso!";
