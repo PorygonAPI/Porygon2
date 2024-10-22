@@ -218,6 +218,12 @@ public class DataScrapperService {
 
                     LocalDate today = LocalDate.now();
                     LocalDate lastUpdate = portal.getUltimaAtualizacao();
+
+                    if (lastUpdate == null) {
+                        System.err.println("lastUpdate is null for portal: " + portal.getId());
+                        continue;
+                    }
+
                     int daysBetween = (int) ChronoUnit.DAYS.between(lastUpdate, today);
 
                     if (daysBetween >= updateRate) {
