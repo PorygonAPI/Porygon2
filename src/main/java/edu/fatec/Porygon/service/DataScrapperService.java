@@ -211,9 +211,6 @@ public class DataScrapperService {
 
                 if (!portal.isHasScrapedToday() && portal.isAtivo()) {
                     scrapeDatabyPortalID(portal.getId());
-                    portal.setHasScrapedToday(true);
-                    portal.setUltimaAtualizacao(LocalDate.now());
-                    portalRepository.save(portal);
                 }
 
             } else if (updateRate == 7 || updateRate == 30) {
@@ -221,19 +218,10 @@ public class DataScrapperService {
 
                     LocalDate today = LocalDate.now();
                     LocalDate lastUpdate = portal.getUltimaAtualizacao();
-
-                    if (lastUpdate == null) {
-                        System.err.println("lastUpdate is null for portal: " + portal.getId());
-                        continue;
-                    }
-
                     int daysBetween = (int) ChronoUnit.DAYS.between(lastUpdate, today);
 
                     if (daysBetween >= updateRate) {
                         scrapeDatabyPortalID(portal.getId());
-                        portal.setHasScrapedToday(true);
-                        portal.setUltimaAtualizacao(LocalDate.now());
-                        portalRepository.save(portal);
                     }
                 }
             }
