@@ -40,15 +40,17 @@ public class NoticiaController {
 
     @GetMapping("/noticias/detalhe/{id}")
     @ResponseBody
-    public ResponseEntity<Noticia> detalheNoticiaJson(@PathVariable Integer id) {
+    public ResponseEntity<NoticiaDTO> detalheNoticiaJson(@PathVariable Integer id) {
         Optional<Noticia> noticiaOptional = noticiaRepository.findById(id);
-        
+
         if (noticiaOptional.isPresent()) {
             Noticia noticia = noticiaOptional.get();
             if (noticia.getJornalista() != null) {
                 Hibernate.initialize(noticia.getJornalista());
             }
-            return ResponseEntity.ok(noticia);
+            // Converta para o DTO
+            NoticiaDTO noticiaDTO = new NoticiaDTO(noticia);
+            return ResponseEntity.ok(noticiaDTO);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
