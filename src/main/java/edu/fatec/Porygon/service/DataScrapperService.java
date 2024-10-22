@@ -61,7 +61,7 @@ public class DataScrapperService {
                 if (Data != null) {
                     verificationDate = Data.attr("datetime");
                 } else {
-                    System.err.println("No date element found for link: " + link);
+                    //System.err.println("No date element found for link: " + link);
                     verificationDate = "1001-01-01T10:44:13.253Z";
                 }
 
@@ -76,8 +76,7 @@ public class DataScrapperService {
                 if (Titulo == null || Titulo.text().trim().isEmpty()
                         || Autor == null || Autor.text().trim().isEmpty()
                         || contentScrapper.trim().isEmpty()) {
-                    System.err.println(
-                            "Notícia não salva. Título, autor e conteúdo não podem estar vazios para o link: " + link);
+                    //System.err.println("Notícia não salva. Título, autor e conteúdo não podem estar vazios para o link: " + link);
                     continue;
                 }
 
@@ -92,7 +91,7 @@ public class DataScrapperService {
                 if (!noticiaRepository.existsByHref(noticia.getHref())) {
                     noticias.add(noticia);
                 } else {
-                    System.out.println("Notícia já existente: " + noticia.getHref());
+                    //System.out.println("Notícia já existente: " + noticia.getHref());
                 }
             }
 
@@ -105,7 +104,7 @@ public class DataScrapperService {
             portalRepository.save(portal);
 
         } catch (IOException e) {
-            System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
+            //System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
         }
     }
 
@@ -138,11 +137,11 @@ public class DataScrapperService {
     }
 
     private void showLoading() {
-        System.out.println("Carregamento iniciado...");
+        //System.out.println("Carregamento iniciado...");
     }
 
     private void hideLoading() {
-        System.out.println("Carregamento encerrado.");
+        //System.out.println("Carregamento encerrado.");
     }
 
     // Set to run at noon(12h00)
@@ -223,7 +222,7 @@ public class DataScrapperService {
                     LocalDate lastUpdate = portal.getUltimaAtualizacao();
 
                     if (lastUpdate == null) {
-                        System.err.println("lastUpdate is null for portal: " + portal.getId());
+                        //System.err.println("lastUpdate is null for portal: " + portal.getId());
                         continue;
                     }
 
