@@ -105,8 +105,11 @@ public class PortalController {
     
         portalRepository.save(portal);
     
-        if (!isEdit && portal.isAtivo()) {
+        if (!isEdit && portal.isAtivo() && !portal.isHasScrapedToday()) {
             dataScrapperService.WebScrapper();
+            portal.setHasScrapedToday(true);
+            portal.setUltimaAtualizacao(LocalDate.now());
+            portalRepository.save(portal);
             successMessage = "Cadastro de portal e primeira coleta realizada com sucesso!";
         } else if (!portal.isAtivo()) {
             successMessage = "Cadastro de portal realizado sem coleta por estar desativo.";
