@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/tags")
@@ -23,9 +24,13 @@ public class TagController {
     }
 
     @PostMapping("/salvar")
-    public String salvarTag(Tag tag, Model model) {
+    public String salvarTag(Tag tag, RedirectAttributes redirectAttributes) {
+        if (tagRepository.findByNome(tag.getNome()).isPresent()) {
+            redirectAttributes.addFlashAttribute("mensagemErro", "Já existe uma tag com esse nome.");
+            return "redirect:/tags";
+        }
         tagRepository.save(tag);
-        model.addAttribute("mensagemSucesso", "Tag salva com sucesso!");
+        redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag cadastrada com sucesso!");
         return "redirect:/tags";
     }
 }

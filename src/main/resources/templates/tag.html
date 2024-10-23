@@ -70,6 +70,13 @@
 <br>
 
 <div class="container mt-5">
+    <div th:if="${mensagemSucesso}" class="alert alert-success" role="alert">
+        <p th:text="${mensagemSucesso}"></p>
+    </div>
+    <div th:if="${mensagemErro}" class="alert alert-danger" role="alert">
+        <p th:text="${mensagemErro}"></p>
+    </div>
+
     <h4 class="mb-4 text-center">Cadastro de Tags</h4>
     <form th:action="@{/tags/salvar}" method="post">
         <div class="row mb-3">
