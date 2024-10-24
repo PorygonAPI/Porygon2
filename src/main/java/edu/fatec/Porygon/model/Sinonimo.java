@@ -9,7 +9,7 @@ public class Sinonimo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(unique = true) 
+    @Column(unique = true, length = 46)
     private String nome;
 
     @ManyToOne
