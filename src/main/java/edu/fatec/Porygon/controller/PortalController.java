@@ -132,7 +132,10 @@ public class PortalController {
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
         boolean novoStatus = body.get("ativo");
-        portalService.alterarStatus(id, novoStatus); 
+        Portal portal = portalService.alterarStatus(id, novoStatus); 
+        if (novoStatus && portal != null && !portal.isHasScrapedToday()) {
+            dataScrapperService.WebScrapper();
+        }
         return ResponseEntity.ok().build();
     }
 }
