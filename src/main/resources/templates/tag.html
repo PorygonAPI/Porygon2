@@ -92,6 +92,29 @@
     </form>
 </div>
 
+<div class="container mt-5">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr th:each="tag : ${tags}">
+                <td th:text="${tag.id}"></td>
+                <td th:text="${tag.nome}"></td>
+                <td>
+                    <a class="btn btn-info">Editar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <footer class="bg-dark text-light py-4">
     <div class="container text-center">
         <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>

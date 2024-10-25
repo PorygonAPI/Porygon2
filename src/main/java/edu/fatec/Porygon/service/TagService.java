@@ -1,6 +1,7 @@
 package edu.fatec.Porygon.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.model.Sinonimo;
@@ -43,5 +44,8 @@ public class TagService {
             novaTag.setSinonimos(new ArrayList<>()); 
         }
         return novaTag;
-    }       
+    }
+    public List<Tag> listarTagsOrdenadas() {
+        return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "nome"));
+    }
 }
