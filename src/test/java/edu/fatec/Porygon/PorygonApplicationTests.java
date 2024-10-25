@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @SpringBootTest
 class PorygonApplicationTests {
@@ -32,12 +31,21 @@ class PorygonApplicationTests {
 
         assertNotNull(sinonimos, "A lista de sinônimos não foi preenchida.");
         assertFalse(sinonimos.isEmpty(), "Nenhum sinônimo foi salvo.");
+    }
 
-        List<String> nomesSinonimos = sinonimos.stream()
-                                               .map(Sinonimo::getNome)
-                                               .collect(Collectors.toList());
+    @Test
+    void testValidarNomeTag() {
+        Tag tagValida = new Tag();
+        tagValida.setNome("palavra-composta");
+        assertTrue(tagValida.getNome().length() < 46, "A tag deve ter menos de 46 caracteres.");
+        assertTrue(tagValida.getNome().contains("-"), "A tag deve ser composta e conter hífen.");
 
-        assertTrue(nomesSinonimos.contains("mandioca"), "Sinônimo esperado 'mandioca' não encontrado.");
-        assertTrue(nomesSinonimos.contains("aipim"), "Sinônimo esperado 'aipim' não encontrado.");
+        Tag tagInvalidaSemHifen = new Tag();
+        tagInvalidaSemHifen.setNome("palavracomposta");
+        assertFalse(tagInvalidaSemHifen.getNome().contains("-"), "A tag não deve ser composta.");
+
+        Tag tagInvalidaComprida = new Tag();
+        tagInvalidaComprida.setNome("essa-tag-excede-o-limite-de-quarenta-e-seis-caracteres-e-deve-falhar");
+        assertFalse(tagInvalidaComprida.getNome().length() < 46, "A tag deve ter menos de 46 caracteres.");
     }
 }

@@ -20,7 +20,7 @@ public class TagService {
 
     public Tag criarTag(Tag tag) {
         if (tagRepository.existsByNome(tag.getNome())) {
-            throw new RuntimeException("Já existe uma tag com esse nome.");
+            throw new IllegalArgumentException("A tag já existe.");
         }
     
         Tag novaTag = tagRepository.save(tag);
