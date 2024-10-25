@@ -36,6 +36,10 @@
             text-align: center;
             padding: 1rem 0;
         }
+
+        .acoes-column {
+            width: 100px;
+        }
     </style>
 </head>
 
@@ -99,15 +103,15 @@
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
-                <th>Ações</th>
+                <th class="acoes-column">Ações</th>
             </tr>
             </thead>
             <tbody class="table-group-divider">
             <tr th:each="tag : ${tags}">
                 <td th:text="${tag.id}"></td>
                 <td th:text="${tag.nome}"></td>
-                <td>
-                    <a class="btn btn-info">Editar</a>
+                <td class="acoes-column">
+                    <a class="btn btn-info btn-sm">Editar</a>
                 </td>
             </tr>
             </tbody>
