@@ -20,6 +20,7 @@ public class TagController {
     @GetMapping
     public String mostrarFormularioCadastro(Model model) {
         model.addAttribute("tag", new Tag());
+        model.addAttribute("tags", tagService.listarTagsOrdenadas());
         return "tag";
     }
 
