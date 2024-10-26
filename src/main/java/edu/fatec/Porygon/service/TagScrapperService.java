@@ -12,7 +12,7 @@ public class TagScrapperService {
     public static List<String> buscarSinonimos(String palavra) {
         List<String> sinonimos = buscarSinonimosDicio(palavra);
         if (sinonimos == null || sinonimos.isEmpty()) {
-            sinonimos = buscarSinonimosAlternativo(palavra);
+            sinonimos = buscarSinonimosSinonimos(palavra);
         }
         return sinonimos;
     }
@@ -39,7 +39,7 @@ public class TagScrapperService {
         return null;
     }
 
-    private static List<String> buscarSinonimosAlternativo(String palavra) {
+    private static List<String> buscarSinonimosSinonimos(String palavra) {
         try {
             String url = "https://www.sinonimos.com.br/" + palavra + "/";
             Document doc = Jsoup.connect(url).get();
