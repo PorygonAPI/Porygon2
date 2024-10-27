@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SinonimoRepository extends JpaRepository<Sinonimo, Long> {
-    
-    boolean existsByNome(String nome);
+
+    boolean existsByNomeAndTag(String nome, Tag tag);
     void deleteByTag(Tag tag);
     List<Sinonimo> findByTag(Tag tag);
 }

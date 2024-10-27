@@ -20,33 +20,33 @@ public class TagService {
     @Autowired
     private SinonimoRepository sinonimoRepository;
 
+    @Autowired
+    private TagScrapperService tagScrapperService;
+
     public Tag criarTag(Tag tag) {
         if (tagRepository.existsByNome(tag.getNome())) {
-            throw new IllegalArgumentException("A tag já existe.");
+            throw new RuntimeException("A tag já existe.");
         }
 
         Tag novaTag = tagRepository.save(tag);
-        List<String> sinonimos = TagScrapperService.buscarSinonimos(novaTag.getNome());
+        List<String> sinonimos = tagScrapperService.buscarSinonimos(novaTag.getNome());
         vincularSinonimos(sinonimos, novaTag);
 
         return novaTag;
     }
 
     public Tag editarTag(Integer id, String novoNome) {
-        Optional<Tag> optionalTag = tagRepository.findById(id);
-        if (optionalTag.isEmpty()) {
-            throw new IllegalArgumentException("Tag não encontrada.");
-        }
+        Tag tagExistente = tagRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tag não encontrada."));
 
-        Tag tagExistente = optionalTag.get();
         if (!tagExistente.getNome().equalsIgnoreCase(novoNome) && tagRepository.existsByNome(novoNome)) {
-            throw new IllegalArgumentException("Uma tag com este nome já existe.");
+            throw new RuntimeException("Uma tag com este nome já existe.");
         }
 
         tagExistente.setNome(novoNome);
         tagRepository.save(tagExistente);
 
-        List<String> sinonimos = TagScrapperService.buscarSinonimos(tagExistente.getNome());
+        List<String> sinonimos = tagScrapperService.buscarSinonimos(tagExistente.getNome());
         vincularSinonimos(sinonimos, tagExistente);
 
         return tagExistente;
@@ -56,7 +56,8 @@ public class TagService {
         if (sinonimos != null && !sinonimos.isEmpty()) {
             List<Sinonimo> sinonimoList = new ArrayList<>();
             for (String sinonimoNome : sinonimos) {
-                if (!sinonimoRepository.existsByNome(sinonimoNome)) {
+                // Verifica a existência considerando apenas a combinação com a mesma tag
+                if (!sinonimoRepository.existsByNomeAndTag(sinonimoNome, tag)) {
                     Sinonimo sinonimo = new Sinonimo();
                     sinonimo.setNome(sinonimoNome);
                     sinonimo.setTag(tag);

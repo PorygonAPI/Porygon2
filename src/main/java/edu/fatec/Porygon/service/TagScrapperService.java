@@ -3,21 +3,29 @@ package edu.fatec.Porygon.service;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Service
 public class TagScrapperService {
 
-    public static List<String> buscarSinonimos(String palavra) {
-        List<String> sinonimos = buscarSinonimosDicio(palavra);
-        if (sinonimos == null || sinonimos.isEmpty()) {
-            sinonimos = buscarSinonimosSinonimos(palavra);
-        }
-        return sinonimos;
+    public List<String> buscarSinonimos(String palavra) {
+        List<String> sinonimosDicio = buscarSinonimosDicio(palavra);
+        List<String> sinonimosSinonimos = buscarSinonimosSinonimos(palavra);
+
+        // Combina os sinônimos dos dois sites, removendo duplicatas
+        return Stream.concat(sinonimosDicio.stream(), sinonimosSinonimos.stream())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    private static List<String> buscarSinonimosDicio(String palavra) {
+    private List<String> buscarSinonimosDicio(String palavra) {
         try {
             String url = "https://www.dicio.com.br/" + palavra + "/";
             Document doc = Jsoup.connect(url).get();
@@ -33,13 +41,13 @@ public class TagScrapperService {
                             .collect(Collectors.toList());
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Erro ao buscar sinônimos no Dicio: " + e.getMessage());
         }
-        return null;
+        return Collections.emptyList();
     }
 
-    private static List<String> buscarSinonimosSinonimos(String palavra) {
+    private List<String> buscarSinonimosSinonimos(String palavra) {
         try {
             String url = "https://www.sinonimos.com.br/" + palavra + "/";
             Document doc = Jsoup.connect(url).get();
@@ -50,9 +58,9 @@ public class TagScrapperService {
                         .map(element -> element.text().trim())
                         .collect(Collectors.toList());
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Erro ao buscar sinônimos no Sinonimos.com.br: " + e.getMessage());
         }
-        return null;
+        return Collections.emptyList();
     }
 }
