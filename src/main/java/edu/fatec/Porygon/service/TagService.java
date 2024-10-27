@@ -20,10 +20,15 @@ public class TagService {
     private SinonimoRepository sinonimoRepository;
 
     public Tag criarTag(Tag tag) {
-        if (tagRepository.existsByNome(tag.getNome())) {
+
+        String newTagName = StandardizeTag(tag);
+
+        if (tagRepository.existsByNome(newTagName)) {
             throw new IllegalArgumentException("A tag já existe.");
         }
-    
+
+        tag.setNome(newTagName);
+
         Tag novaTag = tagRepository.save(tag);
     
         List<String> sinonimos = TagScrapperService.buscarSinonimos(novaTag.getNome());
@@ -48,4 +53,25 @@ public class TagService {
     public List<Tag> listarTagsOrdenadas() {
         return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "nome"));
     }
+
+    public String StandardizeTag(Tag tag) {
+        String modifiedTag = tag.getNome();
+        String returnTag = "";
+
+        if (modifiedTag == null || modifiedTag.isEmpty()) {
+            returnTag = modifiedTag;
+        }else{
+            String[] nameWords = modifiedTag.replaceAll("-"," ").toLowerCase().split("\\s+");
+            StringBuilder newString = new StringBuilder();
+            for (String word : nameWords) {
+                if (!word.isEmpty()) {
+                    newString.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1)).append(" ");
+                }
+            }
+            returnTag = newString.toString().trim();
+        }
+
+        return returnTag;
+    }
+
 }
