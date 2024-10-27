@@ -82,12 +82,15 @@
     </div>
 
     <h4 class="mb-4 text-center">Cadastro de Tag</h4>
-    <form th:action="@{/tags/salvar}" method="post">
+    <form th:action="@{/tags/salvar}" method="post" onsubmit="return validarTag()">
         <div class="row mb-3">
             <div class="col-md-6 offset-md-3">
                 <label for="nome" class="form-label">Nome da Tag:</label>
                 <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome da Tag" required>
                 <small class="form-text text-muted">Cadastre uma Tag de cada vez e separe palavras compostas com hífen ( - ), sem espaços.</small>
+                <div id="erroTag" class="text-danger" style="display: none;">
+                    Nome de tag inválido. Utilize hífen para palavras compostas e evite espaços.
+                </div>
             </div>
         </div>
         <div class="d-grid gap-2 col-2 mx-auto">
@@ -125,6 +128,20 @@
     </div>
 </footer>
 
+
+<script>
+    function validarTag() {
+        const nome = document.getElementById("nome").value;
+        const regex = /^[a-zA-Z0-9áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]+(-[a-zA-Z0-9áéíóúãõâêîôûçÁÉÍÓÚÃÕÂÊÎÔÛÇ]+)*$/;
+
+        if (!regex.test(nome)) {
+            document.getElementById("erroTag").style.display = "block";
+            return false;
+        }
+        document.getElementById("erroTag").style.display = "none";
+        return true;
+    }
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
         const successAlert = document.querySelector('.alert-success');
