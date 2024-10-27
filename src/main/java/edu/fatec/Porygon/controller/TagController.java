@@ -1,14 +1,16 @@
 package edu.fatec.Porygon.controller;
 
 import edu.fatec.Porygon.model.Tag;
+import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/tags")
@@ -16,6 +18,8 @@ public class TagController {
 
     @Autowired
     private TagService tagService;
+    @Autowired
+    private TagRepository tagRepository;
 
     @GetMapping
     public String mostrarFormularioCadastro(Model model) {
@@ -34,4 +38,11 @@ public class TagController {
         }
         return "redirect:/tags";
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<Tag>> buscarTags(@RequestParam String nome) {
+        List<Tag> tags = tagRepository.findByNomeStartingWith(nome); // Método de instância
+        return ResponseEntity.ok(tags);
+    }
+
 }

@@ -36,6 +36,10 @@
             animation: spin 1s linear infinite;
         }
 
+        .tag-selecionada {
+            font-size: 16px; /* Ajuste o tamanho conforme necessário */
+        }
+
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
@@ -131,14 +135,31 @@
                     </div>
                 </div>
             </div>
+            <!-- Campo de Busca para Tags -->
+            <div class="row mb-3">
+                <div class="col-md-6 offset-md-3">
+                    <label for="tagBusca" class="form-label">Buscar Tag:</label>
+                    <input type="text" class="form-control" id="tagBusca" placeholder="Digite o nome da Tag" onkeyup="buscarTags()">
+                </div>
+            </div>
+
+            <!-- Contêiner para exibir as tags selecionadas -->
+            <div class="row mb-3">
+                <div class="col-md-6 offset-md-3">
+                    <label class="form-label">Tags Selecionadas:</label>
+                    <div id="tagsSelecionadas" class="d-flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+
+            <!-- Campo oculto para armazenar os IDs das tags selecionadas -->
+            <input type="hidden" id="tagsSelecionadasInput" name="tagsSelecionadas">
+
             <div class="row mb-3">
                 <div class="mb-6">
                     <label for="tags" class="form-label">Tags</label>
                     <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}">
                         <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
                     </select>
-                    <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
-                        opções.</small>
                 </div>
             </div>
 
@@ -225,11 +246,88 @@
         <div class="container text-center">
           <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
         </div>
-    </footer> 
+    </footer>
 
     <script>
 
-function showAlert(message, alertType = 'success') {
+        let tagsSelecionadas = [];
+
+        function buscarTags() {
+            const input = document.getElementById("tagBusca").value.toLowerCase(); // Valor digitado pelo usuário
+            const tagOptions = document.getElementById("tags").options; // Opções do campo de tags
+
+            // Itera sobre todas as opções de tags
+            for (let i = 0; i < tagOptions.length; i++) {
+                const tagText = tagOptions[i].text.toLowerCase(); // Texto da tag em minúsculo
+
+                // Mostra ou oculta a tag com base no valor digitado
+                if (tagText.startsWith(input)) {
+                    tagOptions[i].style.display = 'block'; // Mostra a tag se corresponder ao início do input
+                } else {
+                    tagOptions[i].style.display = 'none'; // Oculta a tag se não corresponder
+                }
+            }
+        }
+
+        function selecionarTag(tag) {
+            if (!tagsSelecionadas.find(t => t.id === tag.id)) {
+                tagsSelecionadas.push(tag);
+                atualizarTagsSelecionadas();
+            }
+        }
+
+        // Adiciona um evento para mover a tag selecionada para o campo de Tags Selecionadas
+        document.getElementById("tags").addEventListener("change", function () {
+            const selectElement = document.getElementById("tags");
+            const selectedOptions = Array.from(selectElement.selectedOptions);
+
+            selectedOptions.forEach(option => {
+                const tag = {
+                    id: option.value,
+                    nome: option.text
+                };
+                // Verifica se a tag já está nas tags selecionadas para evitar duplicação
+                if (!tagsSelecionadas.find(t => t.id === tag.id)) {
+                    tagsSelecionadas.push(tag);
+                    atualizarTagsSelecionadas();
+                }
+                // Desmarcar a tag no select após movê-la para "Tags Selecionadas"
+                option.selected = false;
+            });
+        });
+
+        function atualizarTagsSelecionadas() {
+            const tagsContainer = document.getElementById("tagsSelecionadas");
+            tagsContainer.innerHTML = '';
+
+            tagsSelecionadas.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.classList.add('badge', 'bg-primary', 'me-2', 'tag-selecionada');
+                tagElement.textContent = tag.nome;
+
+                // Botão "X" para remover a tag
+                const removeBtn = document.createElement('span');
+                removeBtn.classList.add('ms-2', 'text-danger', 'cursor-pointer');
+                removeBtn.textContent = 'X';
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.onclick = () => {
+                    // Remover a tag da lista de tagsSelecionadas
+                    tagsSelecionadas = tagsSelecionadas.filter(t => t.id !== tag.id);
+                    atualizarTagsSelecionadas(); // Atualizar a exibição
+                };
+
+                // Adicionar o botão "X" ao lado do nome da tag
+                tagElement.appendChild(removeBtn);
+                tagsContainer.appendChild(tagElement);
+            });
+
+            // Atualizar o campo oculto com os IDs das tags selecionadas
+            document.getElementById("tagsSelecionadasInput").value = JSON.stringify(tagsSelecionadas.map(t => t.id));
+        }
+
+
+
+        function showAlert(message, alertType = 'success') {
             const alertContainer = document.getElementById('alertContainer');
             const alertMessage = document.getElementById('alertMessage');
 
@@ -255,7 +353,7 @@ function showAlert(message, alertType = 'success') {
         if (errorMessage) {
             showAlert(errorMessage, 'danger');
         }
-        
+
          document.querySelector('form').addEventListener('submit', function (event) {
             showLoading();
         });

@@ -1,6 +1,9 @@
 package edu.fatec.Porygon.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.fatec.Porygon.model.Portal;
+import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.AgendadorRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
 import edu.fatec.Porygon.repository.TagRepository;
@@ -13,6 +16,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -65,7 +70,7 @@ public class PortalController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit, Model model) {
+    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit, Model model, @RequestParam String tags) {
         String errorMessage = null;
         String successMessage = null;
     
@@ -124,7 +129,17 @@ public class PortalController {
         model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("tags", tagRepository.findAll());
-    
+
+        try {
+            // Converte a string de tags em um array de Integers
+            Integer[] tagIds = new ObjectMapper().readValue(tags, Integer[].class);
+            List<Tag> tagList = tagRepository.findAllById(Arrays.asList(tagIds));
+            portal.setTags(tagList);
+            portalRepository.save(portal);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
         return "redirect:/portais?successMessage=" + successMessage;
     }
 
