@@ -9,7 +9,6 @@ import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.repository.SinonimoRepository;
 
 import java.util.List;
-import java.util.ArrayList;
 
 @Service
 public class TagService {
@@ -29,9 +28,7 @@ public class TagService {
         }
 
         Tag novaTag = tagRepository.save(tag);
-        List<String> sinonimos = tagScrapperService.buscarSinonimos(novaTag.getNome());
-        vincularSinonimos(sinonimos, novaTag);
-
+        atualizarSinonimos(novaTag);
         return novaTag;
     }
 
@@ -46,28 +43,33 @@ public class TagService {
         tagExistente.setNome(novoNome);
         tagRepository.save(tagExistente);
 
-        List<String> sinonimos = tagScrapperService.buscarSinonimos(tagExistente.getNome());
-        vincularSinonimos(sinonimos, tagExistente);
-
+        atualizarSinonimos(tagExistente);
         return tagExistente;
     }
 
+    private void atualizarSinonimos(Tag tag) {
+        // Busca os sinônimos atualizados
+        List<String> sinonimos = tagScrapperService.buscarSinonimos(tag.getNome());
+        vincularSinonimos(sinonimos, tag);
+    }
+
     private void vincularSinonimos(List<String> sinonimos, Tag tag) {
-        if (sinonimos != null && !sinonimos.isEmpty()) {
-            List<Sinonimo> sinonimoList = new ArrayList<>();
-            for (String sinonimoNome : sinonimos) {
-                // Verifica a existência considerando apenas a combinação com a mesma tag
-                if (!sinonimoRepository.existsByNomeAndTag(sinonimoNome, tag)) {
-                    Sinonimo sinonimo = new Sinonimo();
-                    sinonimo.setNome(sinonimoNome);
-                    sinonimo.setTag(tag);
-                    sinonimoList.add(sinonimo);
-                }
+        // Remove sinônimos antigos que não estão na nova lista
+        List<Sinonimo> sinonimosAntigos = sinonimoRepository.findByTag(tag);
+        for (Sinonimo sinonimoAntigo : sinonimosAntigos) {
+            if (!sinonimos.contains(sinonimoAntigo.getNome())) {
+                sinonimoRepository.delete(sinonimoAntigo);
             }
-            sinonimoRepository.saveAll(sinonimoList);
-            tag.setSinonimos(sinonimoList);
-        } else {
-            tag.setSinonimos(new ArrayList<>());
+        }
+
+        // Adiciona novos sinônimos
+        for (String sinonimoNome : sinonimos) {
+            if (!sinonimoRepository.existsByNomeAndTag(sinonimoNome, tag)) {
+                Sinonimo sinonimo = new Sinonimo();
+                sinonimo.setNome(sinonimoNome);
+                sinonimo.setTag(tag);
+                sinonimoRepository.save(sinonimo);
+            }
         }
     }
 
