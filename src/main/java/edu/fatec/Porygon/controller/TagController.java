@@ -18,7 +18,7 @@ public class TagController {
     @GetMapping
     public String mostrarFormularioCadastro(Model model) {
         model.addAttribute("tag", new Tag());
-        model.addAttribute("tags", tagService.listarTagsOrdenadas()); // Certifique-se de que este método está disponível
+        model.addAttribute("tags", tagService.listarTagsOrdenadas());
         return "tag";
     }
 
@@ -29,7 +29,7 @@ public class TagController {
                 tagService.editarTag(tag.getId(), tag.getNome());
                 redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag atualizada com sucesso!");
             } else {
-                tagService.criarTag(tag); // Isso agora verifica duplicidade
+                tagService.criarTag(tag);
                 redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag cadastrada com sucesso!");
             }
         } catch (RuntimeException e) {
@@ -40,9 +40,9 @@ public class TagController {
 
     @GetMapping("/editar/{id}")
     public String mostrarFormularioEdicao(@PathVariable Integer id, Model model) {
-        Tag tag = tagService.buscarTagPorId(id); // Método para buscar a tag pelo ID
+        Tag tag = tagService.buscarTagPorId(id);
         model.addAttribute("tag", tag);
         model.addAttribute("tags", tagService.listarTagsOrdenadas());
-        return "tag"; // Retorna para a mesma página, mas agora com a tag a ser editada
+        return "tag";
     }
 }

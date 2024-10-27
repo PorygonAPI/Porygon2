@@ -48,13 +48,11 @@ public class TagService {
     }
 
     private void atualizarSinonimos(Tag tag) {
-        // Busca os sinônimos atualizados
         List<String> sinonimos = tagScrapperService.buscarSinonimos(tag.getNome());
         vincularSinonimos(sinonimos, tag);
     }
 
     private void vincularSinonimos(List<String> sinonimos, Tag tag) {
-        // Remove sinônimos antigos que não estão na nova lista
         List<Sinonimo> sinonimosAntigos = sinonimoRepository.findByTag(tag);
         for (Sinonimo sinonimoAntigo : sinonimosAntigos) {
             if (!sinonimos.contains(sinonimoAntigo.getNome())) {
@@ -62,7 +60,6 @@ public class TagService {
             }
         }
 
-        // Adiciona novos sinônimos
         for (String sinonimoNome : sinonimos) {
             if (!sinonimoRepository.existsByNomeAndTag(sinonimoNome, tag)) {
                 Sinonimo sinonimo = new Sinonimo();

@@ -18,8 +18,6 @@ public class TagScrapperService {
     public List<String> buscarSinonimos(String palavra) {
         List<String> sinonimosDicio = buscarSinonimosDicio(palavra);
         List<String> sinonimosSinonimos = buscarSinonimosSinonimos(palavra);
-
-        // Combina os sinônimos dos dois sites, removendo duplicatas
         return Stream.concat(sinonimosDicio.stream(), sinonimosSinonimos.stream())
                 .distinct()
                 .collect(Collectors.toList());
@@ -59,7 +57,7 @@ public class TagScrapperService {
                         .collect(Collectors.toList());
             }
         } catch (IOException e) {
-            System.err.println("Erro ao buscar sinônimos no Sinonimos.com.br: " + e.getMessage());
+            System.err.println("Erro ao buscar sinônimos no Sinonimos" + e.getMessage());
         }
         return Collections.emptyList();
     }
