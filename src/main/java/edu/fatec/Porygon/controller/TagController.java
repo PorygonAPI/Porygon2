@@ -23,24 +23,26 @@ public class TagController {
     }
 
     @PostMapping("/salvar")
-    public String salvarTag(Tag tag, RedirectAttributes redirectAttributes) {
+    public String salvarTag(@ModelAttribute Tag tag, RedirectAttributes redirectAttributes) {
         try {
-            tagService.criarTag(tag);
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag cadastrada com sucesso!");
+            if (tag.getId() != null) {
+                tagService.editarTag(tag.getId(), tag.getNome());
+                redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag atualizada com sucesso!");
+            } else {
+                tagService.criarTag(tag); // Isso agora verifica duplicidade
+                redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag cadastrada com sucesso!");
+            }
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
         }
         return "redirect:/tags";
     }
 
-    @PostMapping("/editar/{id}")
-    public String editarTag(@PathVariable Integer id, @RequestParam String novoNome, RedirectAttributes redirectAttributes) {
-        try {
-            tagService.editarTag(id, novoNome);
-            redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag atualizada com sucesso!");
-        } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
-        }
-        return "redirect:/tags";
+    @GetMapping("/editar/{id}")
+    public String mostrarFormularioEdicao(@PathVariable Integer id, Model model) {
+        Tag tag = tagService.buscarTagPorId(id); // Método para buscar a tag pelo ID
+        model.addAttribute("tag", tag);
+        model.addAttribute("tags", tagService.listarTagsOrdenadas());
+        return "tag"; // Retorna para a mesma página, mas agora com a tag a ser editada
     }
 }

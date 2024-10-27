@@ -7,9 +7,9 @@ import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.model.Sinonimo;
 import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.repository.SinonimoRepository;
+
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Optional;
 
 @Service
 public class TagService {
@@ -73,5 +73,10 @@ public class TagService {
 
     public List<Tag> listarTagsOrdenadas() {
         return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "nome"));
+    }
+
+    public Tag buscarTagPorId(Integer id) {
+        return tagRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tag não encontrada."));
     }
 }
