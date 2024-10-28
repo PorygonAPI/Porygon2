@@ -76,9 +76,10 @@ public class TagService {
                 sinonimoRepository.delete(sinonimoAntigo);}}
 
         for (String sinonimoNome : sinonimos) {
-            if (!sinonimoRepository.existsByNomeAndTag(sinonimoNome, tag)) {
+            String sinonimoFormatado = formatarPalavra(sinonimoNome);
+            if (!sinonimoRepository.existsByNomeAndTag(sinonimoFormatado, tag)) {
                 Sinonimo sinonimo = new Sinonimo();
-                sinonimo.setNome(sinonimoNome);
+                sinonimo.setNome(sinonimoFormatado);
                 sinonimo.setTag(tag);
                 sinonimoRepository.save(sinonimo);}}}
 
