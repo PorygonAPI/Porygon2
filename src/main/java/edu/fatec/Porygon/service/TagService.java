@@ -26,7 +26,7 @@ public class TagService {
         if (tagRepository.existsByNome(tag.getNome())) {
             throw new RuntimeException("A tag já existe.");}
 
-        validarPalavra(tag.getNome());
+        formatarPalavra(tag.getNome());
         tag.setNome(formatarPalavra(tag.getNome()));
         Tag novaTag = tagRepository.save(tag);
         atualizarSinonimos(novaTag.getNome().toLowerCase(), novaTag);
@@ -39,18 +39,31 @@ public class TagService {
         if (!tagExistente.getNome().equalsIgnoreCase(novoNome) && tagRepository.existsByNome(novoNome)) {
             throw new RuntimeException("Uma tag com este nome já existe.");}
 
-        validarPalavra(novoNome);
+        formatarPalavra(novoNome);
         tagExistente.setNome(formatarPalavra(novoNome));
         tagRepository.save(tagExistente);
         atualizarSinonimos(tagExistente.getNome().toLowerCase(), tagExistente);
         return tagExistente;}
 
     private String formatarPalavra(String nome) {
-        return nome.substring(0, 1).toUpperCase() + nome.substring(1).toLowerCase();}
-    private void validarPalavra(String palavra) {
         String regex = "^[A-Za-zÀ-ÖØ-öø-ÿ]+([ -][A-Za-zÀ-ÖØ-öø-ÿ]+)*$";
-        if (!palavra.matches(regex)) {
-            throw new IllegalArgumentException("Cadastre 1 (uma) palavra por vez ou apenas palavras com hífen ou espaço.");}}
+        if (!nome.matches(regex)) {
+            throw new IllegalArgumentException("Cadastre 1 (uma) palavra por vez ou apenas palavras com hífen ou espaço.");
+        }
+
+        StringBuilder tagFormatada = new StringBuilder();
+        for (String palavra : nome.split(" ")) {
+            String[] proxPalavra = palavra.split("-");
+            for (int p = 0; p < proxPalavra.length; p++) {
+                if (!proxPalavra[p].isEmpty()) {
+                    proxPalavra[p] = proxPalavra[p].substring(0, 1).toUpperCase()
+                            + proxPalavra[p].substring(1).toLowerCase();
+                }
+            }
+            tagFormatada.append(String.join("-", proxPalavra)).append(" ");
+        }
+        return tagFormatada.toString().trim();
+    }
 
     private void atualizarSinonimos(String nomeTagParaScraping, Tag tag) {
         List<String> sinonimos = tagScrapperService.buscarSinonimos(nomeTagParaScraping);
