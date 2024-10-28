@@ -152,7 +152,7 @@
             </div>
 
             <!-- Campo oculto para armazenar os IDs das tags selecionadas -->
-            <input type="hidden" id="tagsSelecionadasInput" name="tagsSelecionadas">
+            <input type="hidden" id="tagsSelecionadasInput" name="tags">
 
             <div class="row mb-3">
                 <div class="mb-6">
@@ -252,78 +252,33 @@
 
         let tagsSelecionadas = [];
 
+        // Função para buscar e filtrar as tags disponíveis no campo select
         function buscarTags() {
-            const input = document.getElementById("tagBusca").value.toLowerCase(); // Valor digitado pelo usuário
-            const tagOptions = document.getElementById("tags").options; // Opções do campo de tags
+            const input = document.getElementById("tagBusca").value.toLowerCase();
+            const tagOptions = document.getElementById("tags").options;
 
-            // Itera sobre todas as opções de tags
+            // Exibir ou ocultar as opções de tags com base na busca
             for (let i = 0; i < tagOptions.length; i++) {
-                const tagText = tagOptions[i].text.toLowerCase(); // Texto da tag em minúsculo
-
-                // Mostra ou oculta a tag com base no valor digitado
-                if (tagText.startsWith(input)) {
-                    tagOptions[i].style.display = 'block'; // Mostra a tag se corresponder ao início do input
-                } else {
-                    tagOptions[i].style.display = 'none'; // Oculta a tag se não corresponder
-                }
+                const tagText = tagOptions[i].text.toLowerCase();
+                tagOptions[i].style.display = tagText.startsWith(input) ? 'block' : 'none';
             }
         }
 
+        // Função para adicionar uma tag selecionada ao contêiner de tags
         function adicionarTag(id, nome) {
-            // Verifica se a tag já está selecionada
-            if (!tagsSelecionadas.includes(id)) {
-                tagsSelecionadas.push(id); // Adiciona a tag à lista de selecionadas
-
-                // Cria um elemento para a tag selecionada
-                const tagElement = document.createElement('div');
-                tagElement.className = 'badge bg-primary text-light tag-selecionada me-1';
-                tagElement.textContent = nome;
-
-                // Cria um botão para remover a tag
-                const removeButton = document.createElement('button');
-                removeButton.className = 'btn-close btn-close-white btn-sm ms-2';
-                removeButton.onclick = function () {
-                    removerTag(id, tagElement); // Chama a função para remover a tag
-                };
-
-                // Anexa o botão ao elemento da tag
-                tagElement.appendChild(removeButton);
-                document.getElementById("tagsSelecionadas").appendChild(tagElement); // Adiciona ao contêiner de tags selecionadas
-
-                // Atualiza o campo oculto com as tags selecionadas
-                document.getElementById("tagsSelecionadasInput").value = tagsSelecionadas.join(',');
+            if (!tagsSelecionadas.find(t => t.id === id)) {
+                tagsSelecionadas.push({ id, nome });
+                atualizarTagsSelecionadas();
             }
         }
 
-        function removerTag(id, tagElement) {
-            // Remove a tag da lista de selecionadas
-            tagsSelecionadas = tagsSelecionadas.filter(tagId => tagId !== id);
-            tagElement.remove(); // Remove o elemento visual da tag
-
-            // Atualiza o campo oculto com as tags selecionadas
-            document.getElementById("tagsSelecionadasInput").value = tagsSelecionadas.join(',');
+        // Função para remover uma tag e atualizar a lista de tags selecionadas
+        function removerTag(id) {
+            tagsSelecionadas = tagsSelecionadas.filter(tag => tag.id !== id);
+            atualizarTagsSelecionadas();
         }
 
-        // Adiciona um evento para mover a tag selecionada para o campo de Tags Selecionadas
-        document.getElementById("tags").addEventListener("change", function () {
-            const selectElement = document.getElementById("tags");
-            const selectedOptions = Array.from(selectElement.selectedOptions);
-
-            selectedOptions.forEach(option => {
-                const tag = {
-                    id: option.value,
-                    nome: option.text
-                };
-                // Verifica se a tag já está nas tags selecionadas para evitar duplicação
-                if (!tagsSelecionadas.find(t => t.id === tag.id)) {
-                    tagsSelecionadas.push(tag);
-                    atualizarTagsSelecionadas();
-                }
-                // Desmarcar a tag no select após movê-la para "Tags Selecionadas"
-                option.selected = false;
-            });
-        });
-
+        // Função que atualiza visualmente as tags selecionadas e o campo oculto com os IDs das tags
         function atualizarTagsSelecionadas() {
             const tagsContainer = document.getElementById("tagsSelecionadas");
             tagsContainer.innerHTML = '';
@@ -335,23 +290,29 @@
 
                 // Botão "X" para remover a tag
                 const removeBtn = document.createElement('span');
-                removeBtn.classList.add('ms-2', 'text-danger', 'cursor-pointer');
-                removeBtn.textContent = 'X';
+                removeBtn.classList.add('ms-2', 'text-danger');
                 removeBtn.style.cursor = 'pointer';
-                removeBtn.onclick = () => {
-                    // Remover a tag da lista de tagsSelecionadas
-                    tagsSelecionadas = tagsSelecionadas.filter(t => t.id !== tag.id);
-                    atualizarTagsSelecionadas(); // Atualizar a exibição
-                };
+                removeBtn.textContent = 'X';
+                removeBtn.onclick = () => removerTag(tag.id);
 
-                // Adicionar o botão "X" ao lado do nome da tag
                 tagElement.appendChild(removeBtn);
                 tagsContainer.appendChild(tagElement);
             });
 
-            // Atualizar o campo oculto com os IDs das tags selecionadas
+            // Atualiza o campo oculto com os IDs das tags selecionadas no formato JSON
             document.getElementById("tagsSelecionadasInput").value = JSON.stringify(tagsSelecionadas.map(t => t.id));
         }
+
+        // Evento que adiciona a tag selecionada do select ao contêiner de tags selecionadas
+        document.getElementById("tags").addEventListener("change", function () {
+            const selectElement = document.getElementById("tags");
+            const selectedOptions = Array.from(selectElement.selectedOptions);
+
+            selectedOptions.forEach(option => {
+                adicionarTag(option.value, option.text);
+                option.selected = false; // Desmarca a tag no select após adicioná-la
+            });
+        });
 
 
 
