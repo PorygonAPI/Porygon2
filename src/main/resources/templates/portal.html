@@ -269,11 +269,39 @@
             }
         }
 
-        function selecionarTag(tag) {
-            if (!tagsSelecionadas.find(t => t.id === tag.id)) {
-                tagsSelecionadas.push(tag);
-                atualizarTagsSelecionadas();
+        function adicionarTag(id, nome) {
+            // Verifica se a tag já está selecionada
+            if (!tagsSelecionadas.includes(id)) {
+                tagsSelecionadas.push(id); // Adiciona a tag à lista de selecionadas
+
+                // Cria um elemento para a tag selecionada
+                const tagElement = document.createElement('div');
+                tagElement.className = 'badge bg-primary text-light tag-selecionada me-1';
+                tagElement.textContent = nome;
+
+                // Cria um botão para remover a tag
+                const removeButton = document.createElement('button');
+                removeButton.className = 'btn-close btn-close-white btn-sm ms-2';
+                removeButton.onclick = function () {
+                    removerTag(id, tagElement); // Chama a função para remover a tag
+                };
+
+                // Anexa o botão ao elemento da tag
+                tagElement.appendChild(removeButton);
+                document.getElementById("tagsSelecionadas").appendChild(tagElement); // Adiciona ao contêiner de tags selecionadas
+
+                // Atualiza o campo oculto com as tags selecionadas
+                document.getElementById("tagsSelecionadasInput").value = tagsSelecionadas.join(',');
             }
+        }
+
+        function removerTag(id, tagElement) {
+            // Remove a tag da lista de selecionadas
+            tagsSelecionadas = tagsSelecionadas.filter(tagId => tagId !== id);
+            tagElement.remove(); // Remove o elemento visual da tag
+
+            // Atualiza o campo oculto com as tags selecionadas
+            document.getElementById("tagsSelecionadasInput").value = tagsSelecionadas.join(',');
         }
 
         // Adiciona um evento para mover a tag selecionada para o campo de Tags Selecionadas

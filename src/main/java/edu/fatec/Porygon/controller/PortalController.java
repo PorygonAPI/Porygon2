@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/portais")
@@ -70,7 +71,7 @@ public class PortalController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit, Model model, @RequestParam String tags) {
+    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit, Model model, @RequestParam(value = "tags", required = false) String tags) {
         String errorMessage = null;
         String successMessage = null;
     
@@ -110,7 +111,7 @@ public class PortalController {
             portal.setDataCriacao(portalExistente.getDataCriacao());
         }
     
-        portalRepository.save(portal);
+       // portalRepository.save(portal);
     
         if (!isEdit && portal.isAtivo() && !portal.isHasScrapedToday()) {
             dataScrapperService.WebScrapper();
@@ -123,21 +124,32 @@ public class PortalController {
         } else {
             successMessage = "Portal editado com sucesso!";
         }
-    
-        model.addAttribute("successMessage", successMessage); 
+
+        model.addAttribute("successMessage", successMessage);
         model.addAttribute("portal", portal);
         model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("tags", tagRepository.findAll());
 
         try {
-            // Converte a string de tags em um array de Integers
-            Integer[] tagIds = new ObjectMapper().readValue(tags, Integer[].class);
-            List<Tag> tagList = tagRepository.findAllById(Arrays.asList(tagIds));
+            List<Tag> tagList;
+            if (tags.startsWith("[") && tags.endsWith("]")) {
+                // Se for formato JSON
+                Integer[] tagIds = new ObjectMapper().readValue(tags, Integer[].class);
+                tagList = tagRepository.findAllById(Arrays.asList(tagIds));
+            } else {
+                // Se for uma string separada por vírgula
+                String[] tagIdStrings = tags.split(",");
+                List<Integer> tagIds = Arrays.stream(tagIdStrings)
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList());
+                tagList = tagRepository.findAllById(tagIds);
+            }
             portal.setTags(tagList);
             portalRepository.save(portal);
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | NumberFormatException e) {
             e.printStackTrace();
+            model.addAttribute("errorMessage", "Erro ao processar tags. Verifique o formato das tags fornecidas.");
         }
 
         return "redirect:/portais?successMessage=" + successMessage;
