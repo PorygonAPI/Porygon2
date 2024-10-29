@@ -3,13 +3,14 @@ package edu.fatec.Porygon.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"nome", "tag_id"})})
 public class Sinonimo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(unique = true, length = 46)
+
+    @Column(length = 46)
     private String nome;
 
     @ManyToOne

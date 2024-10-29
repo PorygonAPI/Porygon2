@@ -13,13 +13,17 @@
         body {
             font-size: 16px;
         }
+
         .form-label {
             font-size: 1.1rem;
         }
+
         .form-control {
             font-size: 1rem;
         }
-        html, body {
+
+        html,
+        body {
             height: 100%;
         }
 
@@ -83,10 +87,12 @@
 
     <h4 class="mb-4 text-center">Cadastro de Tag</h4>
     <form th:action="@{/tags/salvar}" method="post">
+        <input type="hidden" th:if="${tag.id}" th:name="id" th:value="${tag.id}"/>
         <div class="row mb-3">
             <div class="col-md-6 offset-md-3">
                 <label for="nome" class="form-label">Nome da Tag:</label>
-                <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome da Tag" required>
+                <input type="text" class="form-control" id="nome" name="nome"
+                       th:placeholder="${tag.nome}" th:value="${tag.nome}" required>
                 <small class="form-text text-muted">Cadastre uma Tag de cada vez e separe palavras compostas com hífen ( - ), sem espaços.</small>
             </div>
         </div>
@@ -111,7 +117,7 @@
                 <td th:text="${tag.id}"></td>
                 <td th:text="${tag.nome}"></td>
                 <td class="acoes-column">
-                    <a class="btn btn-info btn-sm">Editar</a>
+                    <a th:href="@{/tags/editar/{id}(id=${tag.id})}" class="btn btn-info btn-sm">Editar</a>
                 </td>
             </tr>
             </tbody>
