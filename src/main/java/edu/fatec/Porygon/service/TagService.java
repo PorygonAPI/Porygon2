@@ -48,7 +48,7 @@ public class TagService {
     private String formatarPalavra(String nome) {
         String regex = "^[A-Za-zÀ-ÖØ-öø-ÿ]+([ -][A-Za-zÀ-ÖØ-öø-ÿ]+)*$";
         if (!nome.matches(regex)) {
-            throw new IllegalArgumentException("Cadastre 1 (uma) palavra por vez ou apenas palavras com hífen ou espaço.");
+            throw new IllegalArgumentException("Cadastre 1 (uma) palavra por vez ou palavras compostas com hífen ou espaço.");
         }
 
         StringBuilder tagFormatada = new StringBuilder();
