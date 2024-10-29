@@ -102,7 +102,7 @@
                         <tr th:each="dados : ${apiDadosList}">
                             <td th:text="${dados.api.nome}"></td>
                             <td th:text="'Inativo'">Inativo</td>
-                            <td th:text="${#dates.format(dados.dataColeta, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td> 
                             <td>
                                 <button class="btn btn-info" th:attr="data-id=${dados.id}"
                                     onclick="abrirModal(this)">Abrir</button>
