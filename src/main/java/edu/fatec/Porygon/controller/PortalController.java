@@ -1,6 +1,7 @@
 package edu.fatec.Porygon.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.model.Tag;
@@ -16,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +73,10 @@ public class PortalController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit, Model model, @RequestParam(value = "tags", required = false) String tagsJson) {
+    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal,
+                                          @RequestParam("isEdit") boolean isEdit,
+                                          Model model,
+                                          @RequestParam(value = "tagsSelecionadas", required = false) String tagsSelecionadas) {
         String errorMessage = null;
         String successMessage = null;
     
@@ -111,7 +116,7 @@ public class PortalController {
             portal.setDataCriacao(portalExistente.getDataCriacao());
         }
     
-       // portalRepository.save(portal);
+       portalRepository.save(portal);
     
         if (!isEdit && portal.isAtivo() && !portal.isHasScrapedToday()) {
             dataScrapperService.WebScrapper();
@@ -125,23 +130,30 @@ public class PortalController {
             successMessage = "Portal editado com sucesso!";
         }
 
+        // Extraindo os IDs das tags
+        List<Integer> tagIds = new ArrayList<>();
         try {
-            // Converte o JSON de IDs para uma lista de Integers
-            List<Integer> tagIds = Arrays.asList(new ObjectMapper().readValue(tagsJson, Integer[].class));
+            if (tagsSelecionadas != null && !tagsSelecionadas.isEmpty()) {
+                ObjectMapper mapper = new ObjectMapper();
+                tagIds = mapper.readValue(tagsSelecionadas, new TypeReference<List<Integer>>() {});
+            }
+        } catch (Exception e) {
+            errorMessage = "Erro ao processar tags: " + e.getMessage();
+            model.addAttribute("errorMessage", errorMessage);
+            return "redirect:/portais";
+        }
 
-            // Busca as tags no repositório
-            List<Tag> tagList = tagRepository.findAllById(tagIds);
+        // Salvando o portal com as tags
+        try {
+            if (isEdit) {
+                portalService.atualizar(portal, tagIds);
+            } else {
+                portalService.salvar(portal, tagIds);
+            }
 
-            // Define as tags no portal
-            portal.setTags(tagList);
-
-            // Salva o portal após as verificações necessárias
-            portalRepository.save(portal);
             successMessage = isEdit ? "Portal editado com sucesso!" : "Cadastro de portal realizado com sucesso!";
-
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            model.addAttribute("errorMessage", "Erro ao processar tags. Verifique o formato das tags fornecidas.");
+        } catch (Exception e) {
+            errorMessage = "Erro ao salvar o portal: " + e.getMessage();
         }
 
         model.addAttribute("successMessage", successMessage);
