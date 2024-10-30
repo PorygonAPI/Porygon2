@@ -15,6 +15,9 @@ public class PortalService {
     @Autowired
     private PortalRepository portalRepository;
 
+    @Autowired
+    private  DataScrapperService dataScrapperService;
+
     public List<Portal> listarTodos() {
         return portalRepository.findAll();
     }
@@ -36,12 +39,18 @@ public class PortalService {
         return portalRepository.save(portal);
     }
 
-    public Portal alterarStatus(Integer id, boolean novoStatus) {
+     public Portal alterarStatus(Integer id, boolean novoStatus) {
         Optional<Portal> portalOptional = portalRepository.findById(id);
+        
         if (portalOptional.isPresent()) {
             Portal portal = portalOptional.get();
-            portal.setAtivo(novoStatus); 
-            return portalRepository.save(portal); 
+            portal.setAtivo(novoStatus);
+            if (novoStatus && !portal.isHasScrapedToday()) {
+                dataScrapperService.WebScrapper();
+                portal.setHasScrapedToday(true); 
+                portal.setUltimaAtualizacao(LocalDate.now());
+            }
+            return portalRepository.save(portal);
         }
         return null; 
     }
