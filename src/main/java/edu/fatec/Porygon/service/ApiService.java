@@ -24,6 +24,9 @@ public class ApiService {
     @Autowired
     private ApiDadosRepository apiDadosRepository;
 
+    @Autowired
+    private ApiRotinaService apiRotinaService;
+
     public List<Api> listarTodas() {
         return apiRepository.findAll();
     }
@@ -109,5 +112,15 @@ public class ApiService {
             return apiRepository.save(api);
         }
         return null;
+    }
+
+    public void realizarRaspagemAoAtivar(Integer id) {
+        Api api = apiRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("API não encontrada com ID: " + id));
+        try {
+            apiRotinaService.realizarRequisicaoApi(api); 
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao realizar a raspagem após ativar: " + e.getMessage());
+        }
     }
 }

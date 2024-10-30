@@ -29,15 +29,15 @@ public class PortalController {
     private TagRepository tagRepository;
 
     @Autowired
-    private PortalService portalService;  
+    private PortalService portalService;
 
-   @Autowired
-   private DataScrapperService dataScrapperService;
+    @Autowired
+    private DataScrapperService dataScrapperService;
 
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
         Portal novoPortal = new Portal();
-        novoPortal.setAtivo(true); 
+        novoPortal.setAtivo(true);
         model.addAttribute("portal", novoPortal);
         model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
@@ -65,17 +65,20 @@ public class PortalController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit, Model model) {
+    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit,
+            Model model) {
         String errorMessage = null;
         String successMessage = null;
-    
+
         if (isEdit) {
             Portal portalExistente = portalRepository.findById(portal.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
-    
-            if (!portal.getNome().equals(portalExistente.getNome()) && portalRepository.existsByNome(portal.getNome())) {
+
+            if (!portal.getNome().equals(portalExistente.getNome())
+                    && portalRepository.existsByNome(portal.getNome())) {
                 errorMessage = "Já existe um portal com esse nome.";
-            } else if (!portal.getUrl().equals(portalExistente.getUrl()) && portalRepository.existsByUrl(portal.getUrl())) {
+            } else if (!portal.getUrl().equals(portalExistente.getUrl())
+                    && portalRepository.existsByUrl(portal.getUrl())) {
                 errorMessage = "Já existe um portal com essa URL.";
             }
             portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
@@ -87,7 +90,7 @@ public class PortalController {
                 errorMessage = "Já existe um portal com esta URL.";
             }
         }
-    
+
         if (errorMessage != null) {
             model.addAttribute("portal", portal);
             model.addAttribute("portais", portalRepository.findAll());
@@ -96,7 +99,7 @@ public class PortalController {
             model.addAttribute("errorMessage", errorMessage);
             return "portal";
         }
-    
+
         if (portal.getId() == null) {
             portal.setDataCriacao(LocalDate.now());
         } else {
@@ -104,9 +107,9 @@ public class PortalController {
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
             portal.setDataCriacao(portalExistente.getDataCriacao());
         }
-    
+
         portalRepository.save(portal);
-    
+
         if (!isEdit && portal.isAtivo() && !portal.isHasScrapedToday()) {
             dataScrapperService.WebScrapper();
             portal.setHasScrapedToday(true);
@@ -118,21 +121,31 @@ public class PortalController {
         } else {
             successMessage = "Portal editado com sucesso!";
         }
-    
-        model.addAttribute("successMessage", successMessage); 
+
+        model.addAttribute("successMessage", successMessage);
         model.addAttribute("portal", portal);
         model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("tags", tagRepository.findAll());
-    
+
         return "redirect:/portais?successMessage=" + successMessage;
     }
 
-
     @PostMapping("/alterarStatus/{id}")
-    public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
+    public ResponseEntity<String> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
         boolean novoStatus = body.get("ativo");
-        portalService.alterarStatus(id, novoStatus); 
-        return ResponseEntity.ok().build();
+        Portal portal = portalService.alterarStatus(id, novoStatus);
+
+        String message;
+        if (novoStatus && portal != null && !portal.isHasScrapedToday()) {
+            dataScrapperService.WebScrapper();
+            message = "Portal ativado e raspagem realizada com sucesso.";
+        } else if (novoStatus) {
+            message = "Portal ativado e raspagem realizada com sucesso.";
+        } else {
+            message = "Portal desativado com sucesso.";
+        }
+        return ResponseEntity.ok(message);
     }
+
 }

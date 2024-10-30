@@ -272,7 +272,6 @@ function showAlert(message, alertType = 'success') {
             const portalId = checkbox.getAttribute('data-id');
             const isActive = checkbox.checked;
             const label = checkbox.nextElementSibling;
-
             label.textContent = isActive ? 'Ativo' : 'Desativo';
 
             fetch(`/portais/alterarStatus/${portalId}`, {
@@ -282,18 +281,13 @@ function showAlert(message, alertType = 'success') {
                 },
                 body: JSON.stringify({ ativo: isActive })
             })
-                .then(response => {
-                    if (!response.ok) {
-                        alert("Erro ao alterar o status!");
-                        checkbox.checked = !isActive;
-                        label.textContent = !isActive ? 'Ativo' : 'Desativo';
+                .then(response => response.text()) 
+                .then(message => {
+                    if (message) {
+                        showAlert(message, 'success');
                     }
                 })
-                .catch(error => {
-                    alert("Erro na comunicação com o servidor!");
-                    checkbox.checked = !isActive;
-                    label.textContent = !isActive ? 'Ativo' : 'Desativo';
-                });
+                .catch(error => showAlert('Erro de comunicação com o servidor.', 'danger'));
         }
     </script>
 
