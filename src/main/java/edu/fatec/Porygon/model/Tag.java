@@ -1,6 +1,8 @@
 package edu.fatec.Porygon.model;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,7 +19,7 @@ public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+
     @Column(unique = true, length = 46)
     private String nome;
 
@@ -28,7 +30,7 @@ public class Tag {
     private List<Api> apis;
 
     @ManyToMany(mappedBy = "tags")
-    private List<Portal> portais;
+    private Set<Portal> portais = new HashSet<>();
 
     public Integer getId() {
         return id;
@@ -52,14 +54,6 @@ public class Tag {
 
     public void setSinonimos(List<Sinonimo> sinonimos) {
         this.sinonimos = sinonimos;
-    }
-
-    public List<Portal> getPortais() {
-        return portais;
-    }
-
-    public void setPortais(List<Portal> portais) {
-        this.portais = portais;
     }
 
     public List<Api> getApis() {

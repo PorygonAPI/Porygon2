@@ -131,11 +131,14 @@
                     </div>
                 </div>
             </div>
+            <!-- Em portal.html, modifique o campo de tags -->
             <div class="row mb-3">
                 <div class="mb-6">
                     <label for="tags" class="form-label">Tags</label>
-                    <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}">
-                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
+                    <select id="tags" name="tagIds" class="form-select" multiple>
+                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"
+                            th:selected="${portal.tags != null && portal.tags.contains(tag)}">
+                        </option>
                     </select>
                     <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
                         opções.</small>
@@ -202,7 +205,13 @@
                         <td th:text="${portal.id}"></td>
                         <td th:text="${portal.nome}"></td>
                         <td th:text="${portal.url}"></td>
-                        <td th:text="'Inativo'">Inativo</td>
+                        <td>
+                            <span th:if="${#lists.isEmpty(portal.tags)}">Sem Tag</span>
+                            <span th:each="tag, iterStat : ${portal.tags}">
+                                <span th:text="${tag.nome}"></span>
+                                <span th:if="${!iterStat.last}">, </span>
+                            </span>
+                        </td>
                         <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
                         <td style="width: 100px; text-align: left;">
                             <div class="form-check form-switch">
