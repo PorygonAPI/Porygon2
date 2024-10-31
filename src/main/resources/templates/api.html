@@ -33,6 +33,10 @@
             animation: spin 1s linear infinite;
         }
 
+        .tag-selecionada {
+            font-size: 16px;
+        }
+
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
@@ -132,7 +136,35 @@
                         rows="4" required></textarea>
                 </div>
 
-                <div class="col-md-6">
+                <!-- Campo de Busca para Tags -->
+                <div class="row mb-3">
+                    <div class="col-md-6 offset-md-3">
+                        <label for="tagBusca" class="form-label">Buscar Tag:</label>
+                        <input type="text" class="form-control" id="tagBusca" placeholder="Digite o nome da Tag" onkeyup="buscarTags()">
+                    </div>
+                </div>
+
+                <!-- Contêiner para exibir as tags selecionadas -->
+                <div class="row mb-3">
+                    <div class="col-md-6 offset-md-3">
+                        <label class="form-label">Tags Selecionadas:</label>
+                        <div id="tagsSelecionadas" class="d-flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- Campo oculto para armazenar os IDs das tags selecionadas -->
+                <input type="hidden" id="tagsSelecionadasInput" name="tagsSelecionadas">
+
+                <div class="row mb-3">
+                    <div class="mb-6">
+                        <label for="tags" class="form-label">Tags</label>
+                        <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}">
+                            <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
+                        </select>
+                    </div>
+                </div>
+
+            <!--<div class="col-md-6">
                     <label for="tags" class="form-label">Tags</label>
                     <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}" size="4"
                         style="font-size: 16px;">
@@ -140,7 +172,7 @@
                     </select>
                     <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
                         opções.</small>
-                </div>
+                </div>   -->
             </div>
 
 
@@ -220,6 +252,70 @@
 
 
     <script>
+
+        let tagsSelecionadas = [];
+
+        // Função para buscar e filtrar as tags disponíveis no campo select
+        function buscarTags() {
+            const input = document.getElementById("tagBusca").value.toLowerCase();
+            const tagOptions = document.getElementById("tags").options;
+
+            // Exibir ou ocultar as opções de tags com base na busca
+            for (let i = 0; i < tagOptions.length; i++) {
+                const tagText = tagOptions[i].text.toLowerCase();
+                tagOptions[i].style.display = tagText.startsWith(input) ? 'block' : 'none';
+            }
+        }
+
+        // Função para adicionar uma tag selecionada ao contêiner de tags
+        function adicionarTag(id, nome) {
+            if (!tagsSelecionadas.find(t => t.id === id)) {
+                tagsSelecionadas.push({ id, nome });
+                atualizarTagsSelecionadas();
+            }
+        }
+
+        // Função para remover uma tag e atualizar a lista de tags selecionadas
+        function removerTag(id) {
+            tagsSelecionadas = tagsSelecionadas.filter(tag => tag.id !== id);
+            atualizarTagsSelecionadas();
+        }
+
+        // Função que atualiza visualmente as tags selecionadas e o campo oculto com os IDs das tags
+        function atualizarTagsSelecionadas() {
+            const tagsContainer = document.getElementById("tagsSelecionadas");
+            tagsContainer.innerHTML = '';
+
+            tagsSelecionadas.forEach(tag => {
+                const tagElement = document.createElement('span');
+                tagElement.classList.add('badge', 'bg-primary', 'me-2', 'tag-selecionada');
+                tagElement.textContent = tag.nome;
+
+                // Botão "X" para remover a tag
+                const removeBtn = document.createElement('span');
+                removeBtn.classList.add('ms-2', 'text-danger');
+                removeBtn.style.cursor = 'pointer';
+                removeBtn.textContent = 'X';
+                removeBtn.onclick = () => removerTag(tag.id);
+
+                tagElement.appendChild(removeBtn);
+                tagsContainer.appendChild(tagElement);
+            });
+
+            // Atualiza o campo oculto com os IDs das tags selecionadas no formato JSON
+            document.getElementById("tagsSelecionadasInput").value = JSON.stringify(tagsSelecionadas.map(t => t.id));
+        }
+
+        // Evento que adiciona a tag selecionada do select ao contêiner de tags selecionadas
+        document.getElementById("tags").addEventListener("change", function () {
+            const selectElement = document.getElementById("tags");
+            const selectedOptions = Array.from(selectElement.selectedOptions);
+
+            selectedOptions.forEach(option => {
+                adicionarTag(option.value, option.text);
+                option.selected = false; // Desmarca a tag no select após adicioná-la
+            });
+        });
 
         document.querySelector('form').addEventListener('submit', function (event) {
             showLoading();

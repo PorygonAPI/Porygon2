@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -54,11 +55,20 @@ public class ApiController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarApi(@ModelAttribute Api api, RedirectAttributes redirectAttributes, Model model) {
+    public String salvarOuAtualizarApi(@ModelAttribute Api api,
+                                       @RequestParam(value = "tagIds", required = false) List<Integer> tagIds,
+                                       RedirectAttributes redirectAttributes,
+                                       Model model) {
         try {
-            String mensagemSucesso = apiService.salvarOuAtualizar(api);
+            // Verifica se os IDs de tags foram fornecidos; caso contrário, passa uma lista vazia
+            if (tagIds == null) {
+                tagIds = List.of();
+            }
+
+            // Chama o método com o segundo parâmetro (tagIds)
+            String mensagemSucesso = apiService.salvarOuAtualizar(api, tagIds);
             redirectAttributes.addFlashAttribute("mensagemSucesso", mensagemSucesso);
-            return "redirect:/apis"; 
+            return "redirect:/apis";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("erro", ex.getMessage());
             model.addAttribute("api", api);
@@ -66,7 +76,7 @@ public class ApiController {
             model.addAttribute("agendadores", agendadorRepository.findAll());
             model.addAttribute("formatos", formatoRepository.findAll());
             model.addAttribute("tags", tagRepository.findAll());
-            return "api"; 
+            return "api";
         } catch (RuntimeException ex) {
             model.addAttribute("erro", " " + ex.getMessage());
             model.addAttribute("api", api);
@@ -77,8 +87,9 @@ public class ApiController {
             return "api";
         }
     }
-    
-    
+
+
+
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
         boolean novoStatus = body.get("ativo");
