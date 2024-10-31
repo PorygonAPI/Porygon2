@@ -119,13 +119,12 @@ Para instalar configurar o banco, atualizar o Maven e demais informações impor
 | 2 | Alta | Como usuário, quero cadastrar APIs públicas para coleta de dados estratégicos contextualizados com a minha área de pesquisa, para que eu possa integrar essas informações nas análises | 8 | 2 | R2, RN7 e RN9 |
 | 3 | Alta | Como usuário, quero que o sistema capture notícias dos portais cadastrados para armazenar as informações relevantes no banco de dados | 13| 1 | R5, R4, RN1 e RN7 |
 | 4 | Alta | Como usuário, quero cadastrar tags que serão usadas para categorizar e filtrar notícias para melhorar a organização e a busca de dados | 8 | 3 | R3, R6, RN3, RN7 e RN9 |
-| 5 | Média| Como usuário, quero consultar notícias filtrando por tag para focar em tópicos específicos | 5 | 3 | R7, R6, RN1 e RN9 |
-| 6 | Média| Como usuário, quero consultar APIs associadas a determinadas tags para gerenciar as APIs que estou usando | 5 | 3 | R8 e RN9 |
+| 5 | Média| Como usuário, quero consultar notícias filtrando por tag para focar em tópicos específicos | 5 | 4 | R7, R6, RN1 e RN9 |
+| 6 | Média| Como usuário, quero consultar APIs associadas a determinadas tags para gerenciar as APIs que estou usando | 5 | 4 | R8 e RN9 |
 | 7 | Média| Como usuário, quero consultar notícias filtrando por data para revisar informações dentro de um período específico | 2 | 2 | R7, RN1 e RN9 |
 | 8 | Média| Como usuário, quero consultar APIs filtrando por data de cadastro para revisar e gerenciar o uso de APIs em um período específico | 2 | 4 | R8 e RN9 |
-| 9 | Baixa| Como usuário, quero consultar notícias que contenham uma palavra específica no conteúdo para encontrar informações relevantes | 6 | 4 | R7, RN1 e RN9 |
-| 10| Baixa| Como usuário, quero consultar APIs que contenham uma palavra específica no conteúdo ou na descrição cadastrada por mim para filtrar informações relevantes. | 6 | 4 | R8 e RN9 |
-| 11| Baixa| Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. | 7 | 2 | R1, R5, RN7 e RN9 |
+| 9 | Média| Como usuário, quero consultar notícias e APIs que contenham uma palavra específica no conteúdo para encontrar informações relevantes, sendo possível pelo cadastro da tag no portal e o vínculo com a notícia postada por esse canal | 13 | 3 | R3, R5, R6, RN1 e RN7 |
+| 10| Baixa| Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. | 7 | 2 | R1, R5, RN7 e RN9 |
 
 ### :calendar: Backlog das Sprints
 
@@ -159,7 +158,7 @@ Como usuário, quero que o sistema capture notícias dos portais cadastrados par
 <summary> SPRINT 2 </summary>
 
 
-### **11** - User Story: Rotina do Web Scraping dos Portais de Notícia *R1, R5, RN7 e RN9*
+### **10** - User Story: Rotina do Web Scraping dos Portais de Notícia *R1, R5, RN7 e RN9*
 Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. 
 ### Critérios de Aceite: 
 - Desenvolver testes unitários que garantam o funcionamento correto dos fluxos de edição e desativação de portais. 
@@ -207,6 +206,21 @@ Como usuário, quero cadastrar tags que serão usadas para categorizar e filtrar
 - As tags devem ser aplicáveis a portais e APIs.  
 - O cliente será capaz de aplicar uma tag no cadastramento de um portal ou API, por meio de input com busca elástica, onde aparecem as tags salvas no banco com o começo igual a palavra que está sendo digitada. 
 
+### **9** - User Story - Vínculo da Tag nas Notícias e APIs pelo Conteúdo - *R3, R5, R6, RN1 e RN7*
+Como usuário, quero consultar notícias e APIs que contenham uma palavra específica no conteúdo para encontrar informações relevantes, sendo possível pelo cadastro da tag no portal e o vínculo com a notícia postada por esse canal. 
+### Critérios de Aceite:
+-	O sistema deve permitir a busca por tags previamente cadastradas nos portais pelo conteúdo das notícias.
+-	Como a maioria das APIs são requisições para dados específicos, ao cadastrar uma API com uma ou mais tags, todas os dados salvos terão essa ou essas tags associadas.
+-	Caso a palavra da tag seja encontrada no título ou no corpo da notícia, a tag cadastrada no portal será atribuída à notícia e ela será retornada na consulta por tag. Mas caso a varredura na notícia não encontre nenhuma das tags cadastradas no portal, a notícia não receberá tags.
+-	No cadastramento, o conteúdo de todas as notícias que são salvas no primeiro scraping é verificado e se conter a palavra da tag cadastrada, é atribuída a tag para a notícia. 
+-	As notícias que serão salvas posteriormente, respeitando o agendamento, também seguirão esse padrão de verificação de conteúdo e atribuição ou não da tag.
+-	Quando o usuário edita um portal ou API e atribui uma tag nova, apenas as futuras raspagens farão a verificação dessa tag. As notícias já armazenadas e os dados das requisições das APIs se manterão com as tags antigas.
+
+</details>
+
+<details>
+<summary> SPRINT 4 </summary>
+
 ### **5** - User Story - Consulta de Notícias por Tag - *R7, R6, RN1 e RN9*
 Como usuário, quero consultar notícias filtrando por tag para focar em tópicos específicos.
 ### Critérios de Aceite:
@@ -225,28 +239,11 @@ Como usuário, quero consultar APIs associadas a determinadas tags para gerencia
 - A consulta deve retornar dados de APIs associadas a pelo menos uma das tags selecionadas.  
 - Verificar diferentes cenários, como múltiplas tags e ausência de resultados. 
 
-</details>
-
-<details>
-<summary> SPRINT 4 </summary>
-
 ### **8** - User Story - Consulta de APIs por Data - *R8 e RN9*
 Como usuário, quero consultar APIs filtrando por data de cadastro para revisar e gerenciar o uso de APIs em um período específico.
 ### Critérios de Aceite:
 -	O sistema deve permitir a filtragem de APIs cadastradas dentro de um intervalo de datas.
 -	A consulta deve retornar todas as APIs cadastradas dentro do intervalo especificado.
-
-### **9** - User Story - Consulta de Notícias por Palavra Contida no Conteúdo - *R7, RN1 e RN9*
-Como usuário, quero consultar notícias que contenham uma palavra específica no conteúdo para encontrar informações relevantes.
-### Critérios de Aceite:
--	O sistema deve permitir a busca por palavras específicas no conteúdo da notícia.
--	A consulta deve retornar notícias que contenham a palavra digitada.
-
-### **10** - User Story - Consulta de APIs por Palavra Contida no Conteúdo - *R8 e RN9*
-Como usuário, quero consultar APIs que contenham uma palavra específica no conteúdo ou na descrição cadastrada por mim para filtrar informações relevantes.
-### Critérios de Aceite:
--	O sistema deve permitir a busca por palavras específicas na descrição da API, informada pelo usuário no cadastro da API, e pelo conteúdo da API.
--	A consulta deve retornar APIs que contenham a palavra digitada.
 
 </details>
 
