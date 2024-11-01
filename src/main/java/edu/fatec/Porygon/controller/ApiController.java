@@ -1,6 +1,7 @@
 package edu.fatec.Porygon.controller;
 
 import edu.fatec.Porygon.model.Api;
+import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.AgendadorRepository;
 import edu.fatec.Porygon.repository.FormatoRepository;
 import edu.fatec.Porygon.repository.TagRepository;
@@ -12,7 +13,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/apis")
@@ -33,7 +39,7 @@ public class ApiController {
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
         Api novaApi = new Api();
-        novaApi.setAtivo(true); 
+        novaApi.setAtivo(true);
         model.addAttribute("api", novaApi);
         model.addAttribute("apis", apiService.listarTodas());
         model.addAttribute("agendadores", agendadorRepository.findAll());
@@ -54,11 +60,26 @@ public class ApiController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarApi(@ModelAttribute Api api, RedirectAttributes redirectAttributes, Model model) {
+    public String salvarOuAtualizarApi(@ModelAttribute Api api,
+            @RequestParam(required = false) String tagIds,
+            RedirectAttributes redirectAttributes,
+            Model model) {
         try {
+            List<Integer> tagIdsList = null;
+            if (tagIds != null && !tagIds.isEmpty()) {
+                tagIdsList = Arrays.stream(tagIds.split(","))
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList());
+            }
+
+            if (tagIdsList != null && !tagIdsList.isEmpty()) {
+                Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIdsList));
+                api.setTags(tags);
+            }
+
             String mensagemSucesso = apiService.salvarOuAtualizar(api);
             redirectAttributes.addFlashAttribute("mensagemSucesso", mensagemSucesso);
-            return "redirect:/apis"; 
+            return "redirect:/apis";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("erro", ex.getMessage());
             model.addAttribute("api", api);
@@ -66,7 +87,7 @@ public class ApiController {
             model.addAttribute("agendadores", agendadorRepository.findAll());
             model.addAttribute("formatos", formatoRepository.findAll());
             model.addAttribute("tags", tagRepository.findAll());
-            return "api"; 
+            return "api";
         } catch (RuntimeException ex) {
             model.addAttribute("erro", " " + ex.getMessage());
             model.addAttribute("api", api);
@@ -77,16 +98,15 @@ public class ApiController {
             return "api";
         }
     }
-    
-    
+
     @PostMapping("/alterarStatus/{id}")
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
         boolean novoStatus = body.get("ativo");
         apiService.alterarStatus(id, novoStatus);
-        if (novoStatus) { 
+        if (novoStatus) {
             apiService.realizarRaspagemAoAtivar(id);
         }
         return ResponseEntity.ok().build();
     }
-    
+
 }
