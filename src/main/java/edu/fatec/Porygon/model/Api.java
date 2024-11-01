@@ -1,6 +1,8 @@
 package edu.fatec.Porygon.model;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.time.LocalDate;
 import jakarta.persistence.*;
 
@@ -35,7 +37,16 @@ public class Api {
         joinColumns = @JoinColumn(name = "api_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    private List<Tag> tags;
+
+    private Set<Tag> tags = new HashSet<>();
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @OneToMany(mappedBy = "api", cascade = CascadeType.ALL)
     private List<ApiDados> apiDadosList;
@@ -94,14 +105,6 @@ public class Api {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
-    }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
     }
 
     public LocalDate getUltimaAtualizacao() {

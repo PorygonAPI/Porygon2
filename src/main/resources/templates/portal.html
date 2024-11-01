@@ -40,7 +40,8 @@
                     <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das APIs</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/portais}">Cadastro de Portal<span class="sr-only">(atual)</span></a>
+                    <a class="nav-link text-light" th:href="@{/portais}">Cadastro de Portal<span
+                            class="sr-only">(atual)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-light" th:href="@{/apis}">Cadastro de API</a>
@@ -51,7 +52,7 @@
             </ul>
         </div>
     </nav>
-<br>
+    <br>
 
     <div class="container mt-5">
         <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
@@ -92,16 +93,22 @@
                     </div>
                 </div>
             </div>
+
             <div class="row mb-3">
-                <div class="mb-6">
+                <div class="col-md-6">
                     <label for="tags" class="form-label">Tags</label>
-                    <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}">
-                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
+                    <select id="tags" name="tagIds" class="form-select" multiple required onchange="updateSelectedTags()">
+                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"
+                            th:selected="${portal.tags != null && portal.tags.contains(tag)}">
+                        </option>
                     </select>
-                    <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
-                        opções.</small>
+                    <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
                 </div>
-            </div>
+                <div class="col-md-6">
+                    <br>
+                    <div id="selected-tags" class="d-flex flex-wrap"></div>
+                </div>
+            </div>                        
 
             <h4 class="mb-3 text-center">Cadastro de Seletores</h4>
             <div class="row mb-3">
@@ -163,7 +170,13 @@
                         <td th:text="${portal.id}"></td>
                         <td th:text="${portal.nome}"></td>
                         <td th:text="${portal.url}"></td>
-                        <td th:text="'Inativo'">Inativo</td>
+                        <td>
+                            <span th:if="${#lists.isEmpty(portal.tags)}">Sem Tag</span>
+                            <span th:each="tag, iterStat : ${portal.tags}">
+                                <span th:text="${tag.nome}"></span>
+                                <span th:if="${!iterStat.last}">, </span>
+                            </span>
+                        </td>
                         <td th:text="${portal.agendador != null ? portal.agendador.tipo : 'Sem Agendador'}"></td>
                         <td style="width: 100px; text-align: left;">
                             <div class="form-check form-switch">
@@ -184,13 +197,37 @@
 
     <footer class="bg-dark text-light py-4">
         <div class="container text-center">
-          <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+            <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
         </div>
-    </footer> 
+    </footer>
 
     <script>
+        function updateSelectedTags() {
+            const select = document.getElementById('tags');
+            const selectedTagsContainer = document.getElementById('selected-tags');
+            selectedTagsContainer.innerHTML = '';
 
-function showAlert(message, alertType = 'success') {
+            Array.from(select.selectedOptions).forEach(option => {
+                const chip = document.createElement('span');
+                chip.classList.add('tag-chip');
+                chip.textContent = option.text;
+
+                const removeIcon = document.createElement('span');
+                removeIcon.textContent = ' ✕';
+                removeIcon.classList.add('remove-tag');
+                removeIcon.onclick = function () {
+                    option.selected = false;
+                    updateSelectedTags();
+                };
+
+                chip.appendChild(removeIcon);
+                selectedTagsContainer.appendChild(chip);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", updateSelectedTags);
+
+        function showAlert(message, alertType = 'success') {
             const alertContainer = document.getElementById('alertContainer');
             const alertMessage = document.getElementById('alertMessage');
 
@@ -216,8 +253,8 @@ function showAlert(message, alertType = 'success') {
         if (errorMessage) {
             showAlert(errorMessage, 'danger');
         }
-        
-         document.querySelector('form').addEventListener('submit', function (event) {
+
+        document.querySelector('form').addEventListener('submit', function (event) {
             showLoading();
         });
 
@@ -233,7 +270,6 @@ function showAlert(message, alertType = 'success') {
             const portalId = checkbox.getAttribute('data-id');
             const isActive = checkbox.checked;
             const label = checkbox.nextElementSibling;
-
             label.textContent = isActive ? 'Ativo' : 'Desativo';
 
             fetch(`/portais/alterarStatus/${portalId}`, {
@@ -243,18 +279,13 @@ function showAlert(message, alertType = 'success') {
                 },
                 body: JSON.stringify({ ativo: isActive })
             })
-                .then(response => {
-                    if (!response.ok) {
-                        alert("Erro ao alterar o status!");
-                        checkbox.checked = !isActive;
-                        label.textContent = !isActive ? 'Ativo' : 'Desativo';
+                .then(response => response.text())
+                .then(message => {
+                    if (message) {
+                        showAlert(message, 'success');
                     }
                 })
-                .catch(error => {
-                    alert("Erro na comunicação com o servidor!");
-                    checkbox.checked = !isActive;
-                    label.textContent = !isActive ? 'Ativo' : 'Desativo';
-                });
+                .catch(error => showAlert('Erro de comunicação com o servidor.', 'danger'));
         }
     </script>
 

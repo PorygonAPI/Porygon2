@@ -1,5 +1,6 @@
 package edu.fatec.Porygon.model;
 
+import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +17,23 @@ public class ApiDados {
     @ManyToOne
     @JoinColumn(name = "api_id")
     private Api api;
+
+    @ManyToMany
+    @JoinTable(
+        name = "apidados_tag",
+        joinColumns = @JoinColumn(name = "apidados_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> tags;
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
     public String getConteudo() {
         return conteudo;
     }
