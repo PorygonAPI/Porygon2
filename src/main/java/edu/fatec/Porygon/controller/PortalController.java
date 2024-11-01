@@ -1,6 +1,7 @@
 package edu.fatec.Porygon.controller;
 
 import edu.fatec.Porygon.model.Portal;
+import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.AgendadorRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
 import edu.fatec.Porygon.repository.TagRepository;
@@ -13,7 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/portais")
@@ -65,10 +71,19 @@ public class PortalController {
     }
 
     @PostMapping("/salvar")
-    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal, @RequestParam("isEdit") boolean isEdit,
+    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal,
+            @RequestParam("isEdit") boolean isEdit,
+            @RequestParam(required = false) String tagIds,
             Model model) {
         String errorMessage = null;
         String successMessage = null;
+
+        List<Integer> tagIdsList = null;
+        if (tagIds != null && !tagIds.isEmpty()) {
+            tagIdsList = Arrays.stream(tagIds.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }
 
         if (isEdit) {
             Portal portalExistente = portalRepository.findById(portal.getId())
@@ -98,6 +113,11 @@ public class PortalController {
             model.addAttribute("tags", tagRepository.findAll());
             model.addAttribute("errorMessage", errorMessage);
             return "portal";
+        }
+
+        if (tagIdsList != null && !tagIdsList.isEmpty()) {
+            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIdsList));
+            portal.setTags(tags);
         }
 
         if (portal.getId() == null) {

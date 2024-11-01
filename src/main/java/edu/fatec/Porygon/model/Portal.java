@@ -1,7 +1,10 @@
 package edu.fatec.Porygon.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -34,21 +37,26 @@ public class Portal {
 
     private boolean hasScrapedToday;
 
-    @ManyToMany
-    @JoinTable(name = "portal_tag", joinColumns = @JoinColumn(name = "portal_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private List<Tag> tags;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "Portal_Tag",
+        joinColumns = @JoinColumn(name = "portal_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 
     @OneToMany(mappedBy = "portal")
     @JsonManagedReference
     private List<Noticia> noticias;;
 
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
 
     public Integer getId() {
         return id;

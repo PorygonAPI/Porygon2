@@ -6,9 +6,27 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link href="https://bootswatch.com/5/cerulean/bootstrap.min.css" rel="stylesheet">
     <style>
-        body{
+        .tag-chip {
+            background-color: #c7d1dc;
+            border-radius: 15px;
+            padding: 5px 10px;
+            margin: 2px;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 2px;
+        }
+
+        .tag-chip .remove-tag {
+            margin-left: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #f2f2f2;
+        }
+
+        body {
             font-size: 14px;
         }
+
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -71,7 +89,8 @@
                     <a class="nav-link text-light" th:href="@{/portais}">Cadastro de Portal</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/apis}">Cadastro de API<span class="sr-only">(atual)</span></a>
+                    <a class="nav-link text-light" th:href="@{/apis}">Cadastro de API<span
+                            class="sr-only">(atual)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-light" th:href="@{/tags}">Cadastro de Tag</a>
@@ -79,7 +98,7 @@
             </ul>
         </div>
     </nav>
-    
+
     <br>
 
     <div class="container mt-5">
@@ -89,7 +108,7 @@
         </div>
         <div th:if="${erro}" id="alertErro" class="alert alert-danger" role="alert">
             <p th:text="${erro}"></p>
-        </div>        
+        </div>
 
         <h4 class="mb-4 text-center" th:text="${api.id} != null ? 'Editar API' : 'Cadastro de API'"></h4>
         <form th:action="@{/apis/salvar}" th:object="${api}" method="post">
@@ -119,9 +138,11 @@
                 <div class="col-md-6">
                     <label for="formato" class="form-label">Formato da API</label>
                     <select class="form-select" id="formato" th:field="*{formato.id}" required>
-                        <option th:each="formato : ${formatos}" th:value="${formato.id}" th:text="${formato.nome}"></option>
+                        <option th:each="formato : ${formatos}" th:value="${formato.id}" th:text="${formato.nome}">
+                        </option>
                     </select>
-                    <small class="form-text text-muted">Selecione o tipo de arquivo retornado pela API REST corretamente. A seleção incorreta pode desconfigurar a leitura.</small>
+                    <small class="form-text text-muted">Selecione o tipo de arquivo retornado pela API REST
+                        corretamente. A seleção incorreta pode desconfigurar a leitura.</small>
                 </div>
             </div>
 
@@ -133,19 +154,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="tags" class="form-label">Tags</label>
-                    <select id="tags" class="form-select" multiple th:disabled="${tags.size() == 0}" size="4"
-                        style="font-size: 16px;">
-                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
-                    </select>
-                    <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
-                        opções.</small>
-                </div>
-            </div>
-
-
-            <div class="row mb-3">
-                <div class="col-md-12">
+                    <br>
                     <label class="form-label">
                         Para que a API esteja ativa, deixe o checkbox "Ativa" marcado.
                     </label>
@@ -153,6 +162,24 @@
                         <input type="checkbox" class="form-check-input" id="ativo" th:field="*{ativo}" checked>
                         <label class="form-check-label" for="ativo"><strong>Ativa</strong></label>
                     </div>
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="tags" class="form-label">Tags</label>
+                    <select id="tags" name="tagIds" class="form-select" multiple required onchange="updateSelectedTags()">
+                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"
+                            th:selected="${api.tags != null && api.tags.contains(tag)}">
+                        </option>
+                    </select>
+                    <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
+                        opções.</small>
+                </div>
+                <div class="col-md-6">
+                    <br>
+                    <div id="selected-tags" class="d-flex flex-wrap"></div>
                 </div>
             </div>
 
@@ -186,14 +213,14 @@
                         <td th:text="${api.descricao}"></td>
                         <td th:text="${api.url}"></td>
                         <td th:text="'Inativo'">Inativo</td>
-                        <!-- <td>
-                <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma Tag cadastrada</span>
-                <span th:each="tag, iterStat : ${portal.tags}">
-                    <span th:text="${tag.nome}"></span>
-                    <span th:if="${!iterStat.last}">, </span>
+                        <td>
+                            <span th:if="${#lists.isEmpty(api.tags)}">Nenhuma Tag</span>
+                            <span th:each="tag, iterStat : ${api.tags}">
+                                <span th:text="${tag.nome}"></span>
+                                <span th:if="${!iterStat.last}">, </span>
 
-                </span>
-            </td>       -->
+                            </span>
+                        </td>
                         <td th:text="${api.agendador != null ? api.agendador.tipo : 'Sem Agendador'}"></td>
                         <td>
                             <div class="form-check form-switch">
@@ -214,12 +241,51 @@
 
     <footer class="bg-dark text-light py-4">
         <div class="container text-center">
-          <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+            <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
         </div>
-    </footer> 
+    </footer>
 
 
     <script>
+        function updateSelectedTags() {
+            const select = document.getElementById('tags');
+            const selectedTagsContainer = document.getElementById('selected-tags');
+            selectedTagsContainer.innerHTML = ''; 
+
+            Array.from(select.selectedOptions).forEach(option => {
+                const chip = document.createElement('span');
+                chip.classList.add('tag-chip');
+                chip.textContent = option.text;
+
+                const removeIcon = document.createElement('span');
+                removeIcon.textContent = ' ✕';
+                removeIcon.classList.add('remove-tag');
+                removeIcon.onclick = function () {
+                    option.selected = false;
+                    updateSelectedTags();
+                };
+
+                chip.appendChild(removeIcon);
+                selectedTagsContainer.appendChild(chip);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", updateSelectedTags);
+
+        function showAlert(message, alertType = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertMessage = document.getElementById('alertMessage');
+
+            alertMessage.textContent = message;
+            alertContainer.classList.remove('alert-success', 'alert-danger', 'alert-warning', 'alert-info');
+            alertContainer.classList.add(`alert-${alertType}`);
+
+            alertContainer.style.display = 'block';
+
+            setTimeout(() => {
+                alertContainer.style.display = 'none';
+            }, 3000);
+        }
 
         document.querySelector('form').addEventListener('submit', function (event) {
             showLoading();
@@ -239,13 +305,13 @@
 
             if (alertSucesso) {
                 setTimeout(() => {
-                    alertSucesso.style.display = 'none'; 
+                    alertSucesso.style.display = 'none';
                 }, 10000);
             }
-            
+
             if (alertErro) {
                 setTimeout(() => {
-                    alertErro.style.display = 'none'; 
+                    alertErro.style.display = 'none';
                 }, 5000);
             }
         }
