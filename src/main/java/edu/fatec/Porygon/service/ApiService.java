@@ -98,7 +98,8 @@ public class ApiService {
                 apiDados.setConteudo(response.getBody());
                 apiDados.setDescricao("Dados da API: " + savedApi.getNome());
                 apiDados.setApi(savedApi);
-
+                apiDados.setDataColeta(LocalDate.now());
+    
                 apiDadosRepository.save(apiDados);
 
                 savedApi.setUltimaAtualizacao(LocalDate.now());

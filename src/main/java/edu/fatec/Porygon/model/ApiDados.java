@@ -1,5 +1,6 @@
 package edu.fatec.Porygon.model;
 
+import java.time.LocalDate;
 import java.util.List;
 import jakarta.persistence.*;
 
@@ -13,6 +14,8 @@ public class ApiDados {
     @Column(columnDefinition = "TEXT")
     private String conteudo;
     private String descricao;
+
+    private LocalDate dataColeta;
 
     @ManyToOne
     @JoinColumn(name = "api_id")
@@ -57,5 +60,11 @@ public class ApiDados {
     }
     public void setId(Integer id) {
         this.id = id;
+    }
+    public LocalDate getDataColeta() {
+        return dataColeta;
+    }
+    public void setDataColeta(LocalDate dataColeta) {
+        this.dataColeta = dataColeta;
     }
 }

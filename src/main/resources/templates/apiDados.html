@@ -89,7 +89,7 @@
                         <tr>
                             <th>Nome da API</th>
                             <th>Tags</th>
-                            <!-- <th>Data</th> -->
+                            <th>Data</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -97,7 +97,7 @@
                         <tr th:each="dados : ${apiDadosList}">
                             <td th:text="${dados.api.nome}"></td>
                             <td th:text="'Inativo'">Inativo</td>
-                            <!-- <td th:text="${#dates.format(dados.data, 'dd/MM/yyyy')}"></td> Ajuste no formato da data -->
+                            <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td> 
                             <td>
                                 <button class="btn btn-info" th:attr="data-id=${dados.id}"
                                     onclick="abrirModal(this)">Abrir</button>
