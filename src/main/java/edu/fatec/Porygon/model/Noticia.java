@@ -2,6 +2,7 @@ package edu.fatec.Porygon.model;
 
 import jakarta.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -27,6 +28,22 @@ public class Noticia {
     @JoinColumn(name = "portal_id")
     @JsonBackReference
     private Portal portal;
+
+    @ManyToMany
+    @JoinTable(
+        name = "noticia_tag",
+        joinColumns = @JoinColumn(name = "noticia_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> tags;
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
 
     public Integer getId() {
         return id;
