@@ -78,8 +78,6 @@ public class PortalController {
         String errorMessage = null;
         String successMessage = null;
 
-
-        // Converter string de tagIds para List<Integer>
         List<Integer> tagIdsList = null;
         if (tagIds != null && !tagIds.isEmpty()) {
             tagIdsList = Arrays.stream(tagIds.split(","))
@@ -117,7 +115,6 @@ public class PortalController {
             return "portal";
         }
 
-        // Configurar tags
         if (tagIdsList != null && !tagIdsList.isEmpty()) {
             Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIdsList));
             portal.setTags(tags);

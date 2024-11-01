@@ -149,7 +149,7 @@
                     </div>
                 </div>
             </div>
-            <!-- Em portal.html, modifique o campo de tags -->
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="tags" class="form-label">Tags</label>
@@ -162,7 +162,7 @@
                 </div>
                 <div class="col-md-6">
                     <br>
-                    <div id="selected-tags" class="d-flex flex-wrap"></div> <!-- Area para exibir as tags selecionadas -->
+                    <div id="selected-tags" class="d-flex flex-wrap"></div>
                 </div>
             </div>
             
@@ -228,7 +228,7 @@
                         <td th:text="${portal.nome}"></td>
                         <td th:text="${portal.url}"></td>
                         <td>
-                            <span th:if="${#lists.isEmpty(portal.tags)}">Sem T</span>
+                            <span th:if="${#lists.isEmpty(portal.tags)}">Sem Tag</span>
                             <span th:each="tag, iterStat : ${portal.tags}">
                                 <span th:text="${tag.nome}"></span>
                                 <span th:if="${!iterStat.last}">, </span>
@@ -262,9 +262,8 @@
         function updateSelectedTags() {
             const select = document.getElementById('tags');
             const selectedTagsContainer = document.getElementById('selected-tags');
-            selectedTagsContainer.innerHTML = ''; // Limpa as tags exibidas anteriormente
+            selectedTagsContainer.innerHTML = '';
 
-            // Itera pelas tags selecionadas e cria os "chips"
             Array.from(select.selectedOptions).forEach(option => {
                 const chip = document.createElement('span');
                 chip.classList.add('tag-chip');
@@ -274,8 +273,8 @@
                 removeIcon.textContent = ' ✕';
                 removeIcon.classList.add('remove-tag');
                 removeIcon.onclick = function () {
-                    option.selected = false; // Desmarca a opção no <select>
-                    updateSelectedTags(); // Atualiza a exibição
+                    option.selected = false;
+                    updateSelectedTags();
                 };
 
                 chip.appendChild(removeIcon);
@@ -283,7 +282,6 @@
             });
         }
 
-        // Atualiza as tags selecionadas ao carregar a página
         document.addEventListener("DOMContentLoaded", updateSelectedTags);
 
         function showAlert(message, alertType = 'success') {

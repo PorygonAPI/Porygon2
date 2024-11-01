@@ -4,7 +4,6 @@ import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.PortalRepository;
 import edu.fatec.Porygon.repository.TagRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +30,12 @@ public class PortalService {
     }
 
     public Optional<Portal> buscarPorId(Integer id) {
-        return portalRepository.findByIdWithTags(id); // Inclui as tags no retorno
+        return portalRepository.findByIdWithTags(id);
     }
 
     public Portal salvar(Portal portal, List<Integer> tagIds) {
         portal.setDataCriacao(LocalDate.now());
         
-        // Configura as tags, se fornecidas
         if (tagIds != null && !tagIds.isEmpty()) {
             Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIds));
             portal.setTags(tags);
@@ -46,7 +44,6 @@ public class PortalService {
         return portalRepository.save(portal);
     }
 
-    // Sobrecarga do método salvar para compatibilidade sem tags
     public Portal salvar(Portal portal) {
         return salvar(portal, null);
     }
@@ -55,7 +52,6 @@ public class PortalService {
         Portal portal = portalRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Portal não encontrado"));
         
-        // Remove as associações com tags antes de deletar
         portal.setTags(new HashSet<>());
         portalRepository.save(portal);
         
@@ -66,10 +62,8 @@ public class PortalService {
         Portal portalExistente = portalRepository.findById(portal.getId())
             .orElseThrow(() -> new RuntimeException("Portal não encontrado"));
 
-        // Mantém a data de criação original
         portal.setDataCriacao(portalExistente.getDataCriacao());
         
-        // Atualiza as tags, se fornecidas
         if (tagIds != null) {
             Set<Tag> novasTags = tagIds.isEmpty() 
                 ? new HashSet<>() 
@@ -80,7 +74,6 @@ public class PortalService {
         return portalRepository.save(portal);
     }
 
-    // Sobrecarga do método atualizar para compatibilidade sem tags
     public Portal atualizar(Portal portal) {
         return atualizar(portal, null);
     }
@@ -101,7 +94,6 @@ public class PortalService {
         return null; 
     }
 
-    // Método para atualizar apenas as tags de um portal
     public Portal atualizarTags(Integer portalId, List<Integer> tagIds) {
         Portal portal = portalRepository.findById(portalId)
             .orElseThrow(() -> new RuntimeException("Portal não encontrado"));

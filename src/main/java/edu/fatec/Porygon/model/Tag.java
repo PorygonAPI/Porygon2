@@ -27,7 +27,7 @@ public class Tag {
     private List<Sinonimo> sinonimos;
 
     @ManyToMany(mappedBy = "tags")
-    private List<Api> apis;
+    private Set<Api> apis =  new HashSet<>();
 
     @ManyToMany(mappedBy = "tags")
     private Set<Portal> portais = new HashSet<>();
@@ -56,11 +56,20 @@ public class Tag {
         this.sinonimos = sinonimos;
     }
 
-    public List<Api> getApis() {
+    public Set<Api> getApis() {
         return apis;
     }
 
-    public void setApis(List<Api> apis) {
+    public void setApis(Set<Api> apis) {
         this.apis = apis;
     }
+
+    public Set<Portal> getPortais() {
+        return portais;
+    }
+
+    public void setPortais(Set<Portal> portais) {
+        this.portais = portais;
+    }
+
 }
