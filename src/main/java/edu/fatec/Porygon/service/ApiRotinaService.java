@@ -55,17 +55,15 @@ public class ApiRotinaService {
         RestTemplate restTemplate = new RestTemplate();
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(api.getUrl(), String.class);
-
             ApiDados apiDados = new ApiDados();
             apiDados.setConteudo(response.getBody());
             apiDados.setDescricao("Dados da API: " + api.getNome());
             apiDados.setApi(api);
-
+            apiDados.setDataColeta(LocalDate.now());
             apiDadosRepository.save(apiDados);
 
             api.setUltimaAtualizacao(LocalDate.now());
             apiRepository.save(api);
-
         } catch (Exception e) {
             throw new RuntimeException("Erro ao realizar a requisição para a API: " + e.getMessage());
         }
