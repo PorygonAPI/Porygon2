@@ -99,7 +99,8 @@ public class ApiService {
                 apiDados.setDescricao("Dados da API: " + savedApi.getNome());
                 apiDados.setApi(savedApi);
                 apiDados.setDataColeta(LocalDate.now());
-    
+                apiDados.setTags(new HashSet<>(savedApi.getTags()));
+
                 apiDadosRepository.save(apiDados);
 
                 savedApi.setUltimaAtualizacao(LocalDate.now());
@@ -143,12 +144,12 @@ public class ApiService {
 
     public Api atualizarTags(Integer apiId, List<Integer> tagIds) {
         Api api = apiRepository.findById(apiId)
-            .orElseThrow(() -> new RuntimeException("API não encontrada"));
+                .orElseThrow(() -> new RuntimeException("API não encontrada"));
 
         if (tagIds != null) {
             Set<Tag> novasTags = tagIds.isEmpty()
-                ? new HashSet<>()
-                : new HashSet<>(tagRepository.findAllById(tagIds));
+                    ? new HashSet<>()
+                    : new HashSet<>(tagRepository.findAllById(tagIds));
             api.setTags(novasTags);
         }
 
