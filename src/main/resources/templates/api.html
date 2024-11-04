@@ -158,13 +158,11 @@
                         <td th:text="${api.nome}"></td>
                         <td th:text="${api.descricao}"></td>
                         <td th:text="${api.url}"></td>
-                        <td th:text="'Inativo'">Inativo</td>
                         <td>
                             <span th:if="${#lists.isEmpty(api.tags)}">Nenhuma Tag</span>
                             <span th:each="tag, iterStat : ${api.tags}">
                                 <span th:text="${tag.nome}"></span>
                                 <span th:if="${!iterStat.last}">, </span>
-
                             </span>
                         </td>
                         <td th:text="${api.agendador != null ? api.agendador.tipo : 'Sem Agendador'}"></td>
