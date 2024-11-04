@@ -19,7 +19,6 @@ public class Noticia {
     private Date data;
     @Column(length = 20000)
     private String conteudo;
-    private String autor;
 
     @Column(unique = true)
     private String href;
@@ -36,6 +35,18 @@ public class Noticia {
         inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private List<Tag> tags;
+
+    @ManyToOne
+    @JoinColumn(name = "jornalista_id")
+    private Jornalista jornalista;
+
+    public Jornalista getJornalista() {
+        return jornalista;
+    }
+
+    public void setJornalista(Jornalista jornalista) {
+        this.jornalista = jornalista;
+    }
 
     public List<Tag> getTags() {
         return tags;
@@ -77,13 +88,7 @@ public class Noticia {
         this.conteudo = conteudo;
     }
 
-    public String getAutor() {
-        return autor;
-    }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
-    }
 
     public Portal getPortal() {
         return portal;
