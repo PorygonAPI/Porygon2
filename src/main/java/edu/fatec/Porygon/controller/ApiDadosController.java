@@ -2,14 +2,19 @@ package edu.fatec.Porygon.controller;
 
 import edu.fatec.Porygon.model.ApiDados;
 import edu.fatec.Porygon.repository.ApiDadosRepository;
+import edu.fatec.Porygon.service.ApiDadosService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -18,11 +23,21 @@ public class ApiDadosController {
     @Autowired
     private ApiDadosRepository apiDadosRepository;
 
+    @Autowired
+    private ApiDadosService apiDadosService;
+
+
     @GetMapping("/apis/dados")
-    public String listarApiDados(Model model) {
-        List<ApiDados> apiDadosList = apiDadosRepository.findAll(); 
-                                                                    
-        model.addAttribute("apiDadosList", apiDadosList); 
+    public String listarApiDados(Model model,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("api.nome").ascending());
+        Page<ApiDados> apiDadosPage = apiDadosService.listarApiDados(pageable);
+
+        model.addAttribute("apiDadosList", apiDadosPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", apiDadosPage.getTotalPages());
+        model.addAttribute("totalItems", apiDadosPage.getTotalElements());
         return "apiDados";
     }
 

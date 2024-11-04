@@ -23,7 +23,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias<span class="sr-only">(atual)</span></a>
+                    <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias<span
+                            class="sr-only">(atual)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das APIs</a>
@@ -147,75 +148,134 @@
         </div>
     </div>
 
+    <div class="mt-3">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/(page=${currentPage - 1})}" tabindex="-1">Anterior</a>
+                </li>
+
+                <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${pageNumber == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/(page=${pageNumber})}" th:text="${pageNumber + 1}"></a>
+                </li>
+
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/(page=${currentPage + 1})}">Próximo</a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+
     <footer class="bg-dark text-light py-4">
         <div class="container text-center">
-          <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+            <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
         </div>
-    </footer> 
-    
+    </footer>
+
     <script>
-    function abrirModal(id) {
-    fetch(`/noticias/detalhe/${id}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('modalTitulo').innerText = data.titulo;
-            document.getElementById('modalAutor').innerText = 'Jornalista: ' + data.autor;
+        function abrirModal(id) {
+            fetch(`/noticias/detalhe/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('modalTitulo').innerText = data.titulo;
+                    document.getElementById('modalAutor').innerText = 'Jornalista: ' + data.autor;
 
-            // Ajustar a data para UTC
-            const dataPublicacao = new Date(data.data);
-            const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
+                    const dataPublicacao = new Date(data.data);
+                    const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
 
-            document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacaoUTC.toLocaleDateString('pt-BR');
-            document.getElementById('modalConteudo').innerText = data.conteudo;
-            var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
-            myModal.show();
-        })
-        .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
-    }
+                    document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacaoUTC.toLocaleDateString('pt-BR');
+                    document.getElementById('modalConteudo').innerText = data.conteudo;
+                    var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
+                    myModal.show();
+                })
+                .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
+        }
+
         document.getElementById('consultar').addEventListener('click', function () {
             const dataInicio = new Date(document.getElementById('dataInicio').value);
             const dataFim = new Date(document.getElementById('dataFim').value);
-
             const errorMessage = document.getElementById('error-message');
-            errorMessage.textContent = ''; // Limpa a mensagem de erro
-            errorMessage.style.display = 'none'; // Oculta a mensagem de erro
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
 
-            // Valida se a dataFim é anterior a dataInicio
             if (dataFim < dataInicio) {
                 errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
-                errorMessage.style.display = 'block'; // Exibe a mensagem de erro
+                errorMessage.style.display = 'block';
 
-                // Definir timeout para sumir o alerta após 10 segundos
-                setTimeout(function() {
-                    errorMessage.textContent = ''; // Limpa a mensagem de erro
-                    errorMessage.style.display = 'none'; // Oculta a mensagem de erro
+                setTimeout(function () {
+                    errorMessage.textContent = '';
+                    errorMessage.style.display = 'none';
                 }, 5000);
 
-                return; // Não continua com a consulta
+                return;
             }
 
-
-            // Se a validação passar, faça a consulta
-            fetch(`/noticias?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T')[0]}`)
+            fetch(`/noticias?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T')[0]}&page=0&size=10`)
                 .then(response => response.json())
                 .then(data => {
-                    // Atualize a tabela de notícias com os dados filtrados
                     const tbody = document.querySelector('tbody.table-group-divider');
                     tbody.innerHTML = '';
-                    data.forEach(noticia => {
+                    data.content.forEach(noticia => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>Inativo</td>
                             <td>${noticia.titulo}</td>
                             <td>Inativo</td>
-                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                             <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
-                            `;
+                        `;
                         tbody.appendChild(row);
                     });
+
+                    updatePagination(data);
                 })
                 .catch(error => console.error('Erro ao carregar as notícias:', error));
         });
+
+        function updatePagination(data) {
+            const paginationElement = document.querySelector('.pagination');
+            const totalPagesElement = document.querySelector('.text-center span:first-child');
+            const totalItemsElement = document.querySelector('.text-center span:last-child');
+
+            let paginationHTML = '';
+            for (let i = 0; i < data.totalPages; i++) {
+                paginationHTML += `
+                    <li class="page-item ${i === data.number ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="loadPage(${i})">${i + 1}</a>
+                    </li>
+                `;
+            }
+            paginationElement.innerHTML = paginationHTML;
+
+            totalPagesElement.textContent = `Mostrando página ${data.number + 1} de ${data.totalPages}`;
+            totalItemsElement.textContent = `Total de ${data.totalElements} notícias`;
+        }
+
+        function loadPage(pageNumber) {
+            const dataInicio = new Date(document.getElementById('dataInicio').value);
+            const dataFim = new Date(document.getElementById('dataFim').value);
+
+            fetch(`/noticias?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T ')[0]}&page=${pageNumber}&size=10`)
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('tbody.table-group-divider');
+                    tbody.innerHTML = '';
+                    data.content.forEach(noticia => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${noticia.titulo}</td>
+                            <td>Inativo</td>
+                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                            <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+
+                    updatePagination(data);
+                })
+                .catch(error => console.error('Erro ao carregar as notícias:', error));
+        }
     </script>
 
     <!-- Bootstrap JS e dependências -->
