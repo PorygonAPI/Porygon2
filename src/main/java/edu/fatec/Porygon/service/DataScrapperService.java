@@ -2,8 +2,12 @@ package edu.fatec.Porygon.service;
 
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.model.Portal;
+import edu.fatec.Porygon.model.Sinonimo;
+import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
+import edu.fatec.Porygon.repository.SinonimoRepository;
+import edu.fatec.Porygon.repository.TagRepository;
 import jakarta.annotation.PostConstruct;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
