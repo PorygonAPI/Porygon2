@@ -96,7 +96,13 @@
                     <tbody>
                         <tr th:each="dados : ${apiDadosList}">
                             <td th:text="${dados.api.nome}"></td>
-                            <td th:text="'Inativo'">Inativo</td>
+                            <td>
+                                <span th:if="${#lists.isEmpty(dados.tags)}">Nenhuma tag cadastrada</span>
+                                <span th:each="tag, iterStat : ${dados.tags}">
+                                    <span th:text="${tag.nome}"></span>
+                                    <span th:if="${!iterStat.last}">, </span>
+                                </span>
+                            </td>
                             <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td> 
                             <td>
                                 <button class="btn btn-info" th:attr="data-id=${dados.id}"
