@@ -2,6 +2,7 @@ package edu.fatec.Porygon.model;
 
 import jakarta.persistence.*;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Jornalista {
@@ -13,6 +14,7 @@ public class Jornalista {
     private String nome;
 
     @OneToMany(mappedBy = "jornalista")
+    @JsonManagedReference
     private List<Noticia> noticias;
 
     public Integer getId() {

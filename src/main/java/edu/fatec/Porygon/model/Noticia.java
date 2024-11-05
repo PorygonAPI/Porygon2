@@ -38,6 +38,7 @@ public class Noticia {
 
     @ManyToOne
     @JoinColumn(name = "jornalista_id")
+    @JsonBackReference
     private Jornalista jornalista;
 
     public Jornalista getJornalista() {
