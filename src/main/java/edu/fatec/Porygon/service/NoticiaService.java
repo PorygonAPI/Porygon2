@@ -34,27 +34,16 @@ public class NoticiaService {
          return noticiaRepository.searchNewsByData(dataInicio, dataFim);
     }
 
-    public void findTagsInNoticia() {
+    public void findTagsInTitle() {
         List<Tag> tags = tagRepository.findAll();
-        List<Sinonimo> sinonimos = sinonimoRepository.findAll();
         List<Noticia> news = noticiaRepository.findAll();
-
 
         for (Noticia noticia : news) {
             HashSet<Tag> foundTags = new HashSet<>();
-
             for (Tag tag : tags) {
                 if(noticia.getTitulo().toLowerCase().contains(tag.getNome().toLowerCase())){
                     foundTags.add(tag);
                     break;
-                }
-
-                for (Sinonimo sinonimo : sinonimos) {
-                    if(sinonimo.getTag().getId().equals(tag.getId()) &&
-                            sinonimo.getTag().getNome().toLowerCase().contains(tag.getNome().toLowerCase())){
-                        foundTags.add(tag);
-                        break;
-                    }
                 }
             }
 
@@ -64,4 +53,5 @@ public class NoticiaService {
             }
         }
     }
+
 }

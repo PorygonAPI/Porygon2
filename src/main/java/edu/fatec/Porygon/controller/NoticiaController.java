@@ -59,4 +59,16 @@ public class NoticiaController {
         noticias.sort(Comparator.comparing(Noticia::getData));
         return ResponseEntity.ok(noticias);
     }
+
+    @GetMapping("/associar-tags")
+    @ResponseBody
+    public ResponseEntity<String> associarTagsANoticias() {
+        try {
+            noticiaService.findTagsInTitle();
+            return ResponseEntity.ok("Tags associadas com sucesso às notícias.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao associar tags às notícias: " + e.getMessage());
+        }
+    }
 }
