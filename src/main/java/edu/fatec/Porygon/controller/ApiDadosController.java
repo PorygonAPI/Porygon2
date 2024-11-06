@@ -1,5 +1,6 @@
 package edu.fatec.Porygon.controller;
 
+import edu.fatec.Porygon.dto.ApiDadosDTO;
 import edu.fatec.Porygon.model.ApiDados;
 import edu.fatec.Porygon.repository.ApiDadosRepository;
 import org.springframework.beans.factory.annotation.Autowired;
