@@ -1,5 +1,6 @@
 package edu.fatec.Porygon.controller;
 
+import edu.fatec.Porygon.dto.NoticiaDTO;
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
@@ -36,12 +37,16 @@ public class NoticiaController {
         return "index";
     }
 
-    @GetMapping("/noticias/detalhe/{id}")
+    @GetMapping("/noticias/{id}")
     @ResponseBody
-    public ResponseEntity<Noticia> detalheNoticiaJson(@PathVariable Integer id) {
-        Optional<Noticia> noticiaOptional = noticiaRepository.findById(id);
-        return noticiaOptional.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<NoticiaDTO> getNoticiaDetails(@PathVariable Integer id) {
+        Optional<Noticia> noticiaOpt = noticiaRepository.findById(id);
+        if (noticiaOpt.isPresent()) {
+            NoticiaDTO noticiaDTO = new NoticiaDTO(noticiaOpt.get());
+            return ResponseEntity.ok(noticiaDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/noticias")

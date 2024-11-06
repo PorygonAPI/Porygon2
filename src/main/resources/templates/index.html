@@ -23,7 +23,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias<span class="sr-only">(atual)</span></a>
+                    <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias<span
+                            class="sr-only">(atual)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das APIs</a>
@@ -131,6 +132,7 @@
                     <h5 id="modalTitulo"></h5>
                     <h6 id="modalAutor" class="text-muted"></h6>
                     <p id="modalData"></p>
+                    <p><strong>Tags:</strong> <span id="modalTags"></span></p>
                     <p id="modalConteudo" class="modal-conteudo"></p>
                 </div>
                 <div class="modal-footer">
@@ -142,29 +144,49 @@
 
     <footer class="bg-dark text-light py-4">
         <div class="container text-center">
-          <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+            <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
         </div>
-    </footer> 
-    
+    </footer>
+
     <script>
-    function abrirModal(id) {
-    fetch(`/noticias/detalhe/${id}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('modalTitulo').innerText = data.titulo;
-            document.getElementById('modalAutor').innerText = 'Jornalista: ' + data.autor;
+        function abrirModal(id) {
+            fetch(`/noticias/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar os detalhes da notícia');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('modalTitulo').innerText = data.titulo;
+                    document.getElementById('modalAutor').innerText = 'Jornalista: ' + data.autor;
 
-            // Ajustar a data para UTC
-            const dataPublicacao = new Date(data.data);
-            const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
+                    const dataPublicacao = new Date(data.data);
+                    const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
+                    document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacaoUTC.toLocaleDateString('pt-BR');
 
-            document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacaoUTC.toLocaleDateString('pt-BR');
-            document.getElementById('modalConteudo').innerText = data.conteudo;
-            var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
-            myModal.show();
-        })
-        .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
-    }
+                    document.getElementById('modalConteudo').innerText = data.conteudo;
+
+                    const tagsContainer = document.getElementById('modalTags');
+                    tagsContainer.innerHTML = ''; 
+                    if (Array.isArray(data.tags) && data.tags.length > 0) {
+                        data.tags.forEach(tag => {
+                            const tagSpan = document.createElement('span');
+                            tagSpan.classList.add('badge', 'bg-primary', 'me-1');
+                            tagSpan.innerText = tag.nome; 
+                            tagsContainer.appendChild(tagSpan);
+                        });
+                    } else {
+                        tagsContainer.innerText = 'Nenhuma tag encontrada'; 
+                    }
+
+
+                    var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
+                    myModal.show();
+                })
+                .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
+        }
+
         document.getElementById('consultar').addEventListener('click', function () {
             const dataInicio = new Date(document.getElementById('dataInicio').value);
             const dataFim = new Date(document.getElementById('dataFim').value);
@@ -179,7 +201,7 @@
                 errorMessage.style.display = 'block'; // Exibe a mensagem de erro
 
                 // Definir timeout para sumir o alerta após 10 segundos
-                setTimeout(function() {
+                setTimeout(function () {
                     errorMessage.textContent = ''; // Limpa a mensagem de erro
                     errorMessage.style.display = 'none'; // Oculta a mensagem de erro
                 }, 5000);
@@ -201,7 +223,7 @@
                             <td>Inativo</td>
                             <td>${noticia.titulo}</td>
                             <td>Inativo</td>
-                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                             <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
                             `;
                         tbody.appendChild(row);
