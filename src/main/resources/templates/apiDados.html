@@ -144,11 +144,17 @@
 
                     document.getElementById('conteudoApi').textContent = data.conteudo;
 
-                    if (Array.isArray(data.tags)) {
-                        const tagsText = data.tags.map(tag => tag.nome).join(', ');
-                        document.getElementById('modalTags').textContent = tagsText;
+                    const tagsContainer = document.getElementById('modalTags');
+                    tagsContainer.innerHTML = ''; 
+                    if (Array.isArray(data.tags) && data.tags.length > 0) {
+                        data.tags.forEach(tag => {
+                            const tagSpan = document.createElement('span');
+                            tagSpan.classList.add('badge', 'bg-primary', 'me-1'); 
+                            tagSpan.innerText = tag.nome;
+                            tagsContainer.appendChild(tagSpan);
+                        });
                     } else {
-                        document.getElementById('modalTags').textContent = 'Nenhuma tag encontrada';
+                        tagsContainer.textContent = 'Nenhuma tag encontrada';
                     }
 
                     var modal = new bootstrap.Modal(document.getElementById('apiModal'));
@@ -162,7 +168,6 @@
                     modal.show();
                 });
         }
-
     </script>
 
 </body>
