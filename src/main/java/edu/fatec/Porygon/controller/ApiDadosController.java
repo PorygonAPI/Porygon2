@@ -27,21 +27,21 @@ public class ApiDadosController {
     }
 
     @GetMapping("/dados/{id}")
-    public ResponseEntity<String> abrirDados(@PathVariable Long id) {
+    public ResponseEntity<?> abrirDados(@PathVariable Long id) {
         Optional<ApiDados> apiDadosOptional = apiDadosRepository.findById(id);
-
+    
         if (apiDadosOptional.isPresent()) {
             ApiDados apiDados = apiDadosOptional.get();
             String conteudo = apiDados.getConteudo();
-
+    
             Integer formatoId = apiDados.getApi().getFormato().getId();
-
             String tipoFormato = getTipoFormato(formatoId);
             String conteudoFormatado = formatarConteudo(conteudo, tipoFormato);
-
-            return ResponseEntity.ok(conteudoFormatado);
+    
+            ApiDadosDTO response = new ApiDadosDTO(apiDados, conteudoFormatado);
+            return ResponseEntity.ok(response);
         }
-
+    
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Dados não encontrados");
     }
 
