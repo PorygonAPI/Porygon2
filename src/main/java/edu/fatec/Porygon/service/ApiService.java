@@ -110,6 +110,11 @@ public class ApiService {
             } else if (isNew) {
                 return "Cadastro de API realizado, mas sem coleta REST pois a API está desativada.";
             } else {
+                List<ApiDados> apiDadosList = apiDadosRepository.findByApiId(savedApi.getId());
+                for (ApiDados apiDados : apiDadosList) {
+                    apiDados.setTags(new HashSet<>(savedApi.getTags()));
+                    apiDadosRepository.save(apiDados);
+                }
                 return "Atualização de API realizada com sucesso.";
             }
 
@@ -127,7 +132,15 @@ public class ApiService {
         if (apiOptional.isPresent()) {
             Api api = apiOptional.get();
             api.setAtivo(novoStatus);
-            return apiRepository.save(api);
+            Api updatedApi = apiRepository.save(api);
+
+            List<ApiDados> apiDadosList = apiDadosRepository.findByApiId(updatedApi.getId());
+            for (ApiDados apiDados : apiDadosList) {
+                apiDados.setTags(new HashSet<>(updatedApi.getTags()));
+                apiDadosRepository.save(apiDados);
+            }
+
+            return updatedApi;
         }
         return null;
     }
@@ -137,6 +150,12 @@ public class ApiService {
                 .orElseThrow(() -> new IllegalArgumentException("API não encontrada com ID: " + id));
         try {
             apiRotinaService.realizarRequisicaoApi(api);
+
+            List<ApiDados> apiDadosList = apiDadosRepository.findByApiId(api.getId());
+            for (ApiDados apiDados : apiDadosList) {
+                apiDados.setTags(new HashSet<>(api.getTags()));
+                apiDadosRepository.save(apiDados);
+            }
         } catch (Exception e) {
             throw new RuntimeException("Erro ao realizar a raspagem após ativar: " + e.getMessage());
         }

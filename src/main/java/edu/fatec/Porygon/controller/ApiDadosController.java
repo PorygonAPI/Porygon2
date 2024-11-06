@@ -27,7 +27,7 @@ public class ApiDadosController {
     }
 
     @GetMapping("/dados/{id}")
-    public ResponseEntity<String> abrirDados(@PathVariable Long id) {
+    public ResponseEntity<String> abrirDados(@PathVariable Integer id) {
         Optional<ApiDados> apiDadosOptional = apiDadosRepository.findById(id);
 
         if (apiDadosOptional.isPresent()) {
