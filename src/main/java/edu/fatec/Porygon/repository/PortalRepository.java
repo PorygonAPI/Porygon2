@@ -14,7 +14,7 @@ public interface PortalRepository extends JpaRepository<Portal, Integer> {
     @Query("SELECT p FROM Portal p LEFT JOIN FETCH p.tags WHERE p.id = :id")
     Optional<Portal> findByIdWithTags(@Param("id") Integer id);
 
-     @Query("SELECT DISTINCT p.seletorTitulo FROM Portal p WHERE p.seletorTitulo IS NOT NULL")
+    @Query("SELECT DISTINCT p.seletorTitulo FROM Portal p WHERE p.seletorTitulo IS NOT NULL")
     List<String> findDistinctSeletorTitulo();
 
     @Query("SELECT DISTINCT p.seletorJornalista FROM Portal p WHERE p.seletorJornalista IS NOT NULL")

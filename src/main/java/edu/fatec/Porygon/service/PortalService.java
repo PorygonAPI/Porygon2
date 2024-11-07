@@ -108,7 +108,7 @@ public class PortalService {
         return portalRepository.save(portal);
     }
 
-    public List<String> getSeletoresTitulo() {
+     public List<String> getSeletoresTitulo() {
         return portalRepository.findDistinctSeletorTitulo();
     }
 
