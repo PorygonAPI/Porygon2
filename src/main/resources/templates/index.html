@@ -107,6 +107,12 @@
                             <!-- <td th:text="'Inativo'">Inativo</td> -->
                             <td th:text="${noticia.titulo}"></td>
                             <td th:text="'Inativo'">Inativo</td>
+                            <td>
+                                <span th:if="${#lists.isEmpty(noticia.tags)}">Sem tag associada</span>
+                                <span th:each="tag, iterStat : ${noticia.tags}">
+                                    <span th:text="${tag.nome}"></span><span th:if="${!iterStat.last}">, </span>
+                                </span>
+                            </td>
                             <!-- <td>
                     <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma tag cadastrada</span>
                     <span th:each="tag, iterStat : ${portal.tags}">
@@ -138,6 +144,7 @@
                     <h5 id="modalTitulo"></h5>
                     <h6 id="modalAutor" class="text-muted"></h6>
                     <p id="modalData"></p>
+                    <p><strong>Tags:</strong> <span id="modalTags"></span> </p> <!-- Exibir tags ou mensagem de 'Sem tag associada' -->
                     <p id="modalConteudo" class="modal-conteudo"></p>
                 </div>
                 <div class="modal-footer">
@@ -155,23 +162,40 @@
     
     <script>
     function abrirModal(id) {
-    fetch(`/noticias/detalhe/${id}`)
+    fetch(`/noticias/${id}`)
         .then(response => response.json())
         .then(data => {
             document.getElementById('modalTitulo').innerText = data.titulo;
             document.getElementById('modalAutor').innerText = 'Jornalista: ' + data.autor;
 
-            // Ajustar a data para UTC
-            const dataPublicacao = new Date(data.data);
-            const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
+            const modalTag = document.getElementById('modalTags');
+            if (data.tags && data.tags.length > 0) {
+                modalTag.innerText = 'Tags: ' + data.tags.map(tag => tag.nome).join(', ');
+            } else {
+                modalTag.innerText = 'Sem tag associada.';
+            }
+            const tagsContainer = document.getElementById('modalTags');
+            tagsContainer.innerHTML = ''; 
+            if (Array.isArray(data.tags) && data.tags.length > 0) {
+                data.tags.forEach(tag => {
+                    const tagSpan = document.createElement('span');
+                    tagSpan.classList.add('badge', 'bg-primary', 'me-1');
+                    tagSpan.innerText = tag.nome; 
+                    tagsContainer.appendChild(tagSpan);
+                });
+            } else {
+                tagsContainer.innerText = 'Nenhuma tag encontrada'; 
+            }
 
-            document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacaoUTC.toLocaleDateString('pt-BR');
+            const dataPublicacao = new Date(data.data);
+            document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacao.toLocaleDateString('pt-BR');
             document.getElementById('modalConteudo').innerText = data.conteudo;
+            
             var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
             myModal.show();
         })
         .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
-    }
+}
         document.getElementById('consultar').addEventListener('click', function () {
             const dataInicio = new Date(document.getElementById('dataInicio').value);
             const dataFim = new Date(document.getElementById('dataFim').value);
