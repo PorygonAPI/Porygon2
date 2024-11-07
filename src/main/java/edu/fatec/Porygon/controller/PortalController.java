@@ -48,6 +48,11 @@ public class PortalController {
         model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("tags", tagRepository.findAll());
+        model.addAttribute("seletoresTitulo", portalService.getSeletoresTitulo());
+        model.addAttribute("seletoresJornalista", portalService.getSeletoresJornalista());
+        model.addAttribute("seletoresConteudo", portalService.getSeletoresConteudo());
+        model.addAttribute("seletoresDataPublicacao", portalService.getSeletoresDataPublicacao());
+        model.addAttribute("seletoresCaminhoNoticia", portalService.getSeletoresCaminhoNoticia());
         return "portal";
     }
 
