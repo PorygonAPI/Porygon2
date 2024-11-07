@@ -2,11 +2,13 @@ package edu.fatec.Porygon.controller;
 
 import edu.fatec.Porygon.dto.NoticiaDTO;
 import edu.fatec.Porygon.model.Noticia;
+import edu.fatec.Porygon.model.NoticiaDTO;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Comparator;
+
 import edu.fatec.Porygon.service.NoticiaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
