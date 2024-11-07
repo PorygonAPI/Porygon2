@@ -3,7 +3,6 @@ package edu.fatec.Porygon.dto;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import edu.fatec.Porygon.model.Noticia;
 
 public class NoticiaDTO {
@@ -11,7 +10,7 @@ public class NoticiaDTO {
     private String titulo;
     private Date data;
     private String conteudo;
-    private String autor;
+    private String jornalista;
     private List<TagDTO> tags;
 
     public NoticiaDTO(Noticia noticia) {
@@ -19,7 +18,7 @@ public class NoticiaDTO {
         this.titulo = noticia.getTitulo();
         this.data = noticia.getData();
         this.conteudo = noticia.getConteudo();
-        this.autor = noticia.getAutor();
+        this.jornalista = noticia.getJornalista().getNome();
         this.tags = noticia.getTags().stream()
                             .map(TagDTO::new)
                             .collect(Collectors.toList());
@@ -57,12 +56,12 @@ public class NoticiaDTO {
         this.conteudo = conteudo;
     }
 
-    public String getAutor() {
-        return autor;
+    public String getJornalista() {
+        return jornalista;
     }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
+    public void setJornalista(String jornalista) {
+        this.jornalista = jornalista;
     }
 
     public List<TagDTO> getTags() {
@@ -72,6 +71,4 @@ public class NoticiaDTO {
     public void setTags(List<TagDTO> tags) {
         this.tags = tags;
     }
-
-
 }
