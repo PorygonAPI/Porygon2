@@ -2,6 +2,7 @@ package edu.fatec.Porygon.service;
 
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.model.Portal;
+import edu.fatec.Porygon.model.Jornalista;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
 import jakarta.annotation.PostConstruct;
@@ -28,6 +29,9 @@ public class DataScrapperService {
 
     @Autowired
     private PortalRepository portalRepository;
+
+    @Autowired
+    private JornalistaService jornalistaService;
 
     public void scrapeDatabyPortalID(int id) {
         Portal portal = portalRepository.findById(id)
@@ -81,9 +85,11 @@ public class DataScrapperService {
                     continue;
                 }
 
+                Jornalista jornalista = jornalistaService.obterOuCriarJornalista(Autor.text());
+
                 Noticia noticia = new Noticia();
                 noticia.setTitulo(Titulo.text());
-                noticia.setAutor(Autor.text());
+                noticia.setJornalista(jornalista);
                 noticia.setData(dataPublicacao);
                 noticia.setPortal(portal);
                 noticia.setConteudo(contentScrapper);
