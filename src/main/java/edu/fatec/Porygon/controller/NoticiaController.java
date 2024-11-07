@@ -2,7 +2,6 @@ package edu.fatec.Porygon.controller;
 
 import edu.fatec.Porygon.dto.NoticiaDTO;
 import edu.fatec.Porygon.model.Noticia;
-import edu.fatec.Porygon.model.NoticiaDTO;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
 import java.util.List;
