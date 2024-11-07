@@ -89,14 +89,8 @@
                     <tbody>
                         <tr th:each="dados : ${apiDadosList}">
                             <td th:text="${dados.api.nome}"></td>
-                            <td>
-                                <span th:if="${#lists.isEmpty(dados.tags)}">Nenhuma tag cadastrada</span>
-                                <span th:each="tag, iterStat : ${dados.tags}">
-                                    <span th:text="${tag.nome}"></span>
-                                    <span th:if="${!iterStat.last}">, </span>
-                                </span>
-                            </td>
-                            <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td> 
+                            <td th:text="${#strings.listJoin(dados.tags.![nome], ', ')}"></td>
+                            <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td>
                             <td>
                                 <button class="btn btn-info" th:attr="data-id=${dados.id}"
                                     onclick="abrirModal(this)">Abrir</button>
@@ -115,6 +109,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <p><strong>Tags:</strong> <span id="modalTags"></span></p>
                         <pre id="conteudoApi"></pre>
                     </div>
                     <div class="modal-footer">
@@ -142,21 +137,37 @@
                     if (!response.ok) {
                         throw new Error('Erro ao buscar os dados da API');
                     }
-                    return response.text();
+                    return response.json();
                 })
                 .then(data => {
-                    document.getElementById('conteudoApi').textContent = data;
+                    console.log('Dados recebidos:', data);
+
+                    document.getElementById('conteudoApi').textContent = data.conteudo;
+
+                    const tagsContainer = document.getElementById('modalTags');
+                    tagsContainer.innerHTML = ''; 
+                    if (Array.isArray(data.tags) && data.tags.length > 0) {
+                        data.tags.forEach(tag => {
+                            const tagSpan = document.createElement('span');
+                            tagSpan.classList.add('badge', 'bg-primary', 'me-1'); 
+                            tagSpan.innerText = tag.nome;
+                            tagsContainer.appendChild(tagSpan);
+                        });
+                    } else {
+                        tagsContainer.textContent = 'Nenhuma tag encontrada';
+                    }
+
                     var modal = new bootstrap.Modal(document.getElementById('apiModal'));
                     modal.show();
                 })
                 .catch(error => {
                     console.error('Erro ao buscar os dados da API:', error);
                     document.getElementById('conteudoApi').textContent = 'Erro ao carregar os dados.';
+                    document.getElementById('modalTags').textContent = 'Erro ao carregar as tags.';
                     var modal = new bootstrap.Modal(document.getElementById('apiModal'));
                     modal.show();
                 });
         }
-
     </script>
 
 </body>
