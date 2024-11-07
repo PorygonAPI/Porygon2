@@ -33,6 +33,9 @@ public class DataScrapperService {
     @Autowired
     private JornalistaService jornalistaService;
 
+    @Autowired
+    private NoticiaService noticiaService;
+
     public void scrapeDatabyPortalID(int id) {
         Portal portal = portalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
@@ -140,6 +143,8 @@ public class DataScrapperService {
             }
         }
 
+        noticiaService.findTagsInTitle();
+
         hideLoading();
     }
 
@@ -178,6 +183,7 @@ public class DataScrapperService {
                 }
             }
 
+            noticiaService.findTagsInTitle();
         }
     }
 
@@ -237,7 +243,7 @@ public class DataScrapperService {
                     }
                 }
             }
-
+            noticiaService.findTagsInTitle();
         }
     }
 
