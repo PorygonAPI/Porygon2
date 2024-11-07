@@ -98,15 +98,12 @@
                     <tbody class="table-group-divider">
                         <tr th:each="noticia : ${noticias}">
                             <td th:text="${noticia.titulo}"></td>
-                            <td th:text="'Inativo'">Inativo</td>
-                            
-                            <!-- <td>
-                    <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma tag cadastrada</span>
-                    <span th:each="tag, iterStat : ${portal.tags}">
-                        <span th:text="${tag.nome}"></span>
-                        <span th:if="${!iterStat.last}">, </span>
-                    </span>
-                </td>    -->
+                            <td>
+                                <span th:if="${#lists.isEmpty(noticia.tags)}">Sem tag associada</span>
+                                <span th:each="tag, iterStat : ${noticia.tags}">
+                                    <span th:text="${tag.nome}"></span><span th:if="${!iterStat.last}">, </span>
+                                </span>
+                            </td>
                             <td th:text="${#dates.format(noticia.data, 'dd/MM/yyyy')}"></td>
                             <td>
                                 <button class="btn btn-info"
