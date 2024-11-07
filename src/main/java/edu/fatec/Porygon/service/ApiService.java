@@ -90,6 +90,14 @@ public class ApiService {
 
             Api savedApi = apiRepository.save(api);
 
+            if (!isNew) {
+                List<ApiDados> apiDadosList = apiDadosRepository.findByApiId(savedApi.getId());
+                for (ApiDados apiDados : apiDadosList) {
+                    apiDados.setTags(new HashSet<>(savedApi.getTags()));
+                    apiDadosRepository.save(apiDados);
+                }
+            }
+
             if (isNew && savedApi.isAtivo()) {
                 RestTemplate restTemplateForData = new RestTemplate();
                 ResponseEntity<String> response = restTemplateForData.getForEntity(savedApi.getUrl(), String.class);
