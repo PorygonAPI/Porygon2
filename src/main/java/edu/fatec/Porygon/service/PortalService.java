@@ -107,4 +107,24 @@ public class PortalService {
 
         return portalRepository.save(portal);
     }
+
+     public List<String> getSeletoresTitulo() {
+        return portalRepository.findDistinctSeletorTitulo();
+    }
+
+    public List<String> getSeletoresJornalista() {
+        return portalRepository.findDistinctSeletorJornalista();
+    }
+
+    public List<String> getSeletoresConteudo() {
+        return portalRepository.findDistinctSeletorConteudo();
+    }
+
+    public List<String> getSeletoresDataPublicacao() {
+        return portalRepository.findDistinctSeletorDataPublicacao();
+    }
+
+    public List<String> getSeletoresCaminhoNoticia() {
+        return portalRepository.findDistinctSeletorCaminhoNoticia();
+    }
 }
