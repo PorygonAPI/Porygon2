@@ -116,32 +116,59 @@
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="seletorCaminhoNoticia" class="form-label">Caminho da Lista de Notícias</label>
-                    <input type="text" class="form-control" id="seletorCaminhoNoticia"
-                        th:field="*{seletorCaminhoNoticia}" placeholder="Qual a classe HTML que o contém?" required>
+                    <input type="text" class="form-control" id="seletorCaminhoNoticia" 
+                           th:field="*{seletorCaminhoNoticia}" 
+                           placeholder="Qual a classe HTML que o contém?" 
+                           list="caminhoNoticiaList" required>
+                    <datalist id="caminhoNoticiaList">
+                        <option th:each="seletor : ${seletoresCaminhoNoticia}" th:value="${seletor}"></option>
+                    </datalist>
                 </div>
                 <div class="col-md-6">
                     <label for="seletorTitulo" class="form-label">Título</label>
-                    <input type="text" class="form-control" id="seletorTitulo" th:field="*{seletorTitulo}"
-                        placeholder="Qual a classe HTML que o contém?" required>
+                    <input type="text" class="form-control" id="seletorTitulo" 
+                           th:field="*{seletorTitulo}" 
+                           placeholder="Qual a classe HTML que o contém?" 
+                           list="tituloList" required>
+                    <datalist id="tituloList">
+                        <option th:each="seletor : ${seletoresTitulo}" th:value="${seletor}"></option>
+                    </datalist>
                 </div>
             </div>
+            
             <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="seletorJornalista" class="form-label">Jornalista</label>
-                    <input type="text" class="form-control" id="seletorJornalista" th:field="*{seletorJornalista}"
-                        placeholder="Qual a classe HTML que o contém?" required>
+                    <input type="text" class="form-control" id="seletorJornalista" 
+                           th:field="*{seletorJornalista}" 
+                           placeholder="Qual a classe HTML que o contém?" 
+                           list="jornalistaList" required>
+                    <datalist id="jornalistaList">
+                        <option th:each="seletor : ${seletoresJornalista}" th:value="${seletor}"></option>
+                    </datalist>
                 </div>
                 <div class="col-md-6">
                     <label for="seletorDataPublicacao" class="form-label">Data da Publicação da Notícia</label>
-                    <input type="text" class="form-control" id="seletorDataPublicacao"
-                        th:field="*{seletorDataPublicacao}" placeholder="Qual a classe HTML que o contém?" required>
+                    <input type="text" class="form-control" id="seletorDataPublicacao" 
+                           th:field="*{seletorDataPublicacao}" 
+                           placeholder="Qual a classe HTML que o contém?" 
+                           list="dataPublicacaoList" required>
+                    <datalist id="dataPublicacaoList">
+                        <option th:each="seletor : ${seletoresDataPublicacao}" th:value="${seletor}"></option>
+                    </datalist>
                 </div>
             </div>
+            
             <div class="row mb-3">
                 <div class="col-md-12">
                     <label for="seletorConteudo" class="form-label">Conteúdo</label>
-                    <input type="text" class="form-control" id="seletorConteudo" th:field="*{seletorConteudo}"
-                        placeholder="Qual a classe HTML que o contém?" required>
+                    <input type="text" class="form-control" id="seletorConteudo" 
+                           th:field="*{seletorConteudo}" 
+                           placeholder="Qual a classe HTML que o contém?" 
+                           list="conteudoList" required>
+                    <datalist id="conteudoList">
+                        <option th:each="seletor : ${seletoresConteudo}" th:value="${seletor}"></option>
+                    </datalist>
                 </div>
             </div>
 
@@ -209,15 +236,12 @@
         const tagSelect = document.getElementById('tags');
         const allTags = Array.from(tagSelect.options);
 
-        // Escuta o input do usuário e filtra as tags
         tagInput.addEventListener('input', function() {
             const searchQuery = this.value.toLowerCase();
-            tagSelect.innerHTML = ''; // Limpa as opções visíveis
+            tagSelect.innerHTML = '';
 
-            // Filtra as opções que começam com o texto digitado
             const filteredTags = allTags.filter(tag => tag.text.toLowerCase().startsWith(searchQuery));
             
-            // Adiciona as opções filtradas de volta no select
             filteredTags.forEach(tag => {
                 tagSelect.appendChild(tag);
             });
