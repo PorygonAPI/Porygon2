@@ -98,6 +98,7 @@
                         <tr th:each="noticia : ${noticias}">
                             <td th:text="${noticia.titulo}"></td>
                             <td th:text="'Inativo'">Inativo</td>
+                            
                             <!-- <td>
                     <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma tag cadastrada</span>
                     <span th:each="tag, iterStat : ${portal.tags}">
