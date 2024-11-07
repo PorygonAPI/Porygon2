@@ -98,7 +98,6 @@
                     <tbody class="table-group-divider">
                         <tr th:each="noticia : ${noticias}">
                             <td th:text="${noticia.titulo}"></td>
-                            <td th:text="'Inativo'">Inativo</td>
                             <td>
                                 <span th:if="${#lists.isEmpty(noticia.tags)}">Sem tag associada</span>
                                 <span th:each="tag, iterStat : ${noticia.tags}">
