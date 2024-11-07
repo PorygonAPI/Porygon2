@@ -1,6 +1,5 @@
 package edu.fatec.Porygon.model;
 
-import java.util.List;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;

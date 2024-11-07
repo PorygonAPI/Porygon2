@@ -23,7 +23,8 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="nav justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias<span class="sr-only">(atual)</span></a>
+                    <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias<span
+                            class="sr-only">(atual)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das APIs</a>
@@ -70,13 +71,6 @@
                     opções.</small>
             </div>
 
-            <div class="mb-3">
-                <label for="palavraChave" class="form-label">Palavras no Conteúdo</label>
-                <input type="text" class="form-control" id="palavraChave"
-                    placeholder="Digite palavras separadas por vírgula" disabled>
-                <small class="form-text text-muted">Exemplo: cavalo, cachorro</small>
-            </div>
-
             <div class="row mb-3 justify-content-center">
                 <div class="d-grid col-2">
                     <a href="/" class="btn btn-secondary">Limpar Filtros</a>
@@ -95,7 +89,6 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <!-- <th>Tipo</th> -->
                             <th>Nome/Título</th>
                             <th>Tags</th>
                             <th>Data</th>
@@ -104,7 +97,6 @@
                     </thead>
                     <tbody class="table-group-divider">
                         <tr th:each="noticia : ${noticias}">
-                            <!-- <td th:text="'Inativo'">Inativo</td> -->
                             <td th:text="${noticia.titulo}"></td>
                             <td th:text="'Inativo'">Inativo</td>
                             <td>
@@ -113,13 +105,6 @@
                                     <span th:text="${tag.nome}"></span><span th:if="${!iterStat.last}">, </span>
                                 </span>
                             </td>
-                            <!-- <td>
-                    <span th:if="${#lists.isEmpty(portal.tags)}">Nenhuma tag cadastrada</span>
-                    <span th:each="tag, iterStat : ${portal.tags}">
-                        <span th:text="${tag.nome}"></span>
-                        <span th:if="${!iterStat.last}">, </span>
-                    </span>
-                </td>    -->
                             <td th:text="${#dates.format(noticia.data, 'dd/MM/yyyy')}"></td>
                             <td>
                                 <button class="btn btn-info"
@@ -142,9 +127,9 @@
                 </div>
                 <div class="modal-body">
                     <h5 id="modalTitulo"></h5>
-                    <h6 id="modalAutor" class="text-muted"></h6>
+                    <h6 id="modalJornalista" class="text-muted"></h6>
                     <p id="modalData"></p>
-                    <p><strong>Tags:</strong> <span id="modalTags"></span> </p> <!-- Exibir tags ou mensagem de 'Sem tag associada' -->
+                    <p><strong>Tags:</strong> <span id="modalTags"></span></p>
                     <p id="modalConteudo" class="modal-conteudo"></p>
                 </div>
                 <div class="modal-footer">
@@ -156,74 +141,73 @@
 
     <footer class="bg-dark text-light py-4">
         <div class="container text-center">
-          <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+            <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
         </div>
-    </footer> 
-    
+    </footer>
+
     <script>
-    function abrirModal(id) {
-    fetch(`/noticias/${id}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('modalTitulo').innerText = data.titulo;
-            document.getElementById('modalAutor').innerText = 'Jornalista: ' + data.autor;
+        function abrirModal(id) {
+            fetch(`/noticias/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar os detalhes da notícia');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('modalTitulo').innerText = data.titulo;
+                    document.getElementById('modalJornalista').innerText = 'Jornalista: ' + data.jornalista;
 
-            const modalTag = document.getElementById('modalTags');
-            if (data.tags && data.tags.length > 0) {
-                modalTag.innerText = 'Tags: ' + data.tags.map(tag => tag.nome).join(', ');
-            } else {
-                modalTag.innerText = 'Sem tag associada.';
-            }
-            const tagsContainer = document.getElementById('modalTags');
-            tagsContainer.innerHTML = ''; 
-            if (Array.isArray(data.tags) && data.tags.length > 0) {
-                data.tags.forEach(tag => {
-                    const tagSpan = document.createElement('span');
-                    tagSpan.classList.add('badge', 'bg-primary', 'me-1');
-                    tagSpan.innerText = tag.nome; 
-                    tagsContainer.appendChild(tagSpan);
-                });
-            } else {
-                tagsContainer.innerText = 'Nenhuma tag encontrada'; 
-            }
+                    const dataPublicacao = new Date(data.data);
+                    const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
+                    document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacaoUTC.toLocaleDateString('pt-BR');
 
-            const dataPublicacao = new Date(data.data);
-            document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacao.toLocaleDateString('pt-BR');
-            document.getElementById('modalConteudo').innerText = data.conteudo;
-            
-            var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
-            myModal.show();
-        })
-        .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
-}
+                    document.getElementById('modalConteudo').innerText = data.conteudo;
+
+                    const tagsContainer = document.getElementById('modalTags');
+                    tagsContainer.innerHTML = ''; 
+                    if (Array.isArray(data.tags) && data.tags.length > 0) {
+                        data.tags.forEach(tag => {
+                            const tagSpan = document.createElement('span');
+                            tagSpan.classList.add('badge', 'bg-primary', 'me-1');
+                            tagSpan.innerText = tag.nome; 
+                            tagsContainer.appendChild(tagSpan);
+                        });
+                    } else {
+                        tagsContainer.innerText = 'Nenhuma tag encontrada'; 
+                    }
+
+
+                    var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
+                    myModal.show();
+                })
+                .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
+        }
+
         document.getElementById('consultar').addEventListener('click', function () {
             const dataInicio = new Date(document.getElementById('dataInicio').value);
             const dataFim = new Date(document.getElementById('dataFim').value);
 
             const errorMessage = document.getElementById('error-message');
-            errorMessage.textContent = ''; // Limpa a mensagem de erro
-            errorMessage.style.display = 'none'; // Oculta a mensagem de erro
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
 
-            // Valida se a dataFim é anterior a dataInicio
             if (dataFim < dataInicio) {
                 errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
-                errorMessage.style.display = 'block'; // Exibe a mensagem de erro
+                errorMessage.style.display = 'block';
 
-                // Definir timeout para sumir o alerta após 10 segundos
                 setTimeout(function() {
-                    errorMessage.textContent = ''; // Limpa a mensagem de erro
-                    errorMessage.style.display = 'none'; // Oculta a mensagem de erro
+                    errorMessage.textContent = '';
+                    errorMessage.style.display = 'none';
                 }, 5000);
 
-                return; // Não continua com a consulta
+                return;
             }
 
 
-            // Se a validação passar, faça a consulta
             fetch(`/noticias?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T')[0]}`)
                 .then(response => response.json())
                 .then(data => {
-                    // Atualize a tabela de notícias com os dados filtrados
                     const tbody = document.querySelector('tbody.table-group-divider');
                     tbody.innerHTML = '';
                     data.forEach(noticia => {
@@ -232,7 +216,7 @@
                             <td>Inativo</td>
                             <td>${noticia.titulo}</td>
                             <td>Inativo</td>
-                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                             <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
                             `;
                         tbody.appendChild(row);

@@ -109,25 +109,25 @@
                         <label class="form-check-label" for="ativo"><strong>Ativa</strong></label>
                     </div>
                 </div>
-
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="tags" class="form-label">Tags</label>
-                    <select id="tags" name="tagIds" class="form-select" multiple required onchange="updateSelectedTags()">
-                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"
-                            th:selected="${api.tags != null && api.tags.contains(tag)}">
-                        </option>
-                    </select>
-                    <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
-                        opções.</small>
+                    <div class="flex-grow-1"> 
+                        <label for="tagSearchInput" class="form-label">Buscar Tags</label>
+                        <input type="text" class="form-control" id="tagSearchInput" placeholder="Digite para buscar tags">
+                        <div id="selected-tags" class="d-flex flex-wrap mt-2"></div>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <br>
-                    <div id="selected-tags" class="d-flex flex-wrap"></div>
+                    <label for="tags" class="form-label">Tags</label>
+                    <select id="tags" name="tagIds" class="form-select" multiple required onchange="updateSelectedTags()">
+                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}" th:selected="${api.tags != null && api.tags.contains(tag)}">
+                        </option>
+                    </select>
+                    <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
                 </div>
-            </div>
+            </div>  
 
             <div class="d-grid gap-2 col-2 mx-auto">
                 <button type="submit" class="btn btn-primary">Salvar</button>
@@ -163,7 +163,6 @@
                             <span th:each="tag, iterStat : ${api.tags}">
                                 <span th:text="${tag.nome}"></span>
                                 <span th:if="${!iterStat.last}">, </span>
-
                             </span>
                         </td>
                         <td th:text="${api.agendador != null ? api.agendador.tipo : 'Sem Agendador'}"></td>
@@ -192,6 +191,25 @@
 
 
     <script>
+
+        const tagInput = document.getElementById('tagSearchInput');
+        const tagSelect = document.getElementById('tags');
+        const allTags = Array.from(tagSelect.options);
+
+        // Escuta o input do usuário e filtra as tags
+        tagInput.addEventListener('input', function() {
+            const searchQuery = this.value.toLowerCase();
+            tagSelect.innerHTML = ''; // Limpa as opções visíveis
+
+            // Filtra as opções que começam com o texto digitado
+            const filteredTags = allTags.filter(tag => tag.text.toLowerCase().startsWith(searchQuery));
+            
+            // Adiciona as opções filtradas de volta no select
+            filteredTags.forEach(tag => {
+                tagSelect.appendChild(tag);
+            });
+            updateSelectedTags();
+        });
         function updateSelectedTags() {
             const select = document.getElementById('tags');
             const selectedTagsContainer = document.getElementById('selected-tags');
