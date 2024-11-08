@@ -4,7 +4,14 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+
+import edu.fatec.Porygon.model.Sinonimo;
+import edu.fatec.Porygon.model.Tag;
+import edu.fatec.Porygon.repository.SinonimoRepository;
+import edu.fatec.Porygon.repository.TagRepository;
 
 import edu.fatec.Porygon.model.Sinonimo;
 import edu.fatec.Porygon.model.Tag;
