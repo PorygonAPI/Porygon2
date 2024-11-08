@@ -244,7 +244,6 @@ public class DataScrapperService {
                     }
                 }
             }
-
             noticiaService.findTagsInTitle();
         }
     }
