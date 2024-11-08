@@ -43,7 +43,6 @@ public class NoticiaService {
             for (Tag tag : tags) {
                 if(noticia.getTitulo().toLowerCase().contains(tag.getNome().toLowerCase())){
                     foundTags.add(tag);
-                    break;
                 }
             }
 
