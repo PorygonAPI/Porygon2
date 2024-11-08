@@ -23,28 +23,51 @@ public class TagService {
     private TagScrapperService tagScrapperService;
 
     public Tag criarTag(Tag tag) {
+        // Verifica se a tag já existe no banco de dados
         if (tagRepository.existsByNome(tag.getNome())) {
-            throw new RuntimeException("A tag já existe.");}
+            throw new RuntimeException("A tag já existe.");
+        }
 
-        formatarPalavra(tag.getNome());
+        // Verifica se a tag já existe como sinônimo
+        List<Sinonimo> sinonimosExistentes = sinonimoRepository.findByTag(tag.getNome());
+        if (!sinonimosExistentes.isEmpty()) {
+            // Aqui você pode disparar um modal ou algo similar para pedir confirmação ao usuário
+            // Para simular isso, podemos lançar uma exceção informando sobre a situação
+            throw new RuntimeException("A tag já existe como sinônimo de outra tag. Deseja continuar?");
+        }
+
+        // Formatar o nome da tag
         tag.setNome(formatarPalavra(tag.getNome()));
-        Tag novaTag = tagRepository.save(tag);
-        atualizarSinonimos(novaTag.getNome().toLowerCase(), novaTag);
-        return novaTag;}
 
+        // Salva a nova tag
+        Tag novaTag = tagRepository.save(tag);
+
+        // Atualiza os sinônimos associados à tag
+        atualizarSinonimos(novaTag.getNome().toLowerCase(), novaTag);
+        return novaTag;
+    }
+
+    // Método para editar uma tag, caso seja necessário
     public Tag editarTag(Integer id, String novoNome) {
         Tag tagExistente = tagRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tag não encontrada."));
 
+        // Verifica se o novo nome já existe no banco
         if (!tagExistente.getNome().equalsIgnoreCase(novoNome) && tagRepository.existsByNome(novoNome)) {
-            throw new RuntimeException("Uma tag com este nome já existe.");}
+            throw new RuntimeException("Uma tag com este nome já existe.");
+        }
 
+        // Formatar o nome da nova tag
         formatarPalavra(novoNome);
         tagExistente.setNome(formatarPalavra(novoNome));
         tagRepository.save(tagExistente);
-        atualizarSinonimos(tagExistente.getNome().toLowerCase(), tagExistente);
-        return tagExistente;}
 
+        // Atualiza os sinônimos associados
+        atualizarSinonimos(tagExistente.getNome().toLowerCase(), tagExistente);
+        return tagExistente;
+    }
+
+    // Método de formatação do nome da tag
     private String formatarPalavra(String nome) {
         String regex = "^[A-Za-zÀ-ÖØ-öø-ÿ]+([ -][A-Za-zÀ-ÖØ-öø-ÿ]+)*$";
         if (!nome.matches(regex)) {
@@ -65,15 +88,20 @@ public class TagService {
         return tagFormatada.toString().trim();
     }
 
+    // Atualiza os sinônimos de uma tag
     private void atualizarSinonimos(String nomeTagParaScraping, Tag tag) {
         List<String> sinonimos = tagScrapperService.buscarSinonimos(nomeTagParaScraping);
-        vincularSinonimos(sinonimos, tag);}
+        vincularSinonimos(sinonimos, tag);
+    }
 
+    // Vincula os sinônimos à tag
     private void vincularSinonimos(List<String> sinonimos, Tag tag) {
         List<Sinonimo> sinonimosAntigos = sinonimoRepository.findByTag(tag);
         for (Sinonimo sinonimoAntigo : sinonimosAntigos) {
             if (!sinonimos.contains(sinonimoAntigo.getNome())) {
-                sinonimoRepository.delete(sinonimoAntigo);}}
+                sinonimoRepository.delete(sinonimoAntigo);
+            }
+        }
 
         for (String sinonimoNome : sinonimos) {
             String sinonimoFormatado = formatarPalavra(sinonimoNome);
@@ -81,11 +109,17 @@ public class TagService {
                 Sinonimo sinonimo = new Sinonimo();
                 sinonimo.setNome(sinonimoFormatado);
                 sinonimo.setTag(tag);
-                sinonimoRepository.save(sinonimo);}}}
+                sinonimoRepository.save(sinonimo);
+            }
+        }
+    }
 
     public List<Tag> listarTagsOrdenadas() {
-        return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "nome"));}
+        return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "nome"));
+    }
 
     public Tag buscarTagPorId(Integer id) {
         return tagRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tag não encontrada."));}}
+                .orElseThrow(() -> new RuntimeException("Tag não encontrada."));
+    }
+}
