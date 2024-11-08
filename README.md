@@ -313,7 +313,42 @@ Como usuário, quero consultar APIs filtrando por data de cadastro para revisar 
 
 </details>
 
+<details>
+<summary> SPRINT 3 | 21/10/2024 até 10/11/2024 </summary>
+<br>
 
+  Nesta sprint, usamos points por tarefa para medir nosso progresso em relação às entregas propostas.  
+  Pontuação total: 202
+<br>
+<br>
+![Burndown - Sprint 3](https://github.com/user-attachments/assets/d252dda0-9e07-45fa-a305-f4b9046e58fd)
+
+<br>
+Tarefas Realizadas
+
+| História                                              | Tarefa                                                | Tarefa Status | Atualizado(a)          | Story Point Tarefa |
+|-------------------------------------------------------|-------------------------------------------------------|---------------|------------------------|----------------------|
+| Cadastro de Tags                                      | Implementar a tabela de sinônimos                      | Concluído     | 24/out./24 00:12        | 5                    |
+| Melhorias e Refatoração no Cadastro de Portais e APIs  | Padronizar listas de consultas                         | Concluído     | 25/out./24 10:49        | 3                    |
+| Cadastro de Tags                                      | Desenvolver a lógica para salvar as tags - Backend e Banco | Concluído     | 25/out./24 13:17        | 8                    |
+| Cadastro de Tags                                      | Criar interface para cadastro de tags                  | Concluído     | 26/out./24 00:03        | 5                    |
+| Cadastro de Tags                                      | Desenvolver a lógica para listar as tags               | Concluído     | 26/out./24 02:32        | 5                    |
+| Cadastro de Tags                                      | Implementar uma função para sinonimo de tags com regionalismo | Concluído     | 28/out./24 14:48        | 21                   |
+| Cadastro de Tags                                      | Permitir edição de tags                               | Concluído     | 29/out./24 19:54        | 8                    |
+| Cadastro de Tags                                      | Padronizar nomes das tags no banco                     | Concluído     | 30/out./24 12:45        | 5                    |
+| Cadastro de Tags                                      | Validação na criação e edição de tag                   | Concluído     | 30/out./24 12:45        | 8                    |
+| Cadastro de Tags                                      | Permitir a edição da seleção de tags ao editar portais/APIs | Concluído     | 01/nov./24 16:01        | 8                    |
+| Cadastro de Tags                                      | Vincular e remover tags ao cadastrar novos portais/APIs | Concluído     | 01/nov./24 16:01        | 13                   |
+| Vínculo da Tag nas Notícias e APIs pelo Conteúdo       | Criar Tabela para Vincular Tags às Notícias e Dados de API | Concluído     | 05/nov./24 16:15        | 13                   |
+| Vínculo da Tag nas Notícias e APIs pelo Conteúdo       | Associar Tags automaticamente ao cadastrar API         | Concluído     | 05/nov./24 16:15        | 8                    |
+| Vínculo da Tag nas Notícias e APIs pelo Conteúdo       | Remover do front, banco e BackEnd a funcionalidade "Contém" | Concluído     | 06/nov./24 11:05        | 5                    |
+| Vínculo da Tag nas Notícias e APIs pelo Conteúdo       | Exibir Tags no Modal de Notícia                        | Concluído     | 07/nov./24 12:49        | 8                    |
+| Vínculo da Tag nas Notícias e APIs pelo Conteúdo       | Exibir Tags Vinculadas nas Notícias e no API Dados (Lista) | Concluído     | 07/nov./24 16:44        | 8                    |
+
+<br>
+Última Atualização: 08/11/2024
+
+</details>
 
 
 
