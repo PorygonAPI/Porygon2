@@ -203,6 +203,7 @@
                 return;
             }
 
+
             fetch(`/noticias?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T')[0]}`)
                 .then(response => response.json())
                 .then(data => {
@@ -210,16 +211,13 @@
                     tbody.innerHTML = '';
                     data.forEach(noticia => {
                         const row = document.createElement('tr');
-                        const tags = noticia.tags.length > 0
-                            ? noticia.tags.map(tag => tag.nome).join(', ')
-                            : 'Sem tag associada';
-
                         row.innerHTML = `
-                    <td>${noticia.titulo}</td>
-                    <td>${tags}</td>
-                    <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                    <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
-                `;
+                            <td>Inativo</td>
+                            <td>${noticia.titulo}</td>
+                            <td>Inativo</td>
+                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                            <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
+                            `;
                         tbody.appendChild(row);
                     });
                 })

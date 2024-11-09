@@ -4,6 +4,8 @@ import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import edu.fatec.Porygon.model.Sinonimo;
@@ -11,6 +13,10 @@ import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.SinonimoRepository;
 import edu.fatec.Porygon.repository.TagRepository;
 
+import edu.fatec.Porygon.model.Sinonimo;
+import edu.fatec.Porygon.model.Tag;
+import edu.fatec.Porygon.repository.SinonimoRepository;
+import edu.fatec.Porygon.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import edu.fatec.Porygon.model.Noticia;
