@@ -2,6 +2,7 @@ package edu.fatec.Porygon.service;
 
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.model.Portal;
+import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.model.Jornalista;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
@@ -20,7 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import edu.fatec.Porygon.service.NoticiaService;
+import java.util.stream.Collectors;
 
 @Service
 public class DataScrapperService {
@@ -43,11 +44,9 @@ public class DataScrapperService {
 
         String classNameLink = portal.getSeletorCaminhoNoticia();
         String referenceClass = "a[href]." + classNameLink;
-
         String url = portal.getUrl();
 
         try {
-            List<Noticia> noticias = new ArrayList<>();
             Element Titulo, Data, Autor;
             Elements Conteudo;
 
@@ -57,6 +56,10 @@ public class DataScrapperService {
             for (Element selector : selectPag) {
                 Links.add(selector.absUrl("href"));
             }
+
+            List<String> tagsAssociadas = portal.getTags().stream()
+                    .map(Tag::getNome) // Bsp
+                    .collect(Collectors.toList());
 
             for (String link : Links) {
                 Document linkDoc = Jsoup.connect(link).get();
@@ -99,18 +102,17 @@ public class DataScrapperService {
                 noticia.setConteudo(contentScrapper);
                 noticia.setHref(link);
 
+                List<Integer> tagIds = portal.getTags().stream()
+                        .map(Tag::getId)
+                        .collect(Collectors.toList());
+
                 if (!noticiaRepository.existsByHref(noticia.getHref())) {
-                    noticias.add(noticia);
+                    noticiaService.salvar(noticia, tagIds);
                 } else {
                     System.out.println("Notícia já existente: " + noticia.getHref());
                 }
             }
-
-            if (!noticias.isEmpty()) {
-                noticiaRepository.saveAll(noticias);
-            }
-
-            portal.setHasScrapedToday(true);
+                portal.setHasScrapedToday(true);
             portal.setUltimaAtualizacao(LocalDate.now());
             portalRepository.save(portal);
 
@@ -143,8 +145,6 @@ public class DataScrapperService {
                 }
             }
         }
-
-        noticiaService.findTagsInTitle();
 
         hideLoading();
     }
@@ -184,7 +184,6 @@ public class DataScrapperService {
                 }
             }
 
-            noticiaService.findTagsInTitle();
         }
     }
 
@@ -244,7 +243,7 @@ public class DataScrapperService {
                     }
                 }
             }
-            noticiaService.findTagsInTitle();
+
         }
     }
 

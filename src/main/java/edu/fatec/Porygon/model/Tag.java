@@ -32,6 +32,9 @@ public class Tag {
     @ManyToMany(mappedBy = "tags")
     private Set<Portal> portais = new HashSet<>();
 
+    @ManyToMany(mappedBy = "tags")
+    private Set<Noticia> noticias = new HashSet<>();
+
     public Integer getId() {
         return id;
     }
@@ -70,6 +73,14 @@ public class Tag {
 
     public void setPortais(Set<Portal> portais) {
         this.portais = portais;
+    }
+
+    public Set<Noticia> getNoticias() {
+        return noticias;
+    }
+
+    public void setNoticias(Set<Noticia> noticias) {
+        this.noticias = noticias;
     }
 
 }
