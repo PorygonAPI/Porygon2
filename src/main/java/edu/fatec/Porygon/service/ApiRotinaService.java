@@ -55,8 +55,14 @@ public class ApiRotinaService {
         RestTemplate restTemplate = new RestTemplate();
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(api.getUrl(), String.class);
+            String conteudo = response.getBody();
+            
+            if (apiDadosRepository.existsByConteudo(conteudo)) {
+                return;
+            }
+
             ApiDados apiDados = new ApiDados();
-            apiDados.setConteudo(response.getBody());
+            apiDados.setConteudo(conteudo);
             apiDados.setDescricao("Dados da API: " + api.getNome());
             apiDados.setApi(api);
             apiDados.setDataColeta(LocalDate.now());
