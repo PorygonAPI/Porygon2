@@ -121,16 +121,16 @@ public class NoticiaService {
                         tituloNormalizado.contains(tagNormalizada);
             }
 
-            if (!tagEncontrada && tag.getSinonimos() != null) {
-                for (Sinonimo sinonimo : tag.getSinonimos()) {
-                    String sinonimoNormalizado = normalizarTexto(sinonimo.getNome());
-                    if (conteudoNormalizado.contains(sinonimoNormalizado) ||
-                            tituloNormalizado.contains(sinonimoNormalizado)) {
-                        tagEncontrada = true;
-                        break;
-                    }
-                }
-            }
+//            if (!tagEncontrada && tag.getSinonimos() != null) {
+//                for (Sinonimo sinonimo : tag.getSinonimos()) {
+//                    String sinonimoNormalizado = normalizarTexto(sinonimo.getNome());
+//                    if (conteudoNormalizado.contains(sinonimoNormalizado) ||
+//                            tituloNormalizado.contains(sinonimoNormalizado)) {
+//                        tagEncontrada = true;
+//                        break;
+//                    }
+//                }
+//            }
 
             if (tagEncontrada) {
                 tagsRelevantes.add(tag);
