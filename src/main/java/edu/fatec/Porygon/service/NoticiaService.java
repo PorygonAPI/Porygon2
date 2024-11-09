@@ -1,8 +1,6 @@
 package edu.fatec.Porygon.service;
 
-import java.text.Normalizer;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Arrays;
 import java.util.List;
