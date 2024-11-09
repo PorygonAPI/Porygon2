@@ -248,3 +248,5 @@ public class DataScrapperService {
     }
 
 }
+
+// codigo certo
