@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,6 +32,10 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags")
     private Set<Portal> portais = new HashSet<>();
+
+    @ManyToMany(mappedBy = "tags")
+    @JsonBackReference
+    private Set<Noticia> noticias;
 
     public Integer getId() {
         return id;
