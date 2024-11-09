@@ -135,7 +135,13 @@ public class ApiService {
         if (apiOptional.isPresent()) {
             Api api = apiOptional.get();
             api.setAtivo(novoStatus);
-            return apiRepository.save(api);
+            Api savedApi = apiRepository.save(api);
+
+            if (novoStatus) {
+                apiRotinaService.realizarRequisicaoApi(savedApi);
+            }
+
+            return savedApi;
         }
         return null;
     }

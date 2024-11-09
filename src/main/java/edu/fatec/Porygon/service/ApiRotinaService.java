@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.HashSet;
 
 @Service
 public class ApiRotinaService {
@@ -30,7 +31,6 @@ public class ApiRotinaService {
         verificarEAtualizarApis();
     }
 
-    // O método de verificação que já existe
     public void verificarEAtualizarApis() {
         List<Api> apis = apiRepository.findAll();
 
@@ -42,10 +42,10 @@ public class ApiRotinaService {
 
                 int intervaloDias = agendador.getQuantidade();
 
-                if (ultimaAtualizacao == null || 
-                    hoje.isEqual(ultimaAtualizacao.plusDays(intervaloDias)) || 
-                    hoje.isAfter(ultimaAtualizacao.plusDays(intervaloDias))) {
-                        realizarRequisicaoApi(api);
+                if (ultimaAtualizacao == null ||
+                        hoje.isEqual(ultimaAtualizacao.plusDays(intervaloDias)) ||
+                        hoje.isAfter(ultimaAtualizacao.plusDays(intervaloDias))) {
+                    realizarRequisicaoApi(api);
                 }
             }
         }
@@ -60,6 +60,7 @@ public class ApiRotinaService {
             apiDados.setDescricao("Dados da API: " + api.getNome());
             apiDados.setApi(api);
             apiDados.setDataColeta(LocalDate.now());
+            apiDados.setTags(new HashSet<>(api.getTags())); // Associar as tags da API aos ApiDados
             apiDadosRepository.save(apiDados);
 
             api.setUltimaAtualizacao(LocalDate.now());
