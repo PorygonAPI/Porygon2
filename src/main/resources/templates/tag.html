@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://bootswatch.com/5/cerulean/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
-
 </head>
 
 <body>
@@ -50,8 +49,9 @@
     </div>
 
     <h4 class="mb-4 text-center">Cadastro de Tag</h4>
-    <form th:action="@{/tags/salvar}" method="post">
+    <form th:action="@{/tags/salvar}" method="post" id="tagForm">
         <input type="hidden" th:if="${tag.id}" th:name="id" th:value="${tag.id}"/>
+        <input type="hidden" id="confirmacaoCadastro" name="confirmacaoCadastro" value="false"/>
         <div class="row mb-3">
             <div class="col-md-6 offset-md-3">
                 <label for="nome" class="form-label">Nome da Tag:</label>
@@ -89,6 +89,25 @@
     </div>
 </div>
 
+<!-- Modal de Confirmação -->
+<div class="modal fade" th:if="${confirmarCadastro}" id="confirmacaoModal" tabindex="-1" aria-labelledby="confirmacaoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmacaoModalLabel">Confirmação de Cadastro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Já existe um sinônimo cadastrado. Deseja continuar com o cadastro?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="confirmarCadastro()">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <footer class="bg-dark text-light py-4">
     <div class="container text-center">
         <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
@@ -96,6 +115,11 @@
 </footer>
 
 <script>
+    function confirmarCadastro() {
+        document.getElementById('confirmacaoCadastro').value = 'true';
+        document.getElementById('tagForm').submit();
+    }
+
     document.addEventListener('DOMContentLoaded', (event) => {
         const successAlert = document.querySelector('.alert-success');
         if (successAlert) {
@@ -103,9 +127,14 @@
                 successAlert.style.display = 'none';
             }, 5000);
         }
+
+        const confirmacaoModal = document.getElementById('confirmacaoModal');
+        if (confirmacaoModal) {
+            const modal = new bootstrap.Modal(confirmacaoModal);
+            modal.show();
+        }
     });
 </script>
-<!-- Bootstrap JS e dependências -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
