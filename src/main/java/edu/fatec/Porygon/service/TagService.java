@@ -9,7 +9,6 @@ import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.repository.SinonimoRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TagService {
@@ -23,46 +22,52 @@ public class TagService {
     @Autowired
     private TagScrapperService tagScrapperService;
 
-    public Tag criarTag(Tag tag, boolean ignorarSinonimo) {
+    public Tag criarTag(Tag tag) {
+        // Verifica se a tag já existe no banco de dados
         if (tagRepository.existsByNome(tag.getNome())) {
             throw new RuntimeException("A tag já existe.");
         }
 
-        if (!ignorarSinonimo) {
-            Optional<Tag> sinonimoExistente = verificarSinonimo(tag.getNome());
-            if (sinonimoExistente.isPresent()) {
-                throw new RuntimeException("Já existe um sinônimo cadastrado: " + sinonimoExistente.get().getNome());
-            }
+        // Verifica se a tag já existe como sinônimo
+        List<Sinonimo> sinonimosExistentes = sinonimoRepository.findByTag(tag.getNome());
+        if (!sinonimosExistentes.isEmpty()) {
+            // Aqui você pode disparar um modal ou algo similar para pedir confirmação ao usuário
+            // Para simular isso, podemos lançar uma exceção informando sobre a situação
+            throw new RuntimeException("A tag já existe como sinônimo de outra tag. Deseja continuar?");
         }
 
+        // Formatar o nome da tag
         tag.setNome(formatarPalavra(tag.getNome()));
+
+        // Salva a nova tag
         Tag novaTag = tagRepository.save(tag);
+
+        // Atualiza os sinônimos associados à tag
         atualizarSinonimos(novaTag.getNome().toLowerCase(), novaTag);
         return novaTag;
     }
 
+    // Método para editar uma tag, caso seja necessário
     public Tag editarTag(Integer id, String novoNome) {
         Tag tagExistente = tagRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tag não encontrada."));
 
+        // Verifica se o novo nome já existe no banco
         if (!tagExistente.getNome().equalsIgnoreCase(novoNome) && tagRepository.existsByNome(novoNome)) {
             throw new RuntimeException("Uma tag com este nome já existe.");
         }
 
+        // Formatar o nome da nova tag
+        formatarPalavra(novoNome);
         tagExistente.setNome(formatarPalavra(novoNome));
         tagRepository.save(tagExistente);
+
+        // Atualiza os sinônimos associados
         atualizarSinonimos(tagExistente.getNome().toLowerCase(), tagExistente);
         return tagExistente;
     }
 
-    public Optional<Tag> verificarSinonimo(String nome) {
-        return tagScrapperService.buscarSinonimos(nome.toLowerCase()).stream()
-                .map(tagRepository::findByNome)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
-    }
-
+    // Método de formatação do nome da tag
     private String formatarPalavra(String nome) {
         String regex = "^[A-Za-zÀ-ÖØ-öø-ÿ]+([ -][A-Za-zÀ-ÖØ-öø-ÿ]+)*$";
         if (!nome.matches(regex)) {
@@ -83,11 +88,13 @@ public class TagService {
         return tagFormatada.toString().trim();
     }
 
+    // Atualiza os sinônimos de uma tag
     private void atualizarSinonimos(String nomeTagParaScraping, Tag tag) {
         List<String> sinonimos = tagScrapperService.buscarSinonimos(nomeTagParaScraping);
         vincularSinonimos(sinonimos, tag);
     }
 
+    // Vincula os sinônimos à tag
     private void vincularSinonimos(List<String> sinonimos, Tag tag) {
         List<Sinonimo> sinonimosAntigos = sinonimoRepository.findByTag(tag);
         for (Sinonimo sinonimoAntigo : sinonimosAntigos) {
