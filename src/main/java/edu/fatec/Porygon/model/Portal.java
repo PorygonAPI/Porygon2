@@ -39,9 +39,9 @@ public class Portal {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-        name = "Portal_Tag",
-        joinColumns = @JoinColumn(name = "portal_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
+            name = "Portal_Tag",
+            joinColumns = @JoinColumn(name = "portal_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> tags = new HashSet<>();
 
