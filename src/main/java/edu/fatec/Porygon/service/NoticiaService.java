@@ -59,7 +59,6 @@ public class NoticiaService {
 
         return noticiaRepository.save(noticia);
     }
-
     public void findTagsInTitle() {
         List<Tag> tags = tagRepository.findAll();
         List<Noticia> news = noticiaRepository.findAll();
