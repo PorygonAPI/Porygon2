@@ -56,7 +56,10 @@ public class ApiRotinaService {
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(api.getUrl(), String.class);
             String conteudo = response.getBody();
-            
+
+            api.setUltimaAtualizacao(LocalDate.now());
+            apiRepository.save(api);
+
             if (apiDadosRepository.existsByConteudo(conteudo)) {
                 return;
             }
@@ -66,11 +69,9 @@ public class ApiRotinaService {
             apiDados.setDescricao("Dados da API: " + api.getNome());
             apiDados.setApi(api);
             apiDados.setDataColeta(LocalDate.now());
-            apiDados.setTags(new HashSet<>(api.getTags())); // Associar as tags da API aos ApiDados
+            apiDados.setTags(new HashSet<>(api.getTags()));
             apiDadosRepository.save(apiDados);
 
-            api.setUltimaAtualizacao(LocalDate.now());
-            apiRepository.save(api);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao realizar a requisição para a API: " + e.getMessage());
         }
