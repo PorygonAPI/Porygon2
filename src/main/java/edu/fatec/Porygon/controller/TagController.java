@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping("/tags")
 public class TagController {
@@ -23,13 +25,23 @@ public class TagController {
     }
 
     @PostMapping("/salvar")
-    public String salvarTag(@ModelAttribute Tag tag, RedirectAttributes redirectAttributes) {
+    public String salvarTag(@ModelAttribute Tag tag, @RequestParam("confirmacaoCadastro") boolean confirmacaoCadastro, RedirectAttributes redirectAttributes) {
         try {
+            if (!confirmacaoCadastro) {
+                Optional<Tag> tagExistente = tagService.verificarSinonimo(tag.getNome());
+                if (tagExistente.isPresent()) {
+                    redirectAttributes.addFlashAttribute("mensagemErro", "Já existe um sinônimo cadastrado: " + tagExistente.get().getNome());
+                    redirectAttributes.addFlashAttribute("confirmarCadastro", true);
+                    redirectAttributes.addFlashAttribute("tag", tag);
+                    return "redirect:/tags";
+                }
+            }
+
             if (tag.getId() != null) {
                 tagService.editarTag(tag.getId(), tag.getNome());
                 redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag atualizada com sucesso!");
             } else {
-                tagService.criarTag(tag);
+                tagService.criarTag(tag, confirmacaoCadastro);
                 redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag cadastrada com sucesso!");
             }
         } catch (RuntimeException e) {
