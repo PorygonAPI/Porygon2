@@ -20,7 +20,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import edu.fatec.Porygon.service.NoticiaService;
 
 @Service
 public class DataScrapperService {
