@@ -9,15 +9,19 @@ import jakarta.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 @Service
 public class ApiRotinaService {
+
+    private static final Logger logger = Logger.getLogger(ApiRotinaService.class.getName());
 
     @Autowired
     private ApiRepository apiRepository;
@@ -27,26 +31,31 @@ public class ApiRotinaService {
 
     @PostConstruct
     public void verificarApisNaInicializacao() {
-        System.out.println("Verificando e atualizando APIs ao iniciar a aplicação...");
+        logger.info("Verificando e atualizando APIs ao iniciar a aplicação...");
         verificarEAtualizarApis();
     }
 
+    @Scheduled(cron = "0 0 0 * * *")
     public void verificarEAtualizarApis() {
         List<Api> apis = apiRepository.findAll();
+        LocalDate hoje = LocalDate.now();
 
         for (Api api : apis) {
             if (api.isAtivo() && api.getAgendador() != null) {
                 Agendador agendador = api.getAgendador();
-                LocalDate hoje = LocalDate.now();
                 LocalDate ultimaAtualizacao = api.getUltimaAtualizacao();
-
                 int intervaloDias = agendador.getQuantidade();
 
                 if (ultimaAtualizacao == null ||
                         hoje.isEqual(ultimaAtualizacao.plusDays(intervaloDias)) ||
                         hoje.isAfter(ultimaAtualizacao.plusDays(intervaloDias))) {
+                    logger.info("Iniciando atualização para API: " + api.getNome());
                     realizarRequisicaoApi(api);
+                } else {
+                    logger.info("API " + api.getNome() + " ainda não necessita de atualização.");
                 }
+            } else {
+                logger.info("API " + api.getNome() + " está inativa ou sem agendamento configurado.");
             }
         }
     }
@@ -61,6 +70,7 @@ public class ApiRotinaService {
             apiRepository.save(api);
 
             if (apiDadosRepository.existsByConteudo(conteudo)) {
+                logger.info("Conteúdo já existe no banco de dados para API: " + api.getNome());
                 return;
             }
 
@@ -72,7 +82,10 @@ public class ApiRotinaService {
             apiDados.setTags(new HashSet<>(api.getTags()));
             apiDadosRepository.save(apiDados);
 
+            logger.info("Dados salvos com sucesso para a API: " + api.getNome());
+
         } catch (Exception e) {
+            logger.severe("Erro ao realizar a requisição para a API " + api.getNome() + ": " + e.getMessage());
             throw new RuntimeException("Erro ao realizar a requisição para a API: " + e.getMessage());
         }
     }
