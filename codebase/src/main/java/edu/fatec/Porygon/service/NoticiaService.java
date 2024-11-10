@@ -79,7 +79,6 @@ public class NoticiaService {
                 noticiaRepository.save(noticia);
             }
 
-            // Chama a verificação no conteúdo da notícia
             associarTagsPorConteudo();
         }
     }
@@ -112,18 +111,16 @@ public class NoticiaService {
         for (Noticia noticia : noticias) {
             for (Tag tag : tags) {
                 if (buscarSinonimoNoConteudo(tag, noticia)) {
-                    // Inicializa o conjunto de tags, caso ainda seja null
                     if (noticia.getTags() == null) {
-                        noticia.setTags(new HashSet<>()); // Usa HashSet ao invés de ArrayList
+                        noticia.setTags(new HashSet<>()); 
                     }
 
-                    // Verifica se a tag já está presente antes de adicioná-la
                     if (!noticia.getTags().contains(tag)) {
-                        noticia.getTags().add(tag); // Adiciona a tag original encontrada
+                        noticia.getTags().add(tag);
                         noticiaRepository.save(noticia);
                     }
 
-                    break; // Interrompe ao encontrar o primeiro sinônimo e passa para a próxima notícia
+                    break;
                 }
             }
         }
@@ -132,22 +129,20 @@ public class NoticiaService {
     private boolean buscarSinonimoNoConteudo(Tag tag, Noticia noticia) {
         List<Sinonimo> sinonimos = sinonimoRepository.findByTag(tag);
 
-        // Remove acentos e caracteres especiais do conteúdo
         String conteudoLimpo = Normalizer.normalize(noticia.getConteudo(), Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}", "")
                 .replaceAll("[^a-zA-Z0-9\\s]", "").toLowerCase();
 
-        // Quebra o conteúdo em palavras para comparação
         String[] palavrasConteudo = conteudoLimpo.split("\\s+");
 
         for (String palavra : palavrasConteudo) {
             for (Sinonimo sinonimo : sinonimos) {
                 if (sinonimo.getNome().toLowerCase().equals(palavra)) {
-                    return true; // Encontrou um sinônimo
+                    return true; 
                 }
             }
         }
-        return false; // Não encontrou nenhum sinônimo
+        return false; 
     }
 
     private void associarTagsRelevantes(Noticia noticia, Set<Tag> tagsPortal) {

@@ -196,15 +196,12 @@
         const tagSelect = document.getElementById('tags');
         const allTags = Array.from(tagSelect.options);
 
-        // Escuta o input do usuário e filtra as tags
         tagInput.addEventListener('input', function() {
             const searchQuery = this.value.toLowerCase();
-            tagSelect.innerHTML = ''; // Limpa as opções visíveis
+            tagSelect.innerHTML = '';
 
-            // Filtra as opções que começam com o texto digitado
             const filteredTags = allTags.filter(tag => tag.text.toLowerCase().startsWith(searchQuery));
             
-            // Adiciona as opções filtradas de volta no select
             filteredTags.forEach(tag => {
                 tagSelect.appendChild(tag);
             });
