@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Noticia {
@@ -30,6 +31,7 @@ public class Noticia {
     private Portal portal;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JsonManagedReference
     @JoinTable(
             name = "noticia_tag",
             joinColumns = @JoinColumn(name = "noticia_id"),

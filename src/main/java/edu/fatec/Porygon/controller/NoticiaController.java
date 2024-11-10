@@ -6,6 +6,7 @@ import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.Comparator;
 
 import edu.fatec.Porygon.service.NoticiaService;
@@ -63,8 +64,12 @@ public class NoticiaController {
 
         List<Noticia> noticias = noticiaService.listarNoticiasPorData(dataInicio, dataFim);
         noticias.sort(Comparator.comparing(Noticia::getData));
-        return ResponseEntity.ok(noticias);
-    }
+        List<NoticiaDTO> noticiaDTOs = noticias.stream()
+                .map(NoticiaDTO::new)
+                .collect(Collectors.toList());
+            noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData)); // Ordenação via DTO
+            return ResponseEntity.ok(noticiaDTOs); // Retornando DTOs, não entidades
+}
 
     @GetMapping("/associar-tags")
     @ResponseBody
