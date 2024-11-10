@@ -1,20 +1,17 @@
 package edu.fatec.Porygon.service;
 
+import java.text.Normalizer;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.model.Sinonimo;
 import edu.fatec.Porygon.model.Tag;
-import edu.fatec.Porygon.repository.NoticiaRepository;
-import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.repository.SinonimoRepository;
+import edu.fatec.Porygon.repository.TagRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import edu.fatec.Porygon.model.Noticia;
+import edu.fatec.Porygon.repository.NoticiaRepository;
 
 @Service
 public class NoticiaService {
@@ -57,6 +54,7 @@ public class NoticiaService {
 
         return noticiaRepository.save(noticia);
     }
+
     public void findTagsInTitle() {
         List<Tag> tags = tagRepository.findAll();
         List<Noticia> news = noticiaRepository.findAll();
@@ -75,9 +73,12 @@ public class NoticiaService {
             }
 
             if (!foundTags.isEmpty()) {
-                noticia.setTags(new HashSet<>(foundTags));
+                noticia.setTags(new ArrayList<>(foundTags));
                 noticiaRepository.save(noticia);
             }
+
+            // Chama a verificação no conteúdo da notícia
+            associarTagsPorConteudo();
         }
     }
 
@@ -85,20 +86,64 @@ public class NoticiaService {
         List<Sinonimo> sinonimos = sinonimoRepository.findByTag(tag);
         Tag retorno = null;
 
-        String cleanTitle = normalizarTexto(noticia.getTitulo());
-        String[] words = cleanTitle.split("\\s+");
+        String cleanTitleAccent = Normalizer.normalize(noticia.getTitulo(), Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}", "");
+        String cleanTitleSpecialCharacter = cleanTitleAccent.replaceAll("[^a-zA-Z0-9\\s]", "").toLowerCase();
+        String[] words = cleanTitleSpecialCharacter.split("\\s+");
 
-        outerLoop:
         for (String word : words) {
-            for (Sinonimo sinonimo : sinonimos) {
-                if (sinonimo.getNome().toLowerCase().equals(word)) {
-                    retorno = tag;
-                    break outerLoop;
+            for(Sinonimo sinonimo : sinonimos) {
+                if (sinonimo.getNome().toLowerCase().equals(word)){
+                    return tag;
                 }
             }
         }
 
-        return retorno;
+        return null;
+    }
+
+    public void associarTagsPorConteudo() {
+        List<Tag> tags = tagRepository.findAll();
+        List<Noticia> noticias = noticiaRepository.findAll();
+
+        for (Noticia noticia : noticias) {
+            for (Tag tag : tags) {
+                if (buscarSinonimoNoConteudo(tag, noticia)) {
+                    // Inicializa a lista de tags, caso ainda seja null
+                    if (noticia.getTags() == null) {
+                        noticia.setTags(new ArrayList<>());
+                    }
+
+                    // Verifica se a tag já está presente antes de adicioná-la
+                    if (!noticia.getTags().contains(tag)) {
+                        noticia.getTags().add(tag); // Adiciona a tag original encontrada
+                        noticiaRepository.save(noticia);
+                    }
+
+                    break; // Interrompe ao encontrar o primeiro sinônimo e passa para a próxima notícia
+                }
+            }
+        }
+    }
+
+    private boolean buscarSinonimoNoConteudo(Tag tag, Noticia noticia) {
+        List<Sinonimo> sinonimos = sinonimoRepository.findByTag(tag);
+
+        // Remove acentos e caracteres especiais do conteúdo
+        String conteudoLimpo = Normalizer.normalize(noticia.getConteudo(), Normalizer.Form.NFD)
+                .replaceAll("\\p{InCombiningDiacriticalMarks}", "")
+                .replaceAll("[^a-zA-Z0-9\\s]", "").toLowerCase();
+
+        // Quebra o conteúdo em palavras para comparação
+        String[] palavrasConteudo = conteudoLimpo.split("\\s+");
+
+        for (String palavra : palavrasConteudo) {
+            for (Sinonimo sinonimo : sinonimos) {
+                if (sinonimo.getNome().toLowerCase().equals(palavra)) {
+                    return true; // Encontrou um sinônimo
+                }
+            }
+        }
+        return false; // Não encontrou nenhum sinônimo
     }
 
     private void associarTagsRelevantes(Noticia noticia, Set<Tag> tagsPortal) {
@@ -110,7 +155,7 @@ public class NoticiaService {
         for (Tag tag : tagsPortal) {
             String tagNormalizada = normalizarTexto(tag.getNome());
             String[] palavrasTag = tagNormalizada.split("[-\\s]");
-            boolean tagEncontrada = false;
+            boolean tagEncontrada;
 
             if (palavrasTag.length > 1) {
                 tagEncontrada = Arrays.stream(palavrasTag)
@@ -120,17 +165,6 @@ public class NoticiaService {
                 tagEncontrada = conteudoNormalizado.contains(tagNormalizada) ||
                         tituloNormalizado.contains(tagNormalizada);
             }
-
-//            if (!tagEncontrada && tag.getSinonimos() != null) {
-//                for (Sinonimo sinonimo : tag.getSinonimos()) {
-//                    String sinonimoNormalizado = normalizarTexto(sinonimo.getNome());
-//                    if (conteudoNormalizado.contains(sinonimoNormalizado) ||
-//                            tituloNormalizado.contains(sinonimoNormalizado)) {
-//                        tagEncontrada = true;
-//                        break;
-//                    }
-//                }
-//            }
 
             if (tagEncontrada) {
                 tagsRelevantes.add(tag);

@@ -52,6 +52,7 @@ public class DataScrapperService {
         String url = portal.getUrl();
 
         try {
+            List<Noticia> noticias = new ArrayList<>();
             Element Titulo, Data, Autor;
             Elements Conteudo;
 
@@ -151,6 +152,9 @@ public class DataScrapperService {
             }
         }
 
+        noticiaService.findTagsInTitle();
+        noticiaService.associarTagsPorConteudo();
+
         hideLoading();
     }
 
@@ -189,6 +193,8 @@ public class DataScrapperService {
                 }
             }
 
+            noticiaService.findTagsInTitle();
+            noticiaService.associarTagsPorConteudo();
         }
     }
 
@@ -248,7 +254,8 @@ public class DataScrapperService {
                     }
                 }
             }
-
+            noticiaService.findTagsInTitle();
+            noticiaService.associarTagsPorConteudo();
         }
     }
 
