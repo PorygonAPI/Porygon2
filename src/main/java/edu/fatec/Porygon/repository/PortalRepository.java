@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface PortalRepository extends JpaRepository<Portal, Integer> {
 
     @Query("SELECT p FROM Portal p LEFT JOIN FETCH p.tags WHERE p.id = :id")
-    Optional<Portal> findByIdWithTags(@Param("id") Integer id);
+    Optional<Portal> findByIdWithTags(@Param("id") int id);
 
     @Query("SELECT DISTINCT p.seletorTitulo FROM Portal p WHERE p.seletorTitulo IS NOT NULL")
     List<String> findDistinctSeletorTitulo();
