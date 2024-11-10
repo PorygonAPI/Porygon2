@@ -20,6 +20,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import edu.fatec.Porygon.service.NoticiaService;
 
 @Service
 public class DataScrapperService {
@@ -144,6 +145,7 @@ public class DataScrapperService {
         }
 
         noticiaService.findTagsInTitle();
+        noticiaService.associarTagsPorConteudo();
 
         hideLoading();
     }
@@ -184,6 +186,7 @@ public class DataScrapperService {
             }
 
             noticiaService.findTagsInTitle();
+            noticiaService.associarTagsPorConteudo();
         }
     }
 
@@ -244,6 +247,7 @@ public class DataScrapperService {
                 }
             }
             noticiaService.findTagsInTitle();
+            noticiaService.associarTagsPorConteudo();
         }
     }
 

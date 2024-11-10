@@ -1,6 +1,5 @@
 package edu.fatec.Porygon.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +29,6 @@ public class Noticia {
     private Portal portal;
 
     @ManyToMany
-    @JsonManagedReference
     @JoinTable(
         name = "noticia_tag",
         joinColumns = @JoinColumn(name = "noticia_id"),
