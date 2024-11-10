@@ -37,12 +37,13 @@ public class Portal {
 
     private boolean hasScrapedToday;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-        name = "Portal_Tag",
-        joinColumns = @JoinColumn(name = "portal_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
+            name = "Portal_Tag",
+            joinColumns = @JoinColumn(name = "portal_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
+
     private Set<Tag> tags = new HashSet<>();
 
     public Set<Tag> getTags() {
