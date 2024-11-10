@@ -327,6 +327,7 @@ Tarefas Realizadas
 <br>
 ![Burndown - Sprint 3](https://github.com/user-attachments/assets/c4ab5ddc-610e-401f-acbf-8e47cef13764)
 
+
 <br>
 Tarefas Realizadas
 
@@ -363,8 +364,6 @@ Tarefas Realizadas
 | PYG-93   | PYG-108       | Concluído               | 10/nov./24 14:07     | -                   |
 | PYG-110  | PYG-112       | Concluído               | 10/nov./24 14:14     | 8                   |
 | PYG-14   | PYG-90        | Concluído               | 10/nov./24 14:44     | 8                   |
-
-
 
 
 <br>
