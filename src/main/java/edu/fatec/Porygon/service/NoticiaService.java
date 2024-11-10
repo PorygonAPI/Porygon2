@@ -73,7 +73,7 @@ public class NoticiaService {
             }
 
             if (!foundTags.isEmpty()) {
-                noticia.setTags(new ArrayList<>(foundTags));
+                noticia.setTags(foundTags);
                 noticiaRepository.save(noticia);
             }
 
@@ -108,9 +108,9 @@ public class NoticiaService {
         for (Noticia noticia : noticias) {
             for (Tag tag : tags) {
                 if (buscarSinonimoNoConteudo(tag, noticia)) {
-                    // Inicializa a lista de tags, caso ainda seja null
+                    // Inicializa o conjunto de tags, caso ainda seja null
                     if (noticia.getTags() == null) {
-                        noticia.setTags(new ArrayList<>());
+                        noticia.setTags(new HashSet<>()); // Usa HashSet ao invés de ArrayList
                     }
 
                     // Verifica se a tag já está presente antes de adicioná-la
