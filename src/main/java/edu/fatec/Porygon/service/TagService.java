@@ -9,6 +9,7 @@ import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.repository.SinonimoRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TagService {
@@ -22,15 +23,34 @@ public class TagService {
     @Autowired
     private TagScrapperService tagScrapperService;
 
-    public Tag criarTag(Tag tag) {
+    public Tag criarTag(Tag tag, boolean forcarCadastro) {
         if (tagRepository.existsByNome(tag.getNome())) {
-            throw new RuntimeException("A tag já existe.");}
+            throw new RuntimeException("A tag já existe.");
+        }
 
         formatarPalavra(tag.getNome());
         tag.setNome(formatarPalavra(tag.getNome()));
+        List<Sinonimo> sinonimosExistentes = sinonimoRepository.findByNome(tag.getNome().toLowerCase());
+
+        if (!sinonimosExistentes.isEmpty() && !forcarCadastro) {
+            throw new RuntimeException("A tag possui sinônimos cadastrados.");
+        }
+
         Tag novaTag = tagRepository.save(tag);
-        atualizarSinonimos(novaTag.getNome().toLowerCase(), novaTag);
-        return novaTag;}
+        if (!sinonimosExistentes.isEmpty()) {
+            for (Sinonimo sinonimo : sinonimosExistentes) {
+                List<String> sinonimosNomes = sinonimoRepository.findByTag(sinonimo.getTag())
+                        .stream()
+                        .map(Sinonimo::getNome)
+                        .collect(Collectors.toList());
+                sinonimosNomes.add(sinonimo.getTag().getNome());
+                vincularSinonimos(sinonimosNomes, novaTag);
+            }
+        } else {
+            atualizarSinonimos(novaTag.getNome().toLowerCase(), novaTag);
+        }
+        return novaTag;
+    }
 
     public Tag editarTag(Integer id, String novoNome) {
         Tag tagExistente = tagRepository.findById(id)
@@ -73,15 +93,20 @@ public class TagService {
         List<Sinonimo> sinonimosAntigos = sinonimoRepository.findByTag(tag);
         for (Sinonimo sinonimoAntigo : sinonimosAntigos) {
             if (!sinonimos.contains(sinonimoAntigo.getNome())) {
-                sinonimoRepository.delete(sinonimoAntigo);}}
+                sinonimoRepository.delete(sinonimoAntigo);
+            }
+        }
 
         for (String sinonimoNome : sinonimos) {
             String sinonimoFormatado = formatarPalavra(sinonimoNome);
-            if (!sinonimoRepository.existsByNomeAndTag(sinonimoFormatado, tag)) {
+            if (!sinonimoFormatado.equalsIgnoreCase(tag.getNome()) && !sinonimoRepository.existsByNomeAndTag(sinonimoFormatado, tag)) {
                 Sinonimo sinonimo = new Sinonimo();
                 sinonimo.setNome(sinonimoFormatado);
                 sinonimo.setTag(tag);
-                sinonimoRepository.save(sinonimo);}}}
+                sinonimoRepository.save(sinonimo);
+            }
+        }
+    }
 
     public List<Tag> listarTagsOrdenadas() {
         return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "nome"));}

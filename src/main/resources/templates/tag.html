@@ -8,7 +8,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://bootswatch.com/5/cerulean/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
-
 </head>
 
 <body>
@@ -50,7 +49,7 @@
     </div>
 
     <h4 class="mb-4 text-center">Cadastro de Tag</h4>
-    <form th:action="@{/tags/salvar}" method="post">
+    <form id="tagForm" th:action="@{/tags/salvar}" method="post">
         <input type="hidden" th:if="${tag.id}" th:name="id" th:value="${tag.id}"/>
         <div class="row mb-3">
             <div class="col-md-6 offset-md-3">
@@ -95,6 +94,25 @@
     </div>
 </footer>
 
+<!-- Pop-up Modal -->
+<div class="modal fade" id="sinonimoModal" tabindex="-1" aria-labelledby="sinonimoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sinonimoModalLabel">Sinônimo encontrado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                A tag possui sinônimos cadastrados. Deseja continuar com o cadastro?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmarCadastro">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
         const successAlert = document.querySelector('.alert-success');
@@ -103,6 +121,33 @@
                 successAlert.style.display = 'none';
             }, 5000);
         }
+
+        const tagForm = document.getElementById('tagForm');
+        tagForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const nome = document.getElementById('nome').value;
+
+            fetch(`/tags/verificar-sinonimo?nome=${nome}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sinonimoEncontrado) {
+                        const sinonimoModal = new bootstrap.Modal(document.getElementById('sinonimoModal'));
+                        sinonimoModal.show();
+
+                        document.getElementById('confirmarCadastro').addEventListener('click', function () {
+                            const hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'forcarCadastro';
+                            hiddenInput.value = 'true';
+                            tagForm.appendChild(hiddenInput);
+                            tagForm.submit();
+                        });
+                    } else {
+                        tagForm.submit();
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
+        });
     });
 </script>
 <!-- Bootstrap JS e dependências -->
