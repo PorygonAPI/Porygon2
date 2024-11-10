@@ -283,7 +283,7 @@ Como usuário, quero consultar APIs filtrando por data de cadastro para revisar 
 <br>
 ![Burndown - Sprint 2 (1)](https://github.com/user-attachments/assets/56112d28-8240-4d07-929f-c7cb82e06201)
 <br>
-##### Tarefas Realizadas
+Tarefas Realizadas
 
 | História | Tarefa finalizada | Story Points | Data de Finalização |
 |----------|-------------------|--------------|---------------------|
@@ -315,7 +315,62 @@ Como usuário, quero consultar APIs filtrando por data de cadastro para revisar 
 
 
 
+<details>
+<summary> SPRINT 3 | 21/10/2024 até 10/11/2024 </summary>
+<br>
 
+  Nesta sprint, usamos points por tarefa para medir nosso progresso em relação às entregas propostas.  
+  Pontuação total: 202
+<br>
+  Obs.: Houve uma mudança de escopo durante o desenvolvimento, resultando em uma redução de 26 pontos que serão tratados na próxima sprint. Essa alteração é visível no burndown.
+<br>
+<br>
+![Burndown - Sprint 3](https://github.com/user-attachments/assets/c4ab5ddc-610e-401f-acbf-8e47cef13764)
+
+<br>
+Tarefas Realizadas
+
+| História | Chave do item | Status                  | Atualizado(a)       | Story Point Tarefa |
+|----------|---------------|-------------------------|----------------------|---------------------|
+| PYG-14   | PYG-70        | Concluído               | 24/out./24 00:12     | 5                   |
+| PYG-93   | PYG-102       | Concluído               | 25/out./24 10:49     | 3                   |
+| PYG-14   | PYG-69        | Concluído               | 25/out./24 13:17     | 8                   |
+| PYG-93   | PYG-107       | Concluído               | 25/out./24 13:27     | -                   |
+| PYG-14   | PYG-67        | Concluído               | 26/out./24 00:03     | 5                   |
+| PYG-14   | PYG-82        | Concluído               | 26/out./24 02:32     | 5                   |
+| PYG-14   | PYG-68        | Concluído               | 28/out./24 14:48     | 21                  |
+| PYG-93   | PYG-94        | Concluído               | 28/out./24 18:02     | -                   |
+| PYG-93   | PYG-95        | Concluído               | 28/out./24 18:02     | -                   |
+| PYG-14   | PYG-84        | Concluído               | 29/out./24 19:54     | 8                   |
+| PYG-14   | PYG-87        | Concluído               | 30/out./24 12:45     | 5                   |
+| PYG-14   | PYG-109       | Concluído               | 30/out./24 12:45     | 8                   |
+| PYG-93   | PYG-104       | Concluído               | 30/out./24 20:41     | -                   |
+| PYG-14   | PYG-88        | Concluído               | 01/nov./24 16:01     | 8                   |
+| PYG-14   | PYG-89        | Concluído               | 01/nov./24 16:01     | 13                  |
+| PYG-93   | PYG-105       | Concluído               | 01/nov./24 16:05     | -                   |
+| PYG-93   | PYG-106       | Concluído               | 01/nov./24 16:11     | -                   |
+| PYG-93   | PYG-97        | Concluído               | 04/nov./24 14:58     | -                   |
+| PYG-110  | PYG-111       | Concluído               | 05/nov./24 16:15     | 13                  |
+| PYG-110  | PYG-117       | Concluído               | 05/nov./24 16:15     | 8                   |
+| PYG-110  | PYG-120       | Concluído               | 06/nov./24 11:05     | 5                   |
+| PYG-93   | PYG-98        | Concluído               | 07/nov./24 00:39     | -                   |
+| PYG-93   | PYG-101       | Concluído               | 07/nov./24 10:34     | -                   |
+| PYG-110  | PYG-119       | Concluído               | 07/nov./24 12:49     | 8                   |
+| PYG-110  | PYG-113       | Concluído               | 08/nov./24 20:22     | 8                   |
+| PYG-110  | PYG-114       | Concluído               | 08/nov./24 20:22     | 8                   |
+| PYG-110  | PYG-116       | Concluído               | 10/nov./24 00:29     | 13                  |
+| PYG-110  | PYG-115       | Concluído               | 10/nov./24 00:30     | 8                   |
+| PYG-93   | PYG-108       | Concluído               | 10/nov./24 14:07     | -                   |
+| PYG-110  | PYG-112       | Concluído               | 10/nov./24 14:14     | 8                   |
+| PYG-14   | PYG-90        | Concluído               | 10/nov./24 14:44     | 8                   |
+
+
+
+
+<br>
+Última Atualização: 10/11/2024
+
+</details>
 
 
 
