@@ -14,6 +14,8 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -38,9 +40,12 @@ public class DataScrapperService {
     @Autowired
     private NoticiaService noticiaService;
 
+    @Transactional
     public void scrapeDatabyPortalID(int id) {
-        Portal portal = portalRepository.findById(id)
+        Portal portal = portalRepository.findByIdWithTags(id)
                 .orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
+        portal.getTags().size();
+
 
         String classNameLink = portal.getSeletorCaminhoNoticia();
         String referenceClass = "a[href]." + classNameLink;
