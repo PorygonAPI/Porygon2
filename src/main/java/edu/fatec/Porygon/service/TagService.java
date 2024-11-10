@@ -9,7 +9,7 @@ import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.repository.SinonimoRepository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TagService {
@@ -23,21 +23,32 @@ public class TagService {
     @Autowired
     private TagScrapperService tagScrapperService;
 
-    public Tag criarTag(Tag tag, boolean ignorarSinonimo) {
+    public Tag criarTag(Tag tag, boolean forcarCadastro) {
         if (tagRepository.existsByNome(tag.getNome())) {
             throw new RuntimeException("A tag já existe.");
         }
 
-        if (!ignorarSinonimo) {
-            Optional<Tag> sinonimoExistente = verificarSinonimo(tag.getNome());
-            if (sinonimoExistente.isPresent()) {
-                throw new RuntimeException("Já existe um sinônimo cadastrado: " + sinonimoExistente.get().getNome());
-            }
+        formatarPalavra(tag.getNome());
+        tag.setNome(formatarPalavra(tag.getNome()));
+        List<Sinonimo> sinonimosExistentes = sinonimoRepository.findByNome(tag.getNome().toLowerCase());
+
+        if (!sinonimosExistentes.isEmpty() && !forcarCadastro) {
+            throw new RuntimeException("A tag possui sinônimos cadastrados.");
         }
 
-        tag.setNome(formatarPalavra(tag.getNome()));
         Tag novaTag = tagRepository.save(tag);
-        atualizarSinonimos(novaTag.getNome().toLowerCase(), novaTag);
+        if (!sinonimosExistentes.isEmpty()) {
+            for (Sinonimo sinonimo : sinonimosExistentes) {
+                List<String> sinonimosNomes = sinonimoRepository.findByTag(sinonimo.getTag())
+                        .stream()
+                        .map(Sinonimo::getNome)
+                        .collect(Collectors.toList());
+                sinonimosNomes.add(sinonimo.getTag().getNome());
+                vincularSinonimos(sinonimosNomes, novaTag);
+            }
+        } else {
+            atualizarSinonimos(novaTag.getNome().toLowerCase(), novaTag);
+        }
         return novaTag;
     }
 
@@ -46,22 +57,13 @@ public class TagService {
                 .orElseThrow(() -> new RuntimeException("Tag não encontrada."));
 
         if (!tagExistente.getNome().equalsIgnoreCase(novoNome) && tagRepository.existsByNome(novoNome)) {
-            throw new RuntimeException("Uma tag com este nome já existe.");
-        }
+            throw new RuntimeException("Uma tag com este nome já existe.");}
 
+        formatarPalavra(novoNome);
         tagExistente.setNome(formatarPalavra(novoNome));
         tagRepository.save(tagExistente);
         atualizarSinonimos(tagExistente.getNome().toLowerCase(), tagExistente);
-        return tagExistente;
-    }
-
-    public Optional<Tag> verificarSinonimo(String nome) {
-        return tagScrapperService.buscarSinonimos(nome.toLowerCase()).stream()
-                .map(tagRepository::findByNome)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
-    }
+        return tagExistente;}
 
     private String formatarPalavra(String nome) {
         String regex = "^[A-Za-zÀ-ÖØ-öø-ÿ]+([ -][A-Za-zÀ-ÖØ-öø-ÿ]+)*$";
@@ -85,8 +87,7 @@ public class TagService {
 
     private void atualizarSinonimos(String nomeTagParaScraping, Tag tag) {
         List<String> sinonimos = tagScrapperService.buscarSinonimos(nomeTagParaScraping);
-        vincularSinonimos(sinonimos, tag);
-    }
+        vincularSinonimos(sinonimos, tag);}
 
     private void vincularSinonimos(List<String> sinonimos, Tag tag) {
         List<Sinonimo> sinonimosAntigos = sinonimoRepository.findByTag(tag);
@@ -98,7 +99,7 @@ public class TagService {
 
         for (String sinonimoNome : sinonimos) {
             String sinonimoFormatado = formatarPalavra(sinonimoNome);
-            if (!sinonimoRepository.existsByNomeAndTag(sinonimoFormatado, tag)) {
+            if (!sinonimoFormatado.equalsIgnoreCase(tag.getNome()) && !sinonimoRepository.existsByNomeAndTag(sinonimoFormatado, tag)) {
                 Sinonimo sinonimo = new Sinonimo();
                 sinonimo.setNome(sinonimoFormatado);
                 sinonimo.setTag(tag);
@@ -108,11 +109,8 @@ public class TagService {
     }
 
     public List<Tag> listarTagsOrdenadas() {
-        return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "nome"));
-    }
+        return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "nome"));}
 
     public Tag buscarTagPorId(Integer id) {
         return tagRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Tag não encontrada."));
-    }
-}
+                .orElseThrow(() -> new RuntimeException("Tag não encontrada."));}}
