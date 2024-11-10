@@ -67,8 +67,8 @@ public class NoticiaController {
         List<NoticiaDTO> noticiaDTOs = noticias.stream()
                 .map(NoticiaDTO::new)
                 .collect(Collectors.toList());
-            noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData)); // Ordenação via DTO
-            return ResponseEntity.ok(noticiaDTOs); // Retornando DTOs, não entidades
+            noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData));
+            return ResponseEntity.ok(noticiaDTOs);
 }
 
     @GetMapping("/associar-tags")
