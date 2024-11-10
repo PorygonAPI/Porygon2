@@ -6,11 +6,10 @@ import edu.fatec.Porygon.model.ApiDados;
 import edu.fatec.Porygon.repository.ApiDadosRepository;
 import edu.fatec.Porygon.repository.ApiRepository;
 import jakarta.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -31,19 +30,19 @@ public class ApiRotinaService {
 
     @PostConstruct
     public void verificarApisNaInicializacao() {
-        logger.info("Verificando e atualizando APIs ao iniciar a aplicação...");
+        System.out.println("Verificando e atualizando APIs ao iniciar a aplicação...");
         verificarEAtualizarApis();
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
     public void verificarEAtualizarApis() {
         List<Api> apis = apiRepository.findAll();
-        LocalDate hoje = LocalDate.now();
 
         for (Api api : apis) {
             if (api.isAtivo() && api.getAgendador() != null) {
                 Agendador agendador = api.getAgendador();
+                LocalDate hoje = LocalDate.now();
                 LocalDate ultimaAtualizacao = api.getUltimaAtualizacao();
+
                 int intervaloDias = agendador.getQuantidade();
 
                 if (ultimaAtualizacao == null ||
@@ -60,12 +59,14 @@ public class ApiRotinaService {
         }
     }
 
+    @Transactional
     public void realizarRequisicaoApi(Api api) {
+        api = apiRepository.findByIdWithTags(api.getId()).orElseThrow(() -> new RuntimeException("API não encontrada"));
+
         RestTemplate restTemplate = new RestTemplate();
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(api.getUrl(), String.class);
             String conteudo = response.getBody();
-
             api.setUltimaAtualizacao(LocalDate.now());
             apiRepository.save(api);
 
@@ -73,19 +74,17 @@ public class ApiRotinaService {
                 logger.info("Conteúdo já existe no banco de dados para API: " + api.getNome());
                 return;
             }
-
             ApiDados apiDados = new ApiDados();
-            apiDados.setConteudo(conteudo);
+            apiDados.setConteudo(response.getBody());
             apiDados.setDescricao("Dados da API: " + api.getNome());
             apiDados.setApi(api);
             apiDados.setDataColeta(LocalDate.now());
             apiDados.setTags(new HashSet<>(api.getTags()));
             apiDadosRepository.save(apiDados);
 
-            logger.info("Dados salvos com sucesso para a API: " + api.getNome());
-
+            api.setUltimaAtualizacao(LocalDate.now());
+            apiRepository.save(api);
         } catch (Exception e) {
-            logger.severe("Erro ao realizar a requisição para a API " + api.getNome() + ": " + e.getMessage());
             throw new RuntimeException("Erro ao realizar a requisição para a API: " + e.getMessage());
         }
     }
