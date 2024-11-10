@@ -29,7 +29,7 @@ public class Noticia {
     @JsonBackReference
     private Portal portal;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "noticia_tag",
             joinColumns = @JoinColumn(name = "noticia_id"),

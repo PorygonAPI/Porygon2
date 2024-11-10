@@ -8,6 +8,7 @@ import edu.fatec.Porygon.model.Sinonimo;
 import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.SinonimoRepository;
 import edu.fatec.Porygon.repository.TagRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import edu.fatec.Porygon.model.Noticia;
@@ -55,6 +56,7 @@ public class NoticiaService {
         return noticiaRepository.save(noticia);
     }
 
+    @Transactional
     public void findTagsInTitle() {
         List<Tag> tags = tagRepository.findAll();
         List<Noticia> news = noticiaRepository.findAll();
@@ -82,6 +84,7 @@ public class NoticiaService {
         }
     }
 
+
     public Tag searchSynonymsInTitle(Tag tag, Noticia noticia) {
         List<Sinonimo> sinonimos = sinonimoRepository.findByTag(tag);
         Tag retorno = null;
@@ -101,6 +104,7 @@ public class NoticiaService {
         return null;
     }
 
+    @Transactional
     public void associarTagsPorConteudo() {
         List<Tag> tags = tagRepository.findAll();
         List<Noticia> noticias = noticiaRepository.findAll();
