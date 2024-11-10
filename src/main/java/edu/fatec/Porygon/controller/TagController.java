@@ -1,6 +1,8 @@
 package edu.fatec.Porygon.controller;
 
+import edu.fatec.Porygon.model.Sinonimo;
 import edu.fatec.Porygon.model.Tag;
+import edu.fatec.Porygon.repository.SinonimoRepository;
 import edu.fatec.Porygon.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,7 +10,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/tags")
@@ -16,6 +20,9 @@ public class TagController {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private SinonimoRepository sinonimoRepository;
 
     @GetMapping
     public String mostrarFormularioCadastro(Model model) {
@@ -25,23 +32,13 @@ public class TagController {
     }
 
     @PostMapping("/salvar")
-    public String salvarTag(@ModelAttribute Tag tag, @RequestParam("confirmacaoCadastro") boolean confirmacaoCadastro, RedirectAttributes redirectAttributes) {
+    public String salvarTag(@ModelAttribute Tag tag, @RequestParam(required = false) boolean forcarCadastro, RedirectAttributes redirectAttributes) {
         try {
-            if (!confirmacaoCadastro) {
-                Optional<Tag> tagExistente = tagService.verificarSinonimo(tag.getNome());
-                if (tagExistente.isPresent()) {
-                    redirectAttributes.addFlashAttribute("mensagemErro", "Já existe um sinônimo cadastrado: " + tagExistente.get().getNome());
-                    redirectAttributes.addFlashAttribute("confirmarCadastro", true);
-                    redirectAttributes.addFlashAttribute("tag", tag);
-                    return "redirect:/tags";
-                }
-            }
-
             if (tag.getId() != null) {
                 tagService.editarTag(tag.getId(), tag.getNome());
                 redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag atualizada com sucesso!");
             } else {
-                tagService.criarTag(tag, confirmacaoCadastro);
+                tagService.criarTag(tag, forcarCadastro);
                 redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag cadastrada com sucesso!");
             }
         } catch (RuntimeException e) {
@@ -56,5 +53,14 @@ public class TagController {
         model.addAttribute("tag", tag);
         model.addAttribute("tags", tagService.listarTagsOrdenadas());
         return "tag";
+    }
+
+    @GetMapping("/verificar-sinonimo")
+    @ResponseBody
+    public Map<String, Boolean> verificarSinonimo(@RequestParam String nome) {
+        List<Sinonimo> sinonimosExistentes = sinonimoRepository.findByNome(nome.toLowerCase());
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("sinonimoEncontrado", !sinonimosExistentes.isEmpty());
+        return response;
     }
 }
