@@ -11,5 +11,4 @@ public class PorygonApplication {
 	public static void main(String[] args) {
 		run(PorygonApplication.class, args);
 	}
-
 }

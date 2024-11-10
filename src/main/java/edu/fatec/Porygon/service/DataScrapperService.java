@@ -2,6 +2,7 @@ package edu.fatec.Porygon.service;
 
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.model.Portal;
+import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.model.Jornalista;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import edu.fatec.Porygon.repository.PortalRepository;
@@ -13,6 +14,8 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -20,7 +23,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import edu.fatec.Porygon.service.NoticiaService;
+import java.util.stream.Collectors;
 
 @Service
 public class DataScrapperService {
@@ -37,13 +40,15 @@ public class DataScrapperService {
     @Autowired
     private NoticiaService noticiaService;
 
+    @Transactional
     public void scrapeDatabyPortalID(int id) {
-        Portal portal = portalRepository.findById(id)
+        Portal portal = portalRepository.findByIdWithTags(id)
                 .orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
+        portal.getTags().size();
+
 
         String classNameLink = portal.getSeletorCaminhoNoticia();
         String referenceClass = "a[href]." + classNameLink;
-
         String url = portal.getUrl();
 
         try {
@@ -57,6 +62,10 @@ public class DataScrapperService {
             for (Element selector : selectPag) {
                 Links.add(selector.absUrl("href"));
             }
+
+            List<String> tagsAssociadas = portal.getTags().stream()
+                    .map(Tag::getNome) // Bsp
+                    .collect(Collectors.toList());
 
             for (String link : Links) {
                 Document linkDoc = Jsoup.connect(link).get();
@@ -99,17 +108,16 @@ public class DataScrapperService {
                 noticia.setConteudo(contentScrapper);
                 noticia.setHref(link);
 
+                List<Integer> tagIds = portal.getTags().stream()
+                        .map(Tag::getId)
+                        .collect(Collectors.toList());
+
                 if (!noticiaRepository.existsByHref(noticia.getHref())) {
-                    noticias.add(noticia);
+                    noticiaService.salvar(noticia, tagIds);
                 } else {
                     System.out.println("Notícia já existente: " + noticia.getHref());
                 }
             }
-
-            if (!noticias.isEmpty()) {
-                noticiaRepository.saveAll(noticias);
-            }
-
             portal.setHasScrapedToday(true);
             portal.setUltimaAtualizacao(LocalDate.now());
             portalRepository.save(portal);
@@ -145,6 +153,7 @@ public class DataScrapperService {
         }
 
         noticiaService.findTagsInTitle();
+        noticiaService.associarTagsPorConteudo();
 
         hideLoading();
     }
@@ -185,6 +194,7 @@ public class DataScrapperService {
             }
 
             noticiaService.findTagsInTitle();
+            noticiaService.associarTagsPorConteudo();
         }
     }
 
@@ -245,6 +255,7 @@ public class DataScrapperService {
                 }
             }
             noticiaService.findTagsInTitle();
+            noticiaService.associarTagsPorConteudo();
         }
     }
 

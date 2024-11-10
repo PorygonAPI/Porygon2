@@ -2,9 +2,11 @@ package edu.fatec.Porygon.model;
 
 import jakarta.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Noticia {
@@ -28,13 +30,14 @@ public class Noticia {
     @JsonBackReference
     private Portal portal;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JsonManagedReference
     @JoinTable(
-        name = "noticia_tag",
-        joinColumns = @JoinColumn(name = "noticia_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
+            name = "noticia_tag",
+            joinColumns = @JoinColumn(name = "noticia_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    private List<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "jornalista_id")
@@ -47,14 +50,6 @@ public class Noticia {
 
     public void setJornalista(Jornalista jornalista) {
         this.jornalista = jornalista;
-    }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
     }
 
     public Integer getId() {
@@ -99,7 +94,19 @@ public class Noticia {
         this.portal = portal;
     }
 
-    public String getHref() { return href; }
+    public String getHref() {
+        return href;
+    }
 
-    public void setHref(String href) { this.href = href; }
+    public void setHref(String href) {
+        this.href = href;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 }
