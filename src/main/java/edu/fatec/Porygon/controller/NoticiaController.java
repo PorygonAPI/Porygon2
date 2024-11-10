@@ -6,8 +6,8 @@ import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Comparator;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 import edu.fatec.Porygon.service.NoticiaService;
 
@@ -63,25 +63,25 @@ public class NoticiaController {
         }
 
         List<Noticia> noticias = noticiaService.listarNoticiasPorData(dataInicio, dataFim);
-//        noticias.sort(Comparator.comparing(Noticia::getData));
-//        return ResponseEntity.ok(noticias);
-//    }
+        noticias.sort(Comparator.comparing(Noticia::getData));
         List<NoticiaDTO> noticiaDTOs = noticias.stream()
                 .map(NoticiaDTO::new)
                 .collect(Collectors.toList());
-        noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData)); // Ordenação via DTO
-        return ResponseEntity.ok(noticiaDTOs); // Retornando DTOs, não entidades
-    }
+            noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData)); // Ordenação via DTO
+            return ResponseEntity.ok(noticiaDTOs); // Retornando DTOs, não entidades
+}
 
     @GetMapping("/associar-tags")
     @ResponseBody
     public ResponseEntity<String> associarTagsANoticias() {
         try {
             noticiaService.findTagsInTitle();
+            noticiaService.associarTagsPorConteudo();
             return ResponseEntity.ok("Tags associadas com sucesso às notícias.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erro ao associar tags às notícias: " + e.getMessage());
         }
     }
+
 }
