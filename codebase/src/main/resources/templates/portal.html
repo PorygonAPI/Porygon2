@@ -231,44 +231,45 @@
     </footer>
 
     <script>
+        
+        // DESCOMENTAR QUANDO FOR IMPLEMENTADO O BACK
+        // const tagInput = document.getElementById('tagSearchInput');
+        // const tagSelect = document.getElementById('tags');
+        // const allTags = Array.from(tagSelect.options);
 
-        const tagInput = document.getElementById('tagSearchInput');
-        const tagSelect = document.getElementById('tags');
-        const allTags = Array.from(tagSelect.options);
+        // tagInput.addEventListener('input', function() {
+        //     const searchQuery = this.value.toLowerCase();
+        //     tagSelect.innerHTML = '';
 
-        tagInput.addEventListener('input', function() {
-            const searchQuery = this.value.toLowerCase();
-            tagSelect.innerHTML = '';
-
-            const filteredTags = allTags.filter(tag => tag.text.toLowerCase().startsWith(searchQuery));
+        //     const filteredTags = allTags.filter(tag => tag.text.toLowerCase().startsWith(searchQuery));
             
-            filteredTags.forEach(tag => {
-                tagSelect.appendChild(tag);
-            });
-            updateSelectedTags();
-        });
-        function updateSelectedTags() {
-            const select = document.getElementById('tags');
-            const selectedTagsContainer = document.getElementById('selected-tags');
-            selectedTagsContainer.innerHTML = '';
+        //     filteredTags.forEach(tag => {
+        //         tagSelect.appendChild(tag);
+        //     });
+        //     updateSelectedTags();
+        // });
+        // function updateSelectedTags() {
+        //     const select = document.getElementById('tags');
+        //     const selectedTagsContainer = document.getElementById('selected-tags');
+        //     selectedTagsContainer.innerHTML = '';
 
-            Array.from(tagSelect.selectedOptions).forEach(option => {
-                const chip = document.createElement('span');
-                chip.classList.add('tag-chip');
-                chip.textContent = option.text;
+        //     Array.from(tagSelect.selectedOptions).forEach(option => {
+        //         const chip = document.createElement('span');
+        //         chip.classList.add('tag-chip');
+        //         chip.textContent = option.text;
 
-                const removeIcon = document.createElement('span');
-                removeIcon.textContent = ' ✕';
-                removeIcon.classList.add('remove-tag');
-                removeIcon.onclick = function () {
-                    option.selected = false;
-                    updateSelectedTags();
-                };
+        //         const removeIcon = document.createElement('span');
+        //         removeIcon.textContent = ' ✕';
+        //         removeIcon.classList.add('remove-tag');
+        //         removeIcon.onclick = function () {
+        //             option.selected = false;
+        //             updateSelectedTags();
+        //         };
 
-                chip.appendChild(removeIcon);
-                selectedTagsContainer.appendChild(chip);
-            });
-        }
+        //         chip.appendChild(removeIcon);
+        //         selectedTagsContainer.appendChild(chip);
+        //     });
+        // }
 
         document.addEventListener("DOMContentLoaded", updateSelectedTags);
 
