@@ -62,14 +62,23 @@
 
             <div class="alert alert-danger" id="error-message" style="display:none;"></div>
 
-            <div class="mb-3">
-                <label for="tags" class="form-label">Tags</label>
-                <select id="tags" class="form-select" multiple disabled>
-                    <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"></option>
-                </select>
-                <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
-                    opções.</small>
-            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="flex-grow-1"> 
+                        <label for="tagSearchInput" class="form-label">Buscar Tags</label>
+                        <input type="text" class="form-control" id="tagSearchInput" placeholder="Digite para buscar tags">
+                        <div id="selected-tags" class="d-flex flex-wrap mt-2"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="tags" class="form-label">Tags</label>
+                    <select id="tags" name="tagIds" class="form-select" multiple required onchange="updateSelectedTags()">
+                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}" th:selected="${portal.tags != null && portal.tags.contains(tag)}">
+                        </option>
+                    </select>
+                    <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
+                </div>
+            </div>      
 
             <div class="row mb-3 justify-content-center">
                 <div class="d-grid col-2">
@@ -145,6 +154,46 @@
     </footer>
 
     <script>
+
+        const tagInput = document.getElementById('tagSearchInput');
+        const tagSelect = document.getElementById('tags');
+        const allTags = Array.from(tagSelect.options);
+
+        tagInput.addEventListener('input', function() {
+            const searchQuery = this.value.toLowerCase();
+            tagSelect.innerHTML = '';
+
+            const filteredTags = allTags.filter(tag => tag.text.toLowerCase().startsWith(searchQuery));
+            
+            filteredTags.forEach(tag => {
+                tagSelect.appendChild(tag);
+            });
+            updateSelectedTags();
+        });
+
+        function updateSelectedTags() {
+            const select = document.getElementById('tags');
+            const selectedTagsContainer = document.getElementById('selected-tags');
+            selectedTagsContainer.innerHTML = '';
+
+            Array.from(tagSelect.selectedOptions).forEach(option => {
+                const chip = document.createElement('span');
+                chip.classList.add('tag-chip');
+                chip.textContent = option.text;
+
+                const removeIcon = document.createElement('span');
+                removeIcon.textContent = ' ✕';
+                removeIcon.classList.add('remove-tag');
+                removeIcon.onclick = function () {
+                    option.selected = false;
+                    updateSelectedTags();
+                };
+
+                chip.appendChild(removeIcon);
+                selectedTagsContainer.appendChild(chip);
+            });
+        }
+
         function abrirModal(id) {
             fetch(`/noticias/${id}`)
                 .then(response => {
