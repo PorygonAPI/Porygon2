@@ -12,8 +12,8 @@ public class ApiDados {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(columnDefinition = "NVARCHAR(MAX)")
-    private String conteudo;
+    @Column(columnDefinition = "TEXT")
+    private String conteudo;    
 
     private String descricao;
 
