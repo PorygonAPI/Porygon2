@@ -228,29 +228,37 @@
             })
             .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
     }
-
     document.getElementById('consultar').addEventListener('click', function () {
-        const dataInicio = new Date(document.getElementById('dataInicio').value);
-        const dataFim = new Date(document.getElementById('dataFim').value);
+        const dataInicio = document.getElementById('dataInicio').value;
+        const dataFim = document.getElementById('dataFim').value;
+        const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
 
         const errorMessage = document.getElementById('error-message');
         errorMessage.textContent = '';
         errorMessage.style.display = 'none';
 
-        if (dataFim < dataInicio) {
+        if (dataFim && dataInicio && new Date(dataFim) < new Date(dataInicio)) {
             errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
             errorMessage.style.display = 'block';
-
-            setTimeout(function() {
+            setTimeout(() => {
                 errorMessage.textContent = '';
                 errorMessage.style.display = 'none';
             }, 5000);
-
             return;
         }
 
-        fetch(`/noticias?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T')[0]}`)
-            .then(response => response.json())
+        let url = `/noticias?`;
+        if (dataInicio) url += `dataInicio=${dataInicio}&`;
+        if (dataFim) url += `dataFim=${dataFim}&`;
+        if (selectedTags.length > 0) url += `tagIds=${selectedTags.join(',')}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Nenhuma notícia encontrada.');
+                }
+                return response.json();
+            })
             .then(data => {
                 const tbody = document.querySelector('tbody.table-group-divider');
                 tbody.innerHTML = '';
@@ -259,7 +267,6 @@
                     const tags = noticia.tags.length > 0
                         ? noticia.tags.map(tag => tag.nome).join(', ')
                         : 'Sem tag associada';
-
                     row.innerHTML = `
                     <td>${noticia.titulo}</td>
                     <td>${tags}</td>
@@ -269,7 +276,10 @@
                     tbody.appendChild(row);
                 });
             })
-            .catch(error => console.error('Erro ao carregar as notícias:', error));
+            .catch(error => {
+                console.error('Erro ao carregar as notícias:', error);
+                alert(error.message);
+            });
     });
 </script>
 </body>

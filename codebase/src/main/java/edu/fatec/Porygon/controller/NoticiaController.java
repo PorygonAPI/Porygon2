@@ -4,6 +4,7 @@ import edu.fatec.Porygon.dto.NoticiaDTO;
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,17 +62,30 @@ public class NoticiaController {
 
     @GetMapping("/noticias")
     @ResponseBody
-    public ResponseEntity<?> listarNoticiasPorData(
-            @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
-            @RequestParam("dataFim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+    public ResponseEntity<?> listarNoticias(
+            @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+            @RequestParam(value = "tagIds", required = false) List<Integer> tagIds) {
 
-        if (dataFim.isBefore(dataInicio)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("A data final não pode ser anterior à data inicial.");
+        List<Noticia> noticias = new ArrayList<>();
+
+        if (tagIds != null && !tagIds.isEmpty()) {
+            noticias = noticiaService.listarNoticiasPorTags(tagIds);
         }
 
-        List<Noticia> noticias = noticiaService.listarNoticiasPorData(dataInicio, dataFim);
-        noticias.sort(Comparator.comparing(Noticia::getData));
+        if (dataInicio != null && dataFim != null) {
+            if (dataFim.isBefore(dataInicio)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("A data final não pode ser anterior à data inicial.");
+            }
+            noticias.addAll(noticiaService.listarNoticiasPorData(dataInicio, dataFim));
+        }
+
+        if (noticias.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Nenhuma notícia encontrada.");
+        }
+
         List<NoticiaDTO> noticiaDTOs = noticias.stream()
                 .map(NoticiaDTO::new)
                 .collect(Collectors.toList());
