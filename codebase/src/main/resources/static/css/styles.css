@@ -1,18 +1,21 @@
-.tag-chip {
-    background-color: #c7d1dc;
-    border-radius: 15px;
-    padding: 5px 10px;
-    margin: 2px;
+.badge {
     display: inline-flex;
     align-items: center;
-    margin-top: 2px;
+    padding: 0.5em 1em;
+    border-radius: 1em;
+    background-color: #d1d5db;
+    color: #333;
+    margin-right: 0.5em;
+    margin-bottom: 0.5em;
 }
 
-.tag-chip .remove-tag {
-    margin-left: 8px;
+.badge button {
+    background: none;
+    border: none;
+    color: inherit;
     cursor: pointer;
-    font-weight: bold;
-    color: #f2f2f2;
+    font-size: 1em;
+    margin-left: 0.5em;
 }
 
 body {
