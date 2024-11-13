@@ -67,21 +67,8 @@ public class NoticiaController {
         List<NoticiaDTO> noticiaDTOs = noticias.stream()
                 .map(NoticiaDTO::new)
                 .collect(Collectors.toList());
-            noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData));
-            return ResponseEntity.ok(noticiaDTOs);
-}
-
-    @GetMapping("/associar-tags")
-    @ResponseBody
-    public ResponseEntity<String> associarTagsANoticias() {
-        try {
-            noticiaService.findTagsInTitle();
-            noticiaService.associarTagsPorConteudo();
-            return ResponseEntity.ok("Tags associadas com sucesso às notícias.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao associar tags às notícias: " + e.getMessage());
-        }
+        noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData));
+        return ResponseEntity.ok(noticiaDTOs);
     }
 
 }
