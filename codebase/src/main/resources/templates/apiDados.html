@@ -164,20 +164,19 @@
             selectedTagsContainer.innerHTML = '';
 
             Array.from(select.selectedOptions).forEach(option => {
-                const chip = document.createElement('span');
-                chip.classList.add('tag-chip');
-                chip.textContent = option.text;
+                const tagBadge = document.createElement('span');
+                tagBadge.className = 'badge';
+                tagBadge.textContent = option.text;
 
-                const removeIcon = document.createElement('span');
-                removeIcon.textContent = ' ✕';
-                removeIcon.classList.add('remove-tag');
-                removeIcon.onclick = function () {
+                const removeButton = document.createElement('button');
+                removeButton.textContent = '✕';
+                removeButton.onclick = () => {
                     option.selected = false;
                     updateSelectedTags();
                 };
 
-                chip.appendChild(removeIcon);
-                selectedTagsContainer.appendChild(chip);
+                tagBadge.appendChild(removeButton);
+                selectedTagsContainer.appendChild(tagBadge);
             });
         }
 
