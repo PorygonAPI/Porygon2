@@ -9,7 +9,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.Comparator;
 
+import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.service.NoticiaService;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,11 +33,17 @@ public class NoticiaController {
     @Autowired
     private NoticiaService noticiaService;
 
+    @Autowired
+    private TagRepository tagRepository;
+
+
     @GetMapping("/")
     public String listarNoticias(Model model) {
         List<Noticia> noticias = noticiaRepository.findAll();
         noticias.sort(Comparator.comparing(Noticia::getTitulo));
         model.addAttribute("noticias", noticias);
+        model.addAttribute("tags", tagRepository.findAll());
+
         return "index";
     }
 
