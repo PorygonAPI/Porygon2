@@ -13,7 +13,6 @@ import java.util.Comparator;
 import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.service.NoticiaService;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -37,14 +36,12 @@ public class NoticiaController {
     @Autowired
     private TagRepository tagRepository;
 
-
     @GetMapping("/")
     public String listarNoticias(Model model) {
         List<Noticia> noticias = noticiaRepository.findAll();
         noticias.sort(Comparator.comparing(Noticia::getTitulo));
         model.addAttribute("noticias", noticias);
         model.addAttribute("tags", tagRepository.findAll());
-
         return "index";
     }
 
@@ -71,6 +68,9 @@ public class NoticiaController {
 
         if (tagIds != null && !tagIds.isEmpty()) {
             noticias = noticiaService.listarNoticiasPorTags(tagIds);
+            if (noticias.isEmpty()) {
+                return ResponseEntity.ok(new ArrayList<>());
+            }
         }
 
         if (dataInicio != null && dataFim != null) {
@@ -92,5 +92,4 @@ public class NoticiaController {
         noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData));
         return ResponseEntity.ok(noticiaDTOs);
     }
-
 }
