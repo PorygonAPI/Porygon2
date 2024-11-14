@@ -11,7 +11,7 @@
 </head>
 
 <body>
-<!-- Navbar no index.html -->
+
 <nav class="navbar bg-dark border-bottom border-body absolute-top" data-bs-theme="dark">
     <a class="navbar-brand" href="#" style="margin-left: 10px;">
     </a>
@@ -46,7 +46,6 @@
 <div class="container mt-5">
     <h4 class="mb-4 text-center">Consulta de Notícias</h4>
 
-    <!-- Formulário de Filtros (Desativado) -->
     <form id="filterForm">
         <div class="row mb-3">
             <div class="col">
@@ -90,7 +89,6 @@
 
     </form>
 
-    <!-- Lista de Notícias -->
     <div class="mt-5">
         <h4 class="mb-4 text-center">Lista de Notícias</h4>
         <div class="table-responsive">
@@ -124,7 +122,6 @@
     </div>
 
 </div>
-<!-- Modal -->
 <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -238,6 +235,16 @@
         errorMessage.textContent = '';
         errorMessage.style.display = 'none';
 
+        if (!dataInicio && !dataFim && selectedTags.length === 0) {
+            errorMessage.textContent = 'Selecione pelo menos um filtro de busca.';
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.textContent = '';
+                errorMessage.style.display = 'none';
+            }, 5000);
+            return;
+        }
+
         if (dataFim && dataInicio && new Date(dataFim) < new Date(dataInicio)) {
             errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
             errorMessage.style.display = 'block';
@@ -256,7 +263,7 @@
         fetch(url)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Nenhuma notícia encontrada.');
+                    throw new Error('Não foi encontrada notícia com essa tag.');
                 }
                 return response.json();
             })
@@ -269,17 +276,24 @@
                         ? noticia.tags.map(tag => tag.nome).join(', ')
                         : 'Sem tag associada';
                     row.innerHTML = `
-                    <td>${noticia.titulo}</td>
-                    <td>${tags}</td>
-                    <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                    <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
-                `;
+                <td>${noticia.titulo}</td>
+                <td>${tags}</td>
+                <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
+            `;
                     tbody.appendChild(row);
                 });
             })
             .catch(error => {
                 console.error('Erro ao carregar as notícias:', error);
-                alert(error.message);
+
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+
+                setTimeout(() => {
+                    errorMessage.textContent = '';
+                    errorMessage.style.display = 'none';
+                }, 5000);
             });
     });
 </script>
