@@ -155,7 +155,7 @@
     const tagSelect = document.getElementById('tags');
     const allTags = Array.from(tagSelect.options);
 
-    tagInput.addEventListener('input', function() {
+    tagInput.addEventListener('input', function () {
         const searchQuery = this.value.toLowerCase();
         tagSelect.innerHTML = '';
 
@@ -244,7 +244,6 @@
             }, 5000);
             return;
         }
-
         if (dataFim && dataInicio && new Date(dataFim) < new Date(dataInicio)) {
             errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
             errorMessage.style.display = 'block';
@@ -254,42 +253,39 @@
             }, 5000);
             return;
         }
-
         let url = `/noticias?`;
         if (dataInicio) url += `dataInicio=${dataInicio}&`;
         if (dataFim) url += `dataFim=${dataFim}&`;
         if (selectedTags.length > 0) url += `tagIds=${selectedTags.join(',')}`;
 
         fetch(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Não foi encontrada notícia com essa tag.');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 const tbody = document.querySelector('tbody.table-group-divider');
                 tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    return;
+                }
+
                 data.forEach(noticia => {
                     const row = document.createElement('tr');
                     const tags = noticia.tags.length > 0
                         ? noticia.tags.map(tag => tag.nome).join(', ')
                         : 'Sem tag associada';
                     row.innerHTML = `
-                <td>${noticia.titulo}</td>
-                <td>${tags}</td>
-                <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
-            `;
+                    <td>${noticia.titulo}</td>
+                    <td>${tags}</td>
+                    <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                    <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
+                `;
                     tbody.appendChild(row);
                 });
             })
             .catch(error => {
                 console.error('Erro ao carregar as notícias:', error);
-
-                errorMessage.textContent = error.message;
+                errorMessage.textContent = 'Erro ao carregar as notícias.';
                 errorMessage.style.display = 'block';
-
                 setTimeout(() => {
                     errorMessage.textContent = '';
                     errorMessage.style.display = 'none';

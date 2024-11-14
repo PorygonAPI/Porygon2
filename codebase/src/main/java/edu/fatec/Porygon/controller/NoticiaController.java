@@ -56,7 +56,6 @@ public class NoticiaController {
             return ResponseEntity.notFound().build();
         }
     }
-
     @GetMapping("/noticias")
     @ResponseBody
     public ResponseEntity<?> listarNoticias(
@@ -68,9 +67,6 @@ public class NoticiaController {
 
         if (tagIds != null && !tagIds.isEmpty()) {
             noticias = noticiaService.listarNoticiasPorTags(tagIds);
-            if (noticias.isEmpty()) {
-                return ResponseEntity.ok(new ArrayList<>());
-            }
         }
 
         if (dataInicio != null && dataFim != null) {
@@ -78,12 +74,12 @@ public class NoticiaController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("A data final não pode ser anterior à data inicial.");
             }
-            noticias.addAll(noticiaService.listarNoticiasPorData(dataInicio, dataFim));
+            List<Noticia> noticiasPorData = noticiaService.listarNoticiasPorData(dataInicio, dataFim);
+            noticias.addAll(noticiasPorData);
         }
 
         if (noticias.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Nenhuma notícia encontrada.");
+            return ResponseEntity.ok(new ArrayList<>());
         }
 
         List<NoticiaDTO> noticiaDTOs = noticias.stream()
