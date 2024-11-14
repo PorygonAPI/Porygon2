@@ -212,20 +212,21 @@
             const selectedTagsContainer = document.getElementById('selected-tags');
             selectedTagsContainer.innerHTML = '';
 
-            Array.from(select.selectedOptions).forEach(option => {
-                const tagBadge = document.createElement('span');
-                tagBadge.className = 'badge';
-                tagBadge.textContent = option.text;
+            Array.from(tagSelect.selectedOptions).forEach(option => {
+                const chip = document.createElement('span');
+                chip.classList.add('tag-chip');
+                chip.textContent = option.text;
 
-                const removeButton = document.createElement('button');
-                removeButton.textContent = '✕';
-                removeButton.onclick = () => {
+                const removeIcon = document.createElement('span');
+                removeIcon.textContent = ' ✕';
+                removeIcon.classList.add('remove-tag');
+                removeIcon.onclick = function () {
                     option.selected = false;
                     updateSelectedTags();
                 };
 
-                tagBadge.appendChild(removeButton);
-                selectedTagsContainer.appendChild(tagBadge);
+                chip.appendChild(removeIcon);
+                selectedTagsContainer.appendChild(chip);
             });
         }
 
