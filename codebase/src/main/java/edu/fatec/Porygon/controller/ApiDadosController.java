@@ -3,6 +3,9 @@ package edu.fatec.Porygon.controller;
 import edu.fatec.Porygon.dto.ApiDadosDTO;
 import edu.fatec.Porygon.model.ApiDados;
 import edu.fatec.Porygon.repository.ApiDadosRepository;
+import edu.fatec.Porygon.service.ApiDadosService;
+import edu.fatec.Porygon.service.TagService;
+import edu.fatec.Porygon.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +22,27 @@ public class ApiDadosController {
     @Autowired
     private ApiDadosRepository apiDadosRepository;
 
+    @Autowired
+    private ApiDadosService apiDadosService;
+
+    @Autowired
+    private TagService tagService;
+
     @GetMapping("/apis/dados")
-    public String listarApiDados(Model model) {
-        List<ApiDados> apiDadosList = apiDadosRepository.findAll(); 
-                                                                    
-        model.addAttribute("apiDadosList", apiDadosList); 
+    public String listarApiDados(@RequestParam(required = false) List<Integer> tagIds, Model model) {
+        List<ApiDados> apiDadosList;
+
+        if (tagIds != null && !tagIds.isEmpty()) {
+            apiDadosList = apiDadosService.buscarApiDadosPorTags(tagIds);
+        } else {
+            apiDadosList = apiDadosRepository.findAll();
+        }
+
+        model.addAttribute("apiDadosList", apiDadosList);
+
+        List<Tag> tags = tagService.listarTagsOrdenadas();
+        model.addAttribute("tags", tags);
+
         return "apiDados";
     }
 
