@@ -46,7 +46,7 @@
     <div class="container mt-5">
         <h4 class="mb-4 text-center">Consulta de APIs</h4>
 
-        <form>
+        <form method="get">
             <div class="row mb-3">
                 <div class="col">
                     <label for="dataInicio" class="form-label">Data Início</label>
@@ -65,7 +65,7 @@
                     <div class="flex-grow-1">
                         <label for="tagSearchInput" class="form-label">Buscar Tags</label>
                         <input type="text" class="form-control" id="tagSearchInput"
-                            placeholder="Digite para buscar tags">
+                            placeholder="Digite para buscar tags" disabled>
                         <div id="selected-tags" class="d-flex flex-wrap mt-2"></div>
                     </div>
                 </div>
@@ -73,8 +73,7 @@
                     <label for="tags" class="form-label">Tags</label>
                     <select id="tags" name="tagIds" class="form-select" multiple required
                         onchange="updateSelectedTags()">
-                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}"
-                            th:selected="${api.tags != null && api.tags.contains(tag)}">
+                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}">
                         </option>
                     </select>
                     <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
@@ -87,7 +86,7 @@
                     <a href="/apis/dados" class="btn btn-secondary">Limpar Filtros</a>
                 </div>
                 <div class="d-grid col-2">
-                    <button id="consultarApi" type="button" class="btn btn-primary" disabled>Consultar</button>
+                    <button id="consultarApi" type="submit" class="btn btn-primary">Consultar</button>
                 </div>
             </div>
 
@@ -152,6 +151,7 @@
         const tagSelect = document.getElementById('tags');
         const allTags = Array.from(tagSelect.options);
 
+        /*
         tagInput.addEventListener('input', function () {
             const searchQuery = this.value.toLowerCase();
             tagSelect.innerHTML = '';
@@ -163,6 +163,7 @@
             });
             updateSelectedTags();
         });
+        */
 
         function updateSelectedTags() {
             const select = document.getElementById('tags');
