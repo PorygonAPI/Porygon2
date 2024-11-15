@@ -10,4 +10,5 @@ public interface SinonimoRepository extends JpaRepository<Sinonimo, Integer> {
     void deleteByTag(Tag tag);
     List<Sinonimo> findByTag(Tag tag);
     List<Sinonimo> findByNome(String nome);
+    List<Sinonimo> findByTagIn(List<Tag> tags);
 }
