@@ -52,10 +52,13 @@ public class NoticiaService {
     private Set<Tag> associarTags(Noticia noticia) {
         Set<Tag> tagsPortal = new HashSet<>(tagRepository.findAllByPortais_Id(noticia.getPortal().getId()));
 
-        Set<Tag> foundTags = new HashSet<>();
-        foundTags.addAll(encontrarTagsNoTitulo(noticia.getTitulo(), tagsPortal));
-        foundTags.addAll(encontrarTagsNoConteudo(noticia.getConteudo(), tagsPortal));
-        foundTags.addAll(encontrarSinonimos(noticia.getTitulo(), noticia.getConteudo(), tagsPortal));
+        Set<Tag> foundTags = encontrarTagsNoTitulo(noticia.getTitulo(), tagsPortal);
+        if (foundTags.isEmpty()) {
+            foundTags = encontrarTagsNoConteudo(noticia.getConteudo(), tagsPortal);
+        }
+        if (foundTags.isEmpty()) {
+            foundTags = encontrarSinonimos(noticia.getTitulo(), noticia.getConteudo(), tagsPortal);
+        }
 
         return foundTags;
     }
