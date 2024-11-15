@@ -8,276 +8,291 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://bootswatch.com/5/cerulean/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
-
 </head>
 
 <body>
-    <!-- Navbar no index.html -->
-    <nav class="navbar bg-dark border-bottom border-body absolute-top" data-bs-theme="dark">
-        <a class="navbar-brand" href="#" style="margin-left: 10px;">
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+
+<nav class="navbar bg-dark border-bottom border-body absolute-top" data-bs-theme="dark">
+    <a class="navbar-brand" href="#" style="margin-left: 10px;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="nav justify-content-center">
-                <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias<span
-                            class="sr-only">(atual)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das APIs</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/portais}">Cadastro de Portal</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/apis}">Cadastro de API</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-light" th:href="@{/tags}">Cadastro de Tag</a>
-                </li>
-            </ul>
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias<span
+                        class="sr-only">(atual)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das APIs</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/portais}">Cadastro de Portal</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/apis}">Cadastro de API</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/tags}">Cadastro de Tag</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<br>
+
+<div class="container mt-5">
+    <h4 class="mb-4 text-center">Consulta de Notícias</h4>
+
+    <form id="filterForm">
+        <div class="row mb-3">
+            <div class="col">
+                <label for="dataInicio" class="form-label">Data Início</label>
+                <input type="date" class="form-control" id="dataInicio">
+            </div>
+            <div class="col">
+                <label for="dataFim" class="form-label">Data Fim</label>
+                <input type="date" class="form-control" id="dataFim">
+            </div>
         </div>
-    </nav>
 
-    <br>
+        <div class="alert alert-danger" id="error-message" style="display:none;"></div>
 
-    <div class="container mt-5">
-        <h4 class="mb-4 text-center">Consulta de Notícias</h4>
-
-        <!-- Formulário de Filtros (Desativado) -->
-        <form id="filterForm">
-            <div class="row mb-3">
-                <div class="col">
-                    <label for="dataInicio" class="form-label">Data Início</label>
-                    <input type="date" class="form-control" id="dataInicio">
-                </div>
-                <div class="col">
-                    <label for="dataFim" class="form-label">Data Fim</label>
-                    <input type="date" class="form-control" id="dataFim">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="flex-grow-1">
+                    <label for="tagSearchInput" class="form-label">Buscar Tags</label>
+                    <input type="text" class="form-control" id="tagSearchInput" placeholder="Digite para buscar tags">
+                    <div id="selected-tags" class="d-flex flex-wrap mt-2"></div>
                 </div>
             </div>
-
-            <div class="alert alert-danger" id="error-message" style="display:none;"></div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="flex-grow-1"> 
-                        <label for="tagSearchInput" class="form-label">Buscar Tags</label>
-                        <input type="text" class="form-control" id="tagSearchInput" placeholder="Digite para buscar tags">
-                        <div id="selected-tags" class="d-flex flex-wrap mt-2"></div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <label for="tags" class="form-label">Tags</label>
-                    <select id="tags" name="tagIds" class="form-select" multiple required onchange="updateSelectedTags()">
-                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}" th:selected="${portal.tags != null && portal.tags.contains(tag)}">
-                        </option>
-                    </select>
-                    <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
-                </div>
-            </div>      
-
-            <div class="row mb-3 justify-content-center">
-                <div class="d-grid col-2">
-                    <a href="/" class="btn btn-secondary">Limpar Filtros</a>
-                </div>
-                <div class="d-grid col-2 ">
-                    <button type="button" class="btn btn-primary" id="consultar">Consultar</button>
-                </div>
+            <div class="col-md-6">
+                <label for="tags" class="form-label">Tags</label>
+                <select id="tags" name="tagIds" class="form-select" multiple required onchange="updateSelectedTags()">
+                    <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}" th:selected="${portal != null and portal.tags != null and portal.tags.contains(tag)}">
+                    </option>
+                </select>
+                <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas opções.</small>
             </div>
+        </div>
 
-        </form>
+        <div class="row mb-3 justify-content-center">
+            <div class="d-grid col-2">
+                <a href="/" class="btn btn-secondary">Limpar Filtros</a>
+            </div>
+            <div class="d-grid col-2">
+                <button type="button" class="btn btn-primary" id="consultar">Consultar</button>
+            </div>
+        </div>
 
-        <!-- Lista de Notícias -->
-        <div class="mt-5">
-            <h4 class="mb-4 text-center">Lista de Notícias</h4>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Nome/Título</th>
-                            <th>Tags</th>
-                            <th>Data</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody class="table-group-divider">
-                        <tr th:each="noticia : ${noticias}">
-                            <td th:text="${noticia.titulo}"></td>
-                            <td>
-                                <span th:if="${#lists.isEmpty(noticia.tags)}">Sem tag associada</span>
-                                <span th:each="tag, iterStat : ${noticia.tags}">
+    </form>
+
+    <div class="mt-5">
+        <h4 class="mb-4 text-center">Lista de Notícias</h4>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Nome/Título</th>
+                    <th>Tags</th>
+                    <th>Data</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                <tr th:each="noticia : ${noticias}">
+                    <td th:text="${noticia.titulo}"></td>
+                    <td>
+                        <span th:if="${#lists.isEmpty(noticia.tags)}">Sem tag associada</span>
+                        <span th:each="tag, iterStat : ${noticia.tags}">
                                     <span th:text="${tag.nome}"></span><span th:if="${!iterStat.last}">, </span>
                                 </span>
-                            </td>
-                            <td th:text="${#dates.format(noticia.data, 'dd/MM/yyyy')}"></td>
-                            <td>
-                                <button class="btn btn-info"
-                                    th:onclick="'abrirModal(' + ${noticia.id} + ')'">Abrir</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </div>
-    <!-- Modal -->
-    <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="noticiaModalLabel">Detalhes da Notícia</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <h5 id="modalTitulo"></h5>
-                    <h6 id="modalJornalista" class="text-muted"></h6>
-                    <p id="modalData"></p>
-                    <p><strong>Tags:</strong> <span id="modalTags"></span></p>
-                    <p id="modalConteudo" class="modal-conteudo"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
+                    </td>
+                    <td th:text="${#dates.format(noticia.data, 'dd/MM/yyyy')}"></td>
+                    <td>
+                        <button class="btn btn-info"
+                                th:onclick="'abrirModal(' + ${noticia.id} + ')'">Abrir</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <footer class="bg-dark text-light py-4">
-        <div class="container text-center">
-            <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+</div>
+<div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="noticiaModalLabel">Detalhes da Notícia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5 id="modalTitulo"></h5>
+                <h6 id="modalJornalista" class="text-muted"></h6>
+                <p id="modalData"></p>
+                <p><strong>Tags:</strong> <span id="modalTags"></span></p>
+                <p id="modalConteudo" class="modal-conteudo"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
         </div>
-    </footer>
+    </div>
+</div>
 
-    <script>
+<footer class="bg-dark text-light py-4">
+    <div class="container text-center">
+        <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+    </div>
+</footer>
 
-        const tagInput = document.getElementById('tagSearchInput');
-        const tagSelect = document.getElementById('tags');
-        const allTags = Array.from(tagSelect.options);
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const tagInput = document.getElementById('tagSearchInput');
+    const tagSelect = document.getElementById('tags');
+    const allTags = Array.from(tagSelect.options);
 
-        tagInput.addEventListener('input', function() {
-            const searchQuery = this.value.toLowerCase();
-            tagSelect.innerHTML = '';
+    tagInput.addEventListener('input', function () {
+        const searchQuery = this.value.toLowerCase();
+        tagSelect.innerHTML = '';
 
-            const filteredTags = allTags.filter(tag => tag.text.toLowerCase().startsWith(searchQuery));
-            
-            filteredTags.forEach(tag => {
-                tagSelect.appendChild(tag);
-            });
-            updateSelectedTags();
+        const filteredTags = allTags.filter(tag => tag.text.toLowerCase().startsWith(searchQuery));
+
+        filteredTags.forEach(tag => {
+            tagSelect.appendChild(tag);
         });
+        updateSelectedTags();
+    });
 
-        function updateSelectedTags() {
-            const select = document.getElementById('tags');
-            const selectedTagsContainer = document.getElementById('selected-tags');
-            selectedTagsContainer.innerHTML = '';
+    function updateSelectedTags() {
+        const select = document.getElementById('tags');
+        const selectedTagsContainer = document.getElementById('selected-tags');
+        selectedTagsContainer.innerHTML = '';
 
-            Array.from(tagSelect.selectedOptions).forEach(option => {
-                const chip = document.createElement('span');
-                chip.classList.add('tag-chip');
-                chip.textContent = option.text;
+        Array.from(tagSelect.selectedOptions).forEach(option => {
+            const chip = document.createElement('span');
+            chip.classList.add('tag-chip');
+            chip.textContent = option.text;
 
-                const removeIcon = document.createElement('span');
-                removeIcon.textContent = ' ✕';
-                removeIcon.classList.add('remove-tag');
-                removeIcon.onclick = function () {
-                    option.selected = false;
-                    updateSelectedTags();
-                };
+            const removeIcon = document.createElement('span');
+            removeIcon.textContent = ' ✕';
+            removeIcon.classList.add('remove-tag');
+            removeIcon.onclick = function () {
+                option.selected = false;
+                updateSelectedTags();
+            };
 
-                chip.appendChild(removeIcon);
-                selectedTagsContainer.appendChild(chip);
-            });
+            chip.appendChild(removeIcon);
+            selectedTagsContainer.appendChild(chip);
+        });
+    }
+
+    function abrirModal(id) {
+        fetch(`/noticias/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar os detalhes da notícia');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('modalTitulo').innerText = data.titulo;
+                document.getElementById('modalJornalista').innerText = 'Jornalista: ' + data.jornalista;
+
+                const dataPublicacao = new Date(data.data);
+                const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
+                document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacaoUTC.toLocaleDateString('pt-BR');
+
+                document.getElementById('modalConteudo').innerText = data.conteudo;
+
+                const tagsContainer = document.getElementById('modalTags');
+                tagsContainer.innerHTML = '';
+                if (Array.isArray(data.tags) && data.tags.length > 0) {
+                    data.tags.forEach(tag => {
+                        const tagSpan = document.createElement('span');
+                        tagSpan.classList.add('badge', 'bg-primary', 'me-1');
+                        tagSpan.innerText = tag.nome;
+                        tagsContainer.appendChild(tagSpan);
+                    });
+                } else {
+                    tagsContainer.innerText = 'Nenhuma tag encontrada';
+                }
+
+                var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
+                myModal.show();
+            })
+            .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
+    }
+    document.getElementById('consultar').addEventListener('click', function () {
+        const dataInicio = document.getElementById('dataInicio').value;
+        const dataFim = document.getElementById('dataFim').value;
+        const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
+
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = '';
+        errorMessage.style.display = 'none';
+
+        if (!dataInicio && !dataFim && selectedTags.length === 0) {
+            errorMessage.textContent = 'Selecione pelo menos um filtro de busca.';
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.textContent = '';
+                errorMessage.style.display = 'none';
+            }, 5000);
+            return;
         }
-
-        function abrirModal(id) {
-            fetch(`/noticias/${id}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao carregar os detalhes da notícia');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById('modalTitulo').innerText = data.titulo;
-                    document.getElementById('modalJornalista').innerText = 'Jornalista: ' + data.jornalista;
-
-                    const dataPublicacao = new Date(data.data);
-                    const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
-                    document.getElementById('modalData').innerText = 'Data de publicação: ' + dataPublicacaoUTC.toLocaleDateString('pt-BR');
-
-                    document.getElementById('modalConteudo').innerText = data.conteudo;
-
-                    const tagsContainer = document.getElementById('modalTags');
-                    tagsContainer.innerHTML = ''; 
-                    if (Array.isArray(data.tags) && data.tags.length > 0) {
-                        data.tags.forEach(tag => {
-                            const tagSpan = document.createElement('span');
-                            tagSpan.classList.add('badge', 'bg-primary', 'me-1');
-                            tagSpan.innerText = tag.nome; 
-                            tagsContainer.appendChild(tagSpan);
-                        });
-                    } else {
-                        tagsContainer.innerText = 'Nenhuma tag encontrada'; 
-                    }
-
-
-                    var myModal = new bootstrap.Modal(document.getElementById('noticiaModal'));
-                    myModal.show();
-                })
-                .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
+        if (dataFim && dataInicio && new Date(dataFim) < new Date(dataInicio)) {
+            errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.textContent = '';
+                errorMessage.style.display = 'none';
+            }, 5000);
+            return;
         }
+        let url = `/noticias?`;
+        if (dataInicio) url += `dataInicio=${dataInicio}&`;
+        if (dataFim) url += `dataFim=${dataFim}&`;
+        if (selectedTags.length > 0) url += `tagIds=${selectedTags.join(',')}`;
 
-        document.getElementById('consultar').addEventListener('click', function () {
-            const dataInicio = new Date(document.getElementById('dataInicio').value);
-            const dataFim = new Date(document.getElementById('dataFim').value);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('tbody.table-group-divider');
+                tbody.innerHTML = '';
 
-            const errorMessage = document.getElementById('error-message');
-            errorMessage.textContent = '';
-            errorMessage.style.display = 'none';
+                if (data.length === 0) {
+                    return;
+                }
 
-            if (dataFim < dataInicio) {
-                errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
-                errorMessage.style.display = 'block';
-
-                setTimeout(function() {
-                    errorMessage.textContent = '';
-                    errorMessage.style.display = 'none';
-                }, 5000);
-
-                return;
-            }
-
-            fetch(`/noticias?dataInicio=${dataInicio.toISOString().split('T')[0]}&dataFim=${dataFim.toISOString().split('T')[0]}`)
-                .then(response => response.json())
-                .then(data => {
-                    const tbody = document.querySelector('tbody.table-group-divider');
-                    tbody.innerHTML = '';
-                    data.forEach(noticia => {
-                        const row = document.createElement('tr');
-                        const tags = noticia.tags.length > 0
-                            ? noticia.tags.map(tag => tag.nome).join(', ')
-                            : 'Sem tag associada';
-
-                        row.innerHTML = `
+                data.forEach(noticia => {
+                    const row = document.createElement('tr');
+                    const tags = noticia.tags.length > 0
+                        ? noticia.tags.map(tag => tag.nome).join(', ')
+                        : 'Sem tag associada';
+                    row.innerHTML = `
                     <td>${noticia.titulo}</td>
                     <td>${tags}</td>
                     <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
                     <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
                 `;
-                        tbody.appendChild(row);
-                    });
-                })
-                .catch(error => console.error('Erro ao carregar as notícias:', error));
-        });
-    </script>
-
-    <!-- Bootstrap JS e dependências -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Erro ao carregar as notícias:', error);
+                errorMessage.textContent = 'Erro ao carregar as notícias.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.textContent = '';
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            });
+    });
+</script>
 </body>
 
 </html>

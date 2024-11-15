@@ -33,6 +33,10 @@ public class NoticiaService {
         return noticiaRepository.searchNewsByData(dataInicio, dataFim);
     }
 
+    public List<Noticia> listarNoticiasPorTags(List<Integer> tagIds) {
+        return noticiaRepository.findByTags(tagIds);
+    }
+
     public Noticia salvar(Noticia noticia) {
         Set<Tag> foundTags = associarTags(noticia);
 

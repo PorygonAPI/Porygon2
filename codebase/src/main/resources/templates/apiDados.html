@@ -169,7 +169,7 @@
             const selectedTagsContainer = document.getElementById('selected-tags');
             selectedTagsContainer.innerHTML = '';
 
-            Array.from(select.selectedOptions).forEach(option => {
+            Array.from(tagSelect.selectedOptions).forEach(option => {
                 const chip = document.createElement('span');
                 chip.classList.add('tag-chip');
                 chip.textContent = option.text;
