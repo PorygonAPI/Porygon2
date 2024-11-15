@@ -65,7 +65,7 @@
                     <div class="flex-grow-1">
                         <label for="tagSearchInput" class="form-label">Buscar Tags</label>
                         <input type="text" class="form-control" id="tagSearchInput"
-                            placeholder="Digite para buscar tags" disabled>
+                            placeholder="Digite para buscar tags" >
                         <div id="selected-tags" class="d-flex flex-wrap mt-2"></div>
                     </div>
                 </div>
@@ -151,7 +151,7 @@
         const tagSelect = document.getElementById('tags');
         const allTags = Array.from(tagSelect.options);
 
-        /*
+        
         tagInput.addEventListener('input', function () {
             const searchQuery = this.value.toLowerCase();
             tagSelect.innerHTML = '';
@@ -163,7 +163,7 @@
             });
             updateSelectedTags();
         });
-        */
+        
 
         function updateSelectedTags() {
             const select = document.getElementById('tags');
