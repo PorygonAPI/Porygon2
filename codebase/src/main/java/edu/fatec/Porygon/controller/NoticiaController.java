@@ -39,7 +39,7 @@ public class NoticiaController {
     @GetMapping("/")
     public String listarNoticias(Model model) {
         List<Noticia> noticias = noticiaRepository.findAll();
-        noticias.sort(Comparator.comparing(Noticia::getTitulo));
+        noticias.sort(Comparator.comparing(Noticia::getData));
         model.addAttribute("noticias", noticias);
         model.addAttribute("tags", tagRepository.findAll());
         return "index";
