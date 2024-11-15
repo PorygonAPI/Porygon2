@@ -13,4 +13,6 @@ public interface TagRepository extends JpaRepository<Tag, Integer> {
     Optional<Tag> findByNome(String nome);
 
     List<Tag> findAllByPortais_Id(Integer portalId);
+
+    List<Tag> findByNomeInIgnoreCase(List<String> nomes);
 }
