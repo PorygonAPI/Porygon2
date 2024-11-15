@@ -38,13 +38,18 @@ public class NoticiaService {
     }
 
     public Noticia salvar(Noticia noticia) {
-        Noticia savedNoticia = noticiaRepository.save(noticia);
-        associarTags(savedNoticia);
+        Set<Tag> foundTags = associarTags(noticia);
 
-        return savedNoticia;
+        if (foundTags.isEmpty()) {
+            System.out.println("Notícia não possui tags, não será salva.");
+            return null;
+        }
+
+        noticia.setTags(foundTags);
+        return noticiaRepository.save(noticia);
     }
 
-    private void associarTags(Noticia noticia) {
+    private Set<Tag> associarTags(Noticia noticia) {
         Set<Tag> tagsPortal = new HashSet<>(tagRepository.findAllByPortais_Id(noticia.getPortal().getId()));
 
         Set<Tag> foundTags = new HashSet<>();
@@ -52,8 +57,7 @@ public class NoticiaService {
         foundTags.addAll(encontrarTagsNoConteudo(noticia.getConteudo(), tagsPortal));
         foundTags.addAll(encontrarSinonimos(noticia.getTitulo(), noticia.getConteudo(), tagsPortal));
 
-        noticia.setTags(foundTags);
-        noticiaRepository.save(noticia);
+        return foundTags;
     }
 
     private Set<Tag> encontrarTagsNoTitulo(String titulo, Set<Tag> tagsPortal) {
