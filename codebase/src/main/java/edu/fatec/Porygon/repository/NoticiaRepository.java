@@ -15,10 +15,13 @@ public interface NoticiaRepository extends JpaRepository<Noticia, Integer> {
 
     @Query("Select n FROM Noticia n WHERE n.data between :dataStart and :dataEnd")
     List<Noticia> searchNewsByData(@Param("dataStart") LocalDate dataStart, @Param("dataEnd") LocalDate dataEnd);
-    
+
     @Query("SELECT n FROM Noticia n LEFT JOIN FETCH n.tags WHERE n.id = :id")
     Optional<Noticia> findByIdWithTags(@Param("id") Integer id);
-    
+
     @Query("SELECT DISTINCT n FROM Noticia n JOIN n.tags t WHERE t.id IN :tagIds")
     List<Noticia> findByTags(@Param("tagIds") List<Integer> tagIds);
+
+    @Query("SELECT n FROM Noticia n JOIN n.tags t WHERE n.data BETWEEN :dataInicio AND :dataFim AND t.id IN :tagIds")
+    List<Noticia> findByDataBetweenAndTagsIn(@Param("dataInicio") LocalDate dataInicio, @Param("dataFim") LocalDate dataFim, @Param("tagIds") List<Integer> tagIds);
 }

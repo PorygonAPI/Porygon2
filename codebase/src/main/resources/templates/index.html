@@ -44,8 +44,11 @@
 <br>
 
 <div class="container mt-5">
+    
+            <div class="alert alert-danger" id="error-message" style="display:none;"></div>
+    
     <h4 class="mb-4 text-center">Consulta de Notícias</h4>
-
+    
     <form id="filterForm">
         <div class="row mb-3">
             <div class="col">
@@ -57,9 +60,6 @@
                 <input type="date" class="form-control" id="dataFim">
             </div>
         </div>
-
-        <div class="alert alert-danger" id="error-message" style="display:none;"></div>
-
         <div class="row mb-3">
             <div class="col-md-6">
                 <div class="flex-grow-1">
@@ -253,18 +253,28 @@
             }, 5000);
             return;
         }
+
         let url = `/noticias?`;
         if (dataInicio) url += `dataInicio=${dataInicio}&`;
         if (dataFim) url += `dataFim=${dataFim}&`;
         if (selectedTags.length > 0) url += `tagIds=${selectedTags.join(',')}`;
 
         fetch(url)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 const tbody = document.querySelector('tbody.table-group-divider');
                 tbody.innerHTML = '';
 
-                if (data.length === 0) {
+                if (data.length === 0 || (data.mensagem && data.mensagem === "Nenhuma notícia encontrada")) {
+                    errorMessage.textContent = data.mensagem || 'Nenhuma notícia encontrada.';
+                    errorMessage.style.display = 'block';
                     return;
                 }
 
@@ -284,7 +294,7 @@
             })
             .catch(error => {
                 console.error('Erro ao carregar as notícias:', error);
-                errorMessage.textContent = 'Erro ao carregar as notícias.';
+                errorMessage.textContent = error.message || 'Erro ao carregar as notícias.';
                 errorMessage.style.display = 'block';
                 setTimeout(() => {
                     errorMessage.textContent = '';
