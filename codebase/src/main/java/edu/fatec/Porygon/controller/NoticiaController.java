@@ -4,11 +4,8 @@ import edu.fatec.Porygon.dto.NoticiaDTO;
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
 import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.service.NoticiaService;
@@ -63,30 +60,22 @@ public class NoticiaController {
             @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
             @RequestParam(value = "tagIds", required = false) List<Integer> tagIds) {
 
-        List<Noticia> noticias = new ArrayList<>();
-
-        if (tagIds != null && !tagIds.isEmpty()) {
-            noticias = noticiaService.listarNoticiasPorTags(tagIds);
+        if (dataInicio != null && dataFim != null && dataFim.isBefore(dataInicio)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("A data final não pode ser anterior à data inicial.");
         }
 
-        if (dataInicio != null && dataFim != null) {
-            if (dataFim.isBefore(dataInicio)) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("A data final não pode ser anterior à data inicial.");
-            }
-            List<Noticia> noticiasPorData = noticiaService.listarNoticiasPorData(dataInicio, dataFim);
-            noticias.addAll(noticiasPorData);
-        }
+        List<Noticia> noticias = noticiaService.listarNoticiasPorFiltros(dataInicio, dataFim, tagIds);
 
         if (noticias.isEmpty()) {
-            return ResponseEntity.ok(new ArrayList<>());
+            return ResponseEntity.ok(Collections.singletonMap("mensagem", "Nenhuma notícia encontrada"));
         }
 
         List<NoticiaDTO> noticiaDTOs = noticias.stream()
                 .map(NoticiaDTO::new)
-                .sorted(Comparator.comparing(NoticiaDTO::getId).reversed())
+                .sorted(Comparator.comparing(NoticiaDTO::getData).reversed())
                 .collect(Collectors.toList());
-        noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData));
+
         return ResponseEntity.ok(noticiaDTOs);
     }
 }
