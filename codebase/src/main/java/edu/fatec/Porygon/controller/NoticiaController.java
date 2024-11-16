@@ -4,7 +4,10 @@ import edu.fatec.Porygon.dto.NoticiaDTO;
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import edu.fatec.Porygon.repository.TagRepository;
