@@ -39,7 +39,7 @@ public class NoticiaController {
     @GetMapping("/")
     public String listarNoticias(Model model) {
         List<Noticia> noticias = noticiaRepository.findAll();
-        noticias.sort(Comparator.comparing(Noticia::getData).thenComparing(noticia -> noticia.getPortal().getDataCriacao()));
+        noticias.sort(Comparator.comparing(Noticia::getId).reversed());
         model.addAttribute("noticias", noticias);
         model.addAttribute("tags", tagRepository.findAll());
         return "index";
@@ -84,6 +84,7 @@ public class NoticiaController {
 
         List<NoticiaDTO> noticiaDTOs = noticias.stream()
                 .map(NoticiaDTO::new)
+                .sorted(Comparator.comparing(NoticiaDTO::getId).reversed())
                 .collect(Collectors.toList());
         noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData));
         return ResponseEntity.ok(noticiaDTOs);
