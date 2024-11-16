@@ -73,7 +73,7 @@
                     <label for="tags" class="form-label">Tags</label>
                     <select id="tags" name="tagIds" class="form-select" multiple required
                         onchange="updateSelectedTags()">
-                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}">
+                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}" th:selected="${selectedTagIds != null and selectedTagIds.contains(tag.id)}">
                         </option>
                     </select>
                     <small class="form-text text-muted">Segure a tecla Ctrl (ou Command) para selecionar múltiplas
@@ -105,6 +105,9 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr th:if="${apiDadosList.isEmpty()}">
+                            <td colspan="4" class="text-center">Nenhum dado de API encontrado.</td>
+                        </tr>
                         <tr th:each="dados : ${apiDadosList}">
                             <td th:text="${dados.api.nome}"></td>
                             <td th:text="${#strings.listJoin(dados.tags.![nome], ', ')}"></td>
@@ -227,6 +230,8 @@
                     modal.show();
                 });
         }
+
+        document.addEventListener('DOMContentLoaded', updateSelectedTags);
     </script>
 
 </body>

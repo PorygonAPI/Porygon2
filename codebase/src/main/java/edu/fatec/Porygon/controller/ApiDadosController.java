@@ -42,6 +42,7 @@ public class ApiDadosController {
 
         List<Tag> tags = tagService.listarTagsOrdenadas();
         model.addAttribute("tags", tags);
+        model.addAttribute("selectedTagIds", tagIds);
 
         return "apiDados";
     }
