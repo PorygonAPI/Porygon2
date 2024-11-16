@@ -37,6 +37,18 @@ public class NoticiaService {
         return noticiaRepository.findByTags(tagIds);
     }
 
+    public List<Noticia> listarNoticiasPorFiltros(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds) {
+        if (dataInicio != null && dataFim != null && tagIds != null && !tagIds.isEmpty()) {
+            return noticiaRepository.findByDataBetweenAndTagsIn(dataInicio, dataFim, tagIds);
+        } else if (dataInicio != null && dataFim != null) {
+            return noticiaRepository.searchNewsByData(dataInicio, dataFim);
+        } else if (tagIds != null && !tagIds.isEmpty()) {
+            return noticiaRepository.findByTags(tagIds);
+        } else {
+            return noticiaRepository.findAll();
+        }
+    }
+
     public Noticia salvar(Noticia noticia) {
         Set<Tag> foundTags = associarTags(noticia);
 
