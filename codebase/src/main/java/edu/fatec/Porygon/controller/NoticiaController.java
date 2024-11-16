@@ -76,7 +76,7 @@ public class NoticiaController {
 
         List<NoticiaDTO> noticiaDTOs = noticias.stream()
                 .map(NoticiaDTO::new)
-                .sorted(Comparator.comparing(NoticiaDTO::getData).reversed())
+                .sorted(Comparator.comparing(NoticiaDTO::getId).reversed())
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(noticiaDTOs);
