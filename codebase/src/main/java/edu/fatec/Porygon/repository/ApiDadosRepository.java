@@ -12,4 +12,5 @@ public interface ApiDadosRepository extends JpaRepository<ApiDados, Integer> {
     boolean existsByConteudo(String conteudo);
     Optional<ApiDados> findById(Long id);
     List<ApiDados> findByApiId(Integer apiId);
+    List<ApiDados> findDistinctByTags_IdIn(List<Integer> tagIds);
 }
