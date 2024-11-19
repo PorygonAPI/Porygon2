@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cadastro de Tag</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://bootswatch.com/5/cerulean/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+<nav class="navbar bg-dark border-bottom border-body absolute-top" data-bs-theme="dark">
+    <a class="navbar-brand" href="#" style="margin-left: 10px;"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="nav justify-content-center">
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/}">Consulta de Notícias</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/apis/dados}">Consulta de Dados das APIs</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/portais}">Cadastro de Portal</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/apis}">Cadastro de API</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-light" th:href="@{/tags}">Cadastro de Tag<span class="sr-only">(atual)</span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<br>
+
+<div class="container mt-5">
+    <div th:if="${mensagemSucesso}" class="alert alert-success" role="alert">
+        <p th:text="${mensagemSucesso}"></p>
+    </div>
+    <div th:if="${mensagemErro}" class="alert alert-danger" role="alert">
+        <p th:text="${mensagemErro}"></p>
+    </div>
+
+    <h4 class="mb-4 text-center">Cadastro de Tag</h4>
+    <form id="tagForm" th:action="@{/tags/salvar}" method="post">
+        <input type="hidden" th:if="${tag.id}" th:name="id" th:value="${tag.id}"/>
+        <div class="row mb-3">
+            <div class="col-md-6 offset-md-3">
+                <label for="nome" class="form-label">Nome da Tag:</label>
+                <input type="text" class="form-control" id="nome" name="nome"
+                       th:placeholder="${tag.nome}" th:value="${tag.nome}" required>
+                <small class="form-text text-muted">Cadastre uma Tag de cada vez e separe palavras compostas com hífen ( - ) ou espaço.</small>
+            </div>
+        </div>
+        <div class="d-grid gap-2 col-2 mx-auto">
+            <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+    </form>
+</div>
+
+<div class="container mt-5">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th class="acoes-column">Ações</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            <tr th:each="tag : ${tags}">
+                <td th:text="${tag.id}"></td>
+                <td th:text="${tag.nome}"></td>
+                <td class="acoes-column">
+                    <a th:href="@{/tags/editar/{id}(id=${tag.id})}" class="btn btn-info btn-sm">Editar</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<footer class="bg-dark text-light py-4">
+    <div class="container text-center">
+        <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
+    </div>
+</footer>
+
+<!-- Pop-up Modal -->
+<div class="modal fade" id="sinonimoModal" tabindex="-1" aria-labelledby="sinonimoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sinonimoModalLabel">Sinônimo encontrado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                A tag possui sinônimos cadastrados. Deseja continuar com o cadastro?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmarCadastro">Cadastrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const successAlert = document.querySelector('.alert-success');
+        if (successAlert) {
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 5000);
+        }
+
+        const tagForm = document.getElementById('tagForm');
+        tagForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const nome = document.getElementById('nome').value;
+
+            fetch(`/tags/verificar-sinonimo?nome=${nome}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sinonimoEncontrado) {
+                        const sinonimoModal = new bootstrap.Modal(document.getElementById('sinonimoModal'));
+                        sinonimoModal.show();
+
+                        document.getElementById('confirmarCadastro').addEventListener('click', function () {
+                            const hiddenInput = document.createElement('input');
+                            hiddenInput.type = 'hidden';
+                            hiddenInput.name = 'forcarCadastro';
+                            hiddenInput.value = 'true';
+                            tagForm.appendChild(hiddenInput);
+                            tagForm.submit();
+                        });
+                    } else {
+                        tagForm.submit();
+                    }
+                })
+                .catch(error => console.error('Erro:', error));
+        });
+    });
+</script>
+<!-- Bootstrap JS e dependências -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
