@@ -1,13 +1,11 @@
 package edu.fatec.Porygon.service;
 
 import edu.fatec.Porygon.model.Api;
-import edu.fatec.Porygon.model.ApiDados;
 import edu.fatec.Porygon.model.Tag;
-import edu.fatec.Porygon.repository.ApiDadosRepository;
 import edu.fatec.Porygon.repository.ApiRepository;
 import edu.fatec.Porygon.repository.TagRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -25,9 +23,6 @@ public class ApiService {
 
     @Autowired
     private ApiRepository apiRepository;
-
-    @Autowired
-    private ApiDadosRepository apiDadosRepository;
 
     @Autowired
     private ApiRotinaService apiRotinaService;
@@ -91,20 +86,8 @@ public class ApiService {
             Api savedApi = apiRepository.save(api);
 
             if (isNew && savedApi.isAtivo()) {
-                RestTemplate restTemplateForData = new RestTemplate();
-                ResponseEntity<String> response = restTemplateForData.getForEntity(savedApi.getUrl(), String.class);
 
-                ApiDados apiDados = new ApiDados();
-                apiDados.setConteudo(response.getBody());
-                apiDados.setDescricao("Dados da API: " + savedApi.getNome());
-                apiDados.setApi(savedApi);
-                apiDados.setDataColeta(LocalDate.now());
-                apiDados.setTags(new HashSet<>(savedApi.getTags()));
-
-                apiDadosRepository.save(apiDados);
-
-                savedApi.setUltimaAtualizacao(LocalDate.now());
-                apiRepository.save(savedApi);
+                apiRotinaService.realizarRequisicaoApi(savedApi);
 
                 return "Cadastro de API e coleta REST realizada com sucesso!";
             } else if (isNew) {
