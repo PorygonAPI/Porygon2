@@ -41,6 +41,9 @@ public class TagController {
                 tagService.criarTag(tag, forcarCadastro);
                 redirectAttributes.addFlashAttribute("mensagemSucesso", "Tag cadastrada com sucesso!");
             }
+
+            tagService.atualizarSinonimos(tag.getNome().toLowerCase(), tag).join();
+
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("mensagemErro", e.getMessage());
         }
