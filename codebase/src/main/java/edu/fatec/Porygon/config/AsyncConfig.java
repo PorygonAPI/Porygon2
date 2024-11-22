@@ -12,9 +12,9 @@ public class AsyncConfig {
 
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10); // Tamanho do pool de threads
-        executor.setMaxPoolSize(50);  // Tamanho máximo do pool de threads
-        executor.setQueueCapacity(100); // Tamanho da fila
+        executor.setCorePoolSize(10); 
+        executor.setMaxPoolSize(50); 
+        executor.setQueueCapacity(500); 
         executor.setThreadNamePrefix("api-thread-");
         executor.initialize();
         return executor;
