@@ -90,6 +90,24 @@ public class PortalController {
                     .collect(Collectors.toList());
         }
 
+        try {
+            dataScrapperService.validarSeletores(portal);
+        } catch (IllegalArgumentException e) {
+            errorMessage = e.getMessage();
+        } catch (RuntimeException e) {
+            errorMessage = "Erro ao acessar a URL: " + e.getMessage(); 
+        }
+
+
+        if (errorMessage != null) {
+            model.addAttribute("portal", portal);
+            model.addAttribute("portais", portalRepository.findAll());
+            model.addAttribute("agendadores", agendadorRepository.findAll());
+            model.addAttribute("tags", tagRepository.findAll());
+            model.addAttribute("errorMessage", errorMessage);
+            return "portal"; 
+        }
+
         if (isEdit) {
             Portal portalExistente = portalRepository.findById(portal.getId())
                     .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
@@ -111,13 +129,14 @@ public class PortalController {
             }
         }
 
+
         if (errorMessage != null) {
             model.addAttribute("portal", portal);
             model.addAttribute("portais", portalRepository.findAll());
             model.addAttribute("agendadores", agendadorRepository.findAll());
             model.addAttribute("tags", tagRepository.findAll());
             model.addAttribute("errorMessage", errorMessage);
-            return "portal";
+            return "portal"; 
         }
 
         if (tagIdsList != null && !tagIdsList.isEmpty()) {
@@ -135,25 +154,25 @@ public class PortalController {
 
         portalRepository.save(portal);
 
-        if (!isEdit && portal.isAtivo() && !portal.isHasScrapedToday()) {
-            dataScrapperService.WebScrapper();
-            portal.setHasScrapedToday(true);
-            portal.setUltimaAtualizacao(LocalDate.now());
-            portalRepository.save(portal);
-            successMessage = "Cadastro de portal e primeira coleta realizada com sucesso!";
-        } else if (!isEdit && !portal.isAtivo()) {
-            successMessage = "Cadastro de portal realizado sem coleta por estar desativo.";
-        } else {
-            successMessage = "Portal editado com sucesso!";
+        try {
+            if (!isEdit && portal.isAtivo() && !portal.isHasScrapedToday()) {
+                dataScrapperService.WebScrapper();
+                portal.setHasScrapedToday(true);
+                portal.setUltimaAtualizacao(LocalDate.now());
+            }
+        } catch (Exception e) {
+            errorMessage = "Erro ao realizar a raspagem: " + e.getMessage();
+            model.addAttribute("portal", portal);
+            model.addAttribute("portais", portalRepository.findAll());
+            model.addAttribute("agendadores", agendadorRepository.findAll());
+            model.addAttribute("tags", tagRepository.findAll());
+            model.addAttribute("errorMessage", errorMessage);
+            return "portal";
         }
 
+        successMessage = "Portal salvo com sucesso!";
         model.addAttribute("successMessage", successMessage);
-        model.addAttribute("portal", portal);
-        model.addAttribute("portais", portalRepository.findAll());
-        model.addAttribute("agendadores", agendadorRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
-
-        return "redirect:/portais?successMessage=" + successMessage;
+        return "redirect:/portais";
     }
 
     @PostMapping("/alterarStatus/{id}")
