@@ -151,22 +151,19 @@
 
     <script>
         document.querySelector('form').addEventListener('submit', function (e) {
-            // Obter os valores das datas
             const dataInicio = document.getElementById('dataInicio').value;
             const dataFim = document.getElementById('dataFim').value;
 
-            // Contêiner para exibir mensagens de erro
             const errorMessage = document.getElementById('error-message');
-            errorMessage.style.display = 'none'; // Ocultar mensagem por padrão
+            errorMessage.style.display = 'none';
 
-            // Validar se as datas estão preenchidas
             if (dataInicio && dataFim) {
                 const startDate = new Date(dataInicio);
                 const endDate = new Date(dataFim);
 
-                // Verificar se Data Início é posterior à Data Fim
+
                 if (startDate > endDate) {
-                    e.preventDefault(); // Impedir o envio do formulário
+                    e.preventDefault();
                     errorMessage.textContent = 'A data de início não pode ser posterior à data de fim.';
                     errorMessage.style.display = 'block';
                     setTimeout(() => {
