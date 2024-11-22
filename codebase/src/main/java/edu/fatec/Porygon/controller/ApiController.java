@@ -6,6 +6,8 @@ import edu.fatec.Porygon.repository.AgendadorRepository;
 import edu.fatec.Porygon.repository.FormatoRepository;
 import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.service.ApiService;
+import edu.fatec.Porygon.service.TagService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,6 +36,9 @@ public class ApiController {
     private ApiService apiService;
 
     @Autowired
+    private TagService tagService;
+
+    @Autowired
     private FormatoRepository formatoRepository;
 
     @GetMapping()
@@ -44,7 +49,8 @@ public class ApiController {
         model.addAttribute("apis", apiService.listarTodas());
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("formatos", formatoRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
+        List<Tag> tags = tagService.listarTagsOrdenadas();
+        model.addAttribute("tags", tags);
         return "api";
     }
 
@@ -55,7 +61,8 @@ public class ApiController {
         model.addAttribute("apis", apiService.listarTodas());
         model.addAttribute("agendadores", agendadorRepository.findAll());
         model.addAttribute("formatos", formatoRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
+        List<Tag> tags = tagService.listarTagsOrdenadas();
+        model.addAttribute("tags", tags);
         return "api";
     }
 
@@ -86,7 +93,8 @@ public class ApiController {
             model.addAttribute("apis", apiService.listarTodas());
             model.addAttribute("agendadores", agendadorRepository.findAll());
             model.addAttribute("formatos", formatoRepository.findAll());
-            model.addAttribute("tags", tagRepository.findAll());
+            List<Tag> tags = tagService.listarTagsOrdenadas();
+            model.addAttribute("tags", tags);
             return "api";
         } catch (RuntimeException ex) {
             model.addAttribute("erro", " " + ex.getMessage());
@@ -94,7 +102,8 @@ public class ApiController {
             model.addAttribute("apis", apiService.listarTodas());
             model.addAttribute("agendadores", agendadorRepository.findAll());
             model.addAttribute("formatos", formatoRepository.findAll());
-            model.addAttribute("tags", tagRepository.findAll());
+            List<Tag> tags = tagService.listarTagsOrdenadas();
+            model.addAttribute("tags", tags);
             return "api";
         }
     }

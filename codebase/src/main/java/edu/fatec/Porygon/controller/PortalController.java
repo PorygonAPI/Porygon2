@@ -7,6 +7,8 @@ import edu.fatec.Porygon.repository.PortalRepository;
 import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.service.DataScrapperService;
 import edu.fatec.Porygon.service.PortalService;
+import edu.fatec.Porygon.service.TagService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -38,6 +40,9 @@ public class PortalController {
     private PortalService portalService;
 
     @Autowired
+    private TagService tagService;
+
+    @Autowired
     private DataScrapperService dataScrapperService;
 
     @GetMapping()
@@ -47,7 +52,8 @@ public class PortalController {
         model.addAttribute("portal", novoPortal);
         model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
+        List<Tag> tags = tagService.listarTagsOrdenadas();
+        model.addAttribute("tags", tags);
         model.addAttribute("seletoresTitulo", portalService.getSeletoresTitulo());
         model.addAttribute("seletoresJornalista", portalService.getSeletoresJornalista());
         model.addAttribute("seletoresConteudo", portalService.getSeletoresConteudo());
@@ -64,7 +70,8 @@ public class PortalController {
         model.addAttribute("portal", portal);
         model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
+        List<Tag> tags = tagService.listarTagsOrdenadas();
+        model.addAttribute("tags", tags);
         return "portal";
     }
 
@@ -115,7 +122,8 @@ public class PortalController {
             model.addAttribute("portal", portal);
             model.addAttribute("portais", portalRepository.findAll());
             model.addAttribute("agendadores", agendadorRepository.findAll());
-            model.addAttribute("tags", tagRepository.findAll());
+            List<Tag> tags = tagService.listarTagsOrdenadas();
+            model.addAttribute("tags", tags);
             model.addAttribute("errorMessage", errorMessage);
             return "portal";
         }
@@ -151,7 +159,8 @@ public class PortalController {
         model.addAttribute("portal", portal);
         model.addAttribute("portais", portalRepository.findAll());
         model.addAttribute("agendadores", agendadorRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
+        List<Tag> tags = tagService.listarTagsOrdenadas();
+        model.addAttribute("tags", tags);
 
         return "redirect:/portais?successMessage=" + successMessage;
     }
