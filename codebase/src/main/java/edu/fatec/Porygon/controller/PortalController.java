@@ -14,11 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -42,17 +38,9 @@ public class PortalController {
 
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
-        Portal novoPortal = new Portal();
-        novoPortal.setAtivo(true);
-        model.addAttribute("portal", novoPortal);
-        model.addAttribute("portais", portalRepository.findAll());
-        model.addAttribute("agendadores", agendadorRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
-        model.addAttribute("seletoresTitulo", portalService.getSeletoresTitulo());
-        model.addAttribute("seletoresJornalista", portalService.getSeletoresJornalista());
-        model.addAttribute("seletoresConteudo", portalService.getSeletoresConteudo());
-        model.addAttribute("seletoresDataPublicacao", portalService.getSeletoresDataPublicacao());
-        model.addAttribute("seletoresCaminhoNoticia", portalService.getSeletoresCaminhoNoticia());
+        Portal portal = new Portal(); 
+        portal.setAtivo(true);
+        carregarModelBase(model, portal);
         return "portal";
     }
 
@@ -60,34 +48,24 @@ public class PortalController {
     public String mostrarFormularioEdicao(@PathVariable("id") Integer id, Model model) {
         Portal portal = portalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + id));
-
-        model.addAttribute("portal", portal);
-        model.addAttribute("portais", portalRepository.findAll());
-        model.addAttribute("agendadores", agendadorRepository.findAll());
-        model.addAttribute("tags", tagRepository.findAll());
+        carregarModelBase(model, portal);
         return "portal";
     }
 
-    @GetMapping("/verificarNome")
-    @ResponseBody
-    public Map<String, Boolean> verificarNome(@RequestParam String nome) {
-        boolean existe = portalRepository.existsByNome(nome);
-        return Map.of("existe", existe);
-    }
-
     @PostMapping("/salvar")
-    public String salvarOuAtualizarPortal(@ModelAttribute Portal portal,
+    public String salvarOuAtualizarPortal(
+            @ModelAttribute Portal portal,
             @RequestParam("isEdit") boolean isEdit,
             @RequestParam(required = false) String tagIds,
             Model model) {
+
         String errorMessage = null;
         String successMessage = null;
 
-        List<Integer> tagIdsList = null;
-        if (tagIds != null && !tagIds.isEmpty()) {
-            tagIdsList = Arrays.stream(tagIds.split(","))
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
+        List<Integer> tagIdsList = processarTags(tagIds);
+        if (tagIdsList != null) {
+            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIdsList));
+            portal.setTags(tags);
         }
 
         try {
@@ -95,63 +73,28 @@ public class PortalController {
         } catch (IllegalArgumentException e) {
             errorMessage = e.getMessage();
         } catch (RuntimeException e) {
-            errorMessage = "Erro ao acessar a URL: " + e.getMessage(); 
+            errorMessage = "Erro ao acessar a URL: " + e.getMessage();
         }
 
-
         if (errorMessage != null) {
-            model.addAttribute("portal", portal);
-            model.addAttribute("portais", portalRepository.findAll());
-            model.addAttribute("agendadores", agendadorRepository.findAll());
-            model.addAttribute("tags", tagRepository.findAll());
+            carregarModelBase(model, portal);
             model.addAttribute("errorMessage", errorMessage);
-            return "portal"; 
+            return "portal";
         }
 
         if (isEdit) {
-            Portal portalExistente = portalRepository.findById(portal.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
-
-            if (!portal.getNome().equals(portalExistente.getNome())
-                    && portalRepository.existsByNome(portal.getNome())) {
-                errorMessage = "Já existe um portal com esse nome.";
-            } else if (!portal.getUrl().equals(portalExistente.getUrl())
-                    && portalRepository.existsByUrl(portal.getUrl())) {
-                errorMessage = "Já existe um portal com essa URL.";
-            }
-            portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
-            portal.setDataCriacao(portalExistente.getDataCriacao());
+            errorMessage = verificarDuplicidadeParaEdicao(portal);
         } else {
-            if (portalRepository.existsByNome(portal.getNome())) {
-                errorMessage = "Já existe um portal com este nome.";
-            } else if (portalRepository.existsByUrl(portal.getUrl())) {
-                errorMessage = "Já existe um portal com esta URL.";
-            }
+            errorMessage = verificarDuplicidadeParaCadastro(portal);
         }
-
 
         if (errorMessage != null) {
-            model.addAttribute("portal", portal);
-            model.addAttribute("portais", portalRepository.findAll());
-            model.addAttribute("agendadores", agendadorRepository.findAll());
-            model.addAttribute("tags", tagRepository.findAll());
+            carregarModelBase(model, portal);
             model.addAttribute("errorMessage", errorMessage);
-            return "portal"; 
+            return "portal";
         }
 
-        if (tagIdsList != null && !tagIdsList.isEmpty()) {
-            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIdsList));
-            portal.setTags(tags);
-        }
-
-        if (portal.getId() == null) {
-            portal.setDataCriacao(LocalDate.now());
-        } else {
-            Portal portalExistente = portalRepository.findById(portal.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
-            portal.setDataCriacao(portalExistente.getDataCriacao());
-        }
-
+        ajustarDatasCadastroEdicao(portal, isEdit);
         portalRepository.save(portal);
 
         try {
@@ -162,10 +105,7 @@ public class PortalController {
             }
         } catch (Exception e) {
             errorMessage = "Erro ao realizar a raspagem: " + e.getMessage();
-            model.addAttribute("portal", portal);
-            model.addAttribute("portais", portalRepository.findAll());
-            model.addAttribute("agendadores", agendadorRepository.findAll());
-            model.addAttribute("tags", tagRepository.findAll());
+            carregarModelBase(model, portal);
             model.addAttribute("errorMessage", errorMessage);
             return "portal";
         }
@@ -192,4 +132,58 @@ public class PortalController {
         return ResponseEntity.ok(message);
     }
 
+    private void carregarModelBase(Model model, Portal portal) {
+        model.addAttribute("portal", portal);
+        model.addAttribute("portais", portalRepository.findAll());
+        model.addAttribute("agendadores", agendadorRepository.findAll());
+        model.addAttribute("tags", tagRepository.findAll());
+        model.addAttribute("tagsSelecionadas", portal.getTags().stream().map(Tag::getId).collect(Collectors.toList()));
+        model.addAttribute("seletoresTitulo", portalService.getSeletoresTitulo());
+        model.addAttribute("seletoresJornalista", portalService.getSeletoresJornalista());
+        model.addAttribute("seletoresConteudo", portalService.getSeletoresConteudo());
+        model.addAttribute("seletoresDataPublicacao", portalService.getSeletoresDataPublicacao());
+        model.addAttribute("seletoresCaminhoNoticia", portalService.getSeletoresCaminhoNoticia());
+    }
+
+    private List<Integer> processarTags(String tagIds) {
+        if (tagIds != null && !tagIds.isEmpty()) {
+            return Arrays.stream(tagIds.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    private String verificarDuplicidadeParaEdicao(Portal portal) {
+        Portal portalExistente = portalRepository.findById(portal.getId())
+                .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
+
+        if (!portal.getNome().equals(portalExistente.getNome())
+                && portalRepository.existsByNome(portal.getNome())) {
+            return "Já existe um portal com esse nome.";
+        } else if (!portal.getUrl().equals(portalExistente.getUrl())
+                && portalRepository.existsByUrl(portal.getUrl())) {
+            return "Já existe um portal com essa URL.";
+        }
+        return null;
+    }
+
+    private String verificarDuplicidadeParaCadastro(Portal portal) {
+        if (portalRepository.existsByNome(portal.getNome())) {
+            return "Já existe um portal com este nome.";
+        } else if (portalRepository.existsByUrl(portal.getUrl())) {
+            return "Já existe um portal com esta URL.";
+        }
+        return null;
+    }
+
+    private void ajustarDatasCadastroEdicao(Portal portal, boolean isEdit) {
+        if (isEdit) {
+            Portal portalExistente = portalRepository.findById(portal.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("ID inválido: " + portal.getId()));
+            portal.setDataCriacao(portalExistente.getDataCriacao());
+        } else {
+            portal.setDataCriacao(LocalDate.now());
+        }
+    }
 }

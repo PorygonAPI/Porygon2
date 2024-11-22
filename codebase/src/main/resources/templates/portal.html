@@ -224,24 +224,6 @@
         </div>
     </div>
 
-    <!-- Modal de Erro do Web Scrapping -->
-<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="errorModalLabel">Erro de Web Scraping</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="errorMessageText"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
     <footer class="bg-dark text-light py-4">
         <div class="container text-center">
             <p class="mb-0">© 2024 Porygon. Todos os direitos reservados.</p>
@@ -249,16 +231,6 @@
     </footer>
 
     <script>
-
-document.addEventListener('DOMContentLoaded', function() {
-        const errorMessage = /*[[${errorMessage}]]*/ null; 
-        if (errorMessage) {
-            document.getElementById('errorMessageText').textContent = errorMessage;
-            var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-            errorModal.show();
-        }
-    });
-
         const tagInput = document.getElementById('tagSearchInput');
         const tagSelect = document.getElementById('tags');
         const allTags = Array.from(tagSelect.options);
