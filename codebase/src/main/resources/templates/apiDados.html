@@ -50,11 +50,11 @@
             <div class="row mb-3">
                 <div class="col">
                     <label for="dataInicio" class="form-label">Data Início</label>
-                    <input type="date" class="form-control" id="dataInicio">
+                    <input type="date" class="form-control" id="dataInicio" name="dataInicio" required>
                 </div>
                 <div class="col">
                     <label for="dataFim" class="form-label">Data Fim</label>
-                    <input type="date" class="form-control" id="dataFim">
+                    <input type="date" class="form-control" id="dataFim" name="dataFim" required>
                 </div>
             </div>
 
@@ -150,6 +150,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const dataInicio = document.getElementById('dataInicio').value;
+            const dataFim = document.getElementById('dataFim').value;
+
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'none';
+
+            if (dataInicio && dataFim) {
+                const startDate = new Date(dataInicio);
+                const endDate = new Date(dataFim);
+
+
+                if (startDate > endDate) {
+                    e.preventDefault();
+                    errorMessage.textContent = 'A data de início não pode ser posterior à data de fim.';
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.textContent = '';
+                        errorMessage.style.display = 'none';
+                    }, 5000);
+                    return;
+                }
+            }
+        });
+
         const tagInput = document.getElementById('tagSearchInput');
         const tagSelect = document.getElementById('tags');
         const allTags = Array.from(tagSelect.options);
