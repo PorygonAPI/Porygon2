@@ -189,6 +189,10 @@
         </div>
     </footer>
 
+    <div id="alertContainer" class="alert alert-success alert-dismissible fade show" role="alert" style="display: none; position: fixed; top: 20px; right: 20px; z-index: 1051;">
+        <span id="alertMessage"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
     <script>
 
@@ -296,6 +300,8 @@
                         alert("Erro ao alterar o status!");
                         checkbox.checked = !isActive;
                         label.textContent = !isActive ? 'Ativa' : 'Desativa';
+                    } else {
+                        showAlert(isActive ? 'API ativada com sucesso.' : 'API desativada com sucesso.', 'success');
                     }
                 })
                 .catch(error => {
