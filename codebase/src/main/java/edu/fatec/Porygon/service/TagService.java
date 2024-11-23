@@ -2,6 +2,7 @@ package edu.fatec.Porygon.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.model.Sinonimo;
@@ -9,6 +10,7 @@ import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.repository.SinonimoRepository;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,11 +87,15 @@ public class TagService {
         return tagFormatada.toString().trim();
     }
 
-    private void atualizarSinonimos(String nomeTagParaScraping, Tag tag) {
+    @Async
+    public CompletableFuture<Void> atualizarSinonimos(String nomeTagParaScraping, Tag tag) {
         List<String> sinonimos = tagScrapperService.buscarSinonimos(nomeTagParaScraping);
-        vincularSinonimos(sinonimos, tag);}
+        vincularSinonimos(sinonimos, tag);
+        return CompletableFuture.completedFuture(null);
+    }
 
-    private void vincularSinonimos(List<String> sinonimos, Tag tag) {
+    @Async
+    public CompletableFuture<Void> vincularSinonimos(List<String> sinonimos, Tag tag) {
         List<Sinonimo> sinonimosAntigos = sinonimoRepository.findByTag(tag);
         for (Sinonimo sinonimoAntigo : sinonimosAntigos) {
             if (!sinonimos.contains(sinonimoAntigo.getNome())) {
@@ -106,7 +112,9 @@ public class TagService {
                 sinonimoRepository.save(sinonimo);
             }
         }
+        return CompletableFuture.completedFuture(null);
     }
+
 
     public List<Tag> listarTagsOrdenadas() {
         return tagRepository.findAll(Sort.by(Sort.Direction.ASC, "nome"));}

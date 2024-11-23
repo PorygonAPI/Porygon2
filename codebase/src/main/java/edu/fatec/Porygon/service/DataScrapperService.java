@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DataScrapperService {
@@ -39,7 +41,8 @@ public class DataScrapperService {
     private NoticiaService noticiaService;
 
     @Transactional
-    public void scrapeDatabyPortalID(int id) {
+    @Async
+    public CompletableFuture<Void> scrapeDatabyPortalID(int id) {
         Portal portal = portalRepository.findByIdWithTags(id)
                 .orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
         portal.getTags().size();
@@ -113,6 +116,27 @@ public class DataScrapperService {
         } catch (IOException e) {
             System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
         }
+        
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Async
+    public CompletableFuture<Void> WebScrapper() {
+        showLoading();
+
+        List<Portal> portais = portalRepository.findAll();
+
+        CompletableFuture<Void> allScrapingTasks = CompletableFuture.allOf(
+            portais.stream()
+                   .filter(portal -> !portal.isHasScrapedToday() && portal.isAtivo())
+                   .map(portal -> scrapeDatabyPortalID(portal.getId()))
+                   .toArray(CompletableFuture[]::new)
+        );
+
+        allScrapingTasks.join();
+
+        hideLoading();
+        return CompletableFuture.completedFuture(null);
     }
 
     public void validarSeletores(Portal portal) {
@@ -166,23 +190,6 @@ public class DataScrapperService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse date: " + dateStr, e);
         }
-
-    }
-
-    public void WebScrapper() {
-        showLoading();
-
-        List<Portal> portais = portalRepository.findAll();
-
-        for (Portal portal : portais) {
-            if (!portal.isHasScrapedToday()) {
-                if (portal.isAtivo()) {
-                    scrapeDatabyPortalID(portal.getId());
-                }
-            }
-        }
-
-        hideLoading();
     }
 
     private void showLoading() {
