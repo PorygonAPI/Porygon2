@@ -139,6 +139,48 @@ public class DataScrapperService {
         return CompletableFuture.completedFuture(null);
     }
 
+    public void validarSeletores(Portal portal) {
+        try {
+            Document doc = Jsoup.connect(portal.getUrl()).get();
+    
+            String seletorCaminhoNoticia = "a[href]." + portal.getSeletorCaminhoNoticia();
+            Element firstLinkElement = doc.select(seletorCaminhoNoticia).first();
+    
+            if (firstLinkElement == null) {
+                throw new IllegalArgumentException("O seletor do caminho de notícia está inválido. Verifique!");
+            }
+    
+            String noticiaUrl = firstLinkElement.absUrl("href");
+            //System.out.println("Validando seletores com a notícia encontrada: " + noticiaUrl);
+
+            Document noticiaDoc = Jsoup.connect(noticiaUrl).get();
+    
+            if (noticiaDoc.select(portal.getSeletorTitulo()).isEmpty()) {
+                throw new IllegalArgumentException("O seletor de título está inválido. Verifique!");
+            }
+    
+            if (noticiaDoc.select(portal.getSeletorDataPublicacao()).isEmpty()) {
+                throw new IllegalArgumentException("O seletor de data de publicação está inválido. Verifique!");
+            }
+    
+            if (noticiaDoc.select(portal.getSeletorJornalista()).isEmpty()) {
+                throw new IllegalArgumentException("O seletor de jornalista está inválido. Verifique!");
+            }
+    
+            if (noticiaDoc.select(portal.getSeletorConteudo()).isEmpty()) {
+                throw new IllegalArgumentException("O seletor de conteúdo está inválido. Verifique!");
+            }
+    
+            //System.out.println("Todos os seletores foram validados com sucesso para o portal: " + portal.getNome());
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao acessar a URL: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            //System.err.println("Erro de validação de seletores: " + e.getMessage());
+            throw e;
+        }
+    }
+    
+
     private Date convertStringToDate(String dateStr) {
         try {
             ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateStr, DateTimeFormatter.ISO_DATE_TIME);
