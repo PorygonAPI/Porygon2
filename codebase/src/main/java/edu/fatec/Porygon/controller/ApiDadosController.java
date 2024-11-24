@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,10 +30,17 @@ public class ApiDadosController {
     private TagService tagService;
 
     @GetMapping("/apis/dados")
-    public String listarApiDados(@RequestParam(required = false) List<Integer> tagIds, Model model) {
+    public String listarApiDados(
+            @RequestParam(required = false) List<Integer> tagIds,
+            @RequestParam(required = false) LocalDate dataInicio,
+            @RequestParam(required = false) LocalDate dataFim,
+            Model model) {
         List<ApiDados> apiDadosList;
 
-        if (tagIds != null && !tagIds.isEmpty()) {
+        // Verifica se intervalo de datas é fornecido
+        if (dataInicio != null && dataFim != null) {
+            apiDadosList = apiDadosService.buscarApiDadosPorDatas(dataInicio, dataFim, tagIds);
+        } else if (tagIds != null && !tagIds.isEmpty()) {
             apiDadosList = apiDadosService.buscarApiDadosPorTags(tagIds);
         } else {
             apiDadosList = apiDadosRepository.findAll();
@@ -46,6 +54,7 @@ public class ApiDadosController {
 
         return "apiDados";
     }
+
 
     @GetMapping("/dados/{id}")
     public ResponseEntity<?> abrirDados(@PathVariable Long id) {

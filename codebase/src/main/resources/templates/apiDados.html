@@ -179,7 +179,7 @@
         const tagSelect = document.getElementById('tags');
         const allTags = Array.from(tagSelect.options);
 
-        
+
         tagInput.addEventListener('input', function () {
             const searchQuery = this.value.toLowerCase();
             tagSelect.innerHTML = '';
@@ -191,7 +191,7 @@
             });
             updateSelectedTags();
         });
-        
+
 
         function updateSelectedTags() {
             const select = document.getElementById('tags');
