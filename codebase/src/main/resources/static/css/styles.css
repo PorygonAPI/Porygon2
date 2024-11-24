@@ -83,21 +83,3 @@ footer {
     max-height: 70vh;
     overflow-y: auto;
 }
-
-th {
-    vertical-align: middle; /* Alinha verticalmente no centro */
-    text-align: start; /* Centraliza o texto */
-}
-
-th div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px; /* Espaçamento entre texto e botão */
-}
-
-.btn-outline-secondary {
-    padding: 2px 6px;
-    font-size: 0.9em;
-    height: auto;
-}
