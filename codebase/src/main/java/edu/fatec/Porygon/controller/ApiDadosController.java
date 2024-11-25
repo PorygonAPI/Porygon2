@@ -7,6 +7,7 @@ import edu.fatec.Porygon.service.ApiDadosService;
 import edu.fatec.Porygon.service.TagService;
 import edu.fatec.Porygon.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -35,7 +36,7 @@ public class ApiDadosController {
         if (tagIds != null && !tagIds.isEmpty()) {
             apiDadosList = apiDadosService.buscarApiDadosPorTags(tagIds);
         } else {
-            apiDadosList = apiDadosRepository.findAll();
+            apiDadosList =apiDadosRepository.findAll(Sort.by(Sort.Order.desc("id")));
         }
 
         model.addAttribute("apiDadosList", apiDadosList);
