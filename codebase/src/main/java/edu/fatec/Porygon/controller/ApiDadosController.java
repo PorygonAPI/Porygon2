@@ -36,7 +36,7 @@ public class ApiDadosController {
         if (tagIds != null && !tagIds.isEmpty()) {
             apiDadosList = apiDadosService.buscarApiDadosPorTags(tagIds);
         } else {
-            apiDadosList = apiDadosRepository.findAll(Sort.by(Sort.Order.desc("id")));
+            apiDadosList =apiDadosRepository.findAll(Sort.by(Sort.Order.desc("id")));
         }
 
         model.addAttribute("apiDadosList", apiDadosList);
