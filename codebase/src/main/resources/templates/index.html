@@ -189,8 +189,8 @@
         const rows = Array.from(tbody.querySelectorAll('tr'));
 
         rows.sort((a, b) => {
-            const nameA = a.cells[0].textContent.trim().toLowerCase();
-            const nameB = b.cells[0].textContent.trim().toLowerCase();
+            const nameA = removeAccents(a.cells[0].textContent.trim().toLowerCase());
+            const nameB = removeAccents(b.cells[0].textContent.trim().toLowerCase());
 
             if (nameA < nameB) return order === 'asc' ? -1 : 1;
             if (nameA > nameB) return order === 'asc' ? 1 : -1;
@@ -199,6 +199,10 @@
 
         tbody.innerHTML = '';
         rows.forEach(row => tbody.appendChild(row));
+    }
+
+    function removeAccents(str) {
+        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
     function ordenarTabelaPorData(order) {
