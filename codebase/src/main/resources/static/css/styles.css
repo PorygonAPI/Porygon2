@@ -83,3 +83,37 @@ footer {
     max-height: 70vh;
     overflow-y: auto;
 }
+
+th {
+    vertical-align: middle;
+    text-align: start;
+}
+
+th div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-outline-secondary {
+    padding: 2px 6px;
+    font-size: 0.9em;
+    height: auto;
+}
+
+table.table tbody tr {
+    border-bottom: 1px solid #c7d1dc;
+}
+
+table.table thead th {
+    border-bottom: 2px solid #c7d1dc;
+}
+
+table.table {
+    border-collapse: collapse;
+}
+
+.table-group-divider {
+    border-top: none;
+}
