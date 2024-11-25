@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import edu.fatec.Porygon.model.*;
 import edu.fatec.Porygon.repository.*;
-
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,17 +25,14 @@ public class ApiDadosService {
     }
 
     public List<ApiDados> buscarApiDadosPorDatas(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds) {
-        // Validação do intervalo de datas
         if (dataInicio != null && dataFim != null && dataInicio.isAfter(dataFim)) {
             throw new IllegalArgumentException("A data de início não pode ser posterior à data de fim.");
         }
 
-        // Se tagIds for fornecido, aplicar filtro combinado
         if (tagIds != null && !tagIds.isEmpty()) {
             return apiDadosRepository.findByDataColetaBetweenAndTags_IdIn(dataInicio, dataFim, tagIds);
         }
 
-        // Apenas intervalo de datas
         return apiDadosRepository.findByDataColetaBetweenAndTags_IdIn(dataInicio, dataFim, tagIds);
     }
 

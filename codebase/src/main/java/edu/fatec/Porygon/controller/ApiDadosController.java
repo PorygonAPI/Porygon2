@@ -37,7 +37,6 @@ public class ApiDadosController {
             Model model) {
         List<ApiDados> apiDadosList;
 
-        // Verifica se intervalo de datas é fornecido
         if (dataInicio != null && dataFim != null) {
             apiDadosList = apiDadosService.buscarApiDadosPorDatas(dataInicio, dataFim, tagIds);
         } else if (tagIds != null && !tagIds.isEmpty()) {
