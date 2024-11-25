@@ -222,7 +222,7 @@
 
     function parseDate(dateStr) {
         const [day, month, year] = dateStr.split('/').map(Number);
-        return new Date(year, month - 1, day); // Ajuste do mês (0-11 para Date)
+        return new Date(year, month - 1, day); 
     }
 
     const tagInput = document.getElementById('tagSearchInput');
