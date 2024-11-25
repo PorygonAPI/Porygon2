@@ -50,11 +50,11 @@
             <div class="row mb-3">
                 <div class="col">
                     <label for="dataInicio" class="form-label">Data Início</label>
-                    <input type="date" class="form-control" id="dataInicio" name="dataInicio" required>
+                    <input type="date" class="form-control" id="dataInicio" name="dataInicio" >
                 </div>
                 <div class="col">
                     <label for="dataFim" class="form-label">Data Fim</label>
-                    <input type="date" class="form-control" id="dataFim" name="dataFim" required>
+                    <input type="date" class="form-control" id="dataFim" name="dataFim" >
                 </div>
             </div>
 
@@ -71,7 +71,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="tags" class="form-label">Tags</label>
-                    <select id="tags" name="tagIds" class="form-select" multiple required
+                    <select id="tags" name="tagIds" class="form-select" multiple 
                         onchange="updateSelectedTags()">
                         <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}" th:selected="${selectedTagIds != null and selectedTagIds.contains(tag.id)}">
                         </option>
@@ -97,27 +97,26 @@
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead>
-                    <tr>
-                        <th>Nome da API</th>
-                        <th>Descrição</th>
-                        <th>Tags</th>
-                        <th>Data</th>
-                        <th>Ações</th>
-                    </tr>
+                        <tr>
+                            <th>Nome da API</th>
+                            <th>Tags</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
                     </thead>
-                    <tbody id="api-dados-body">
-                    <tr th:if="${apiDadosList.isEmpty()}">
-                        <td colspan="5" class="text-center">Nenhum dado de API encontrado.</td>
-                    </tr>
-                    <tr th:each="dados : ${apiDadosList}" th:attr="data-id=${dados.id}">
-                        <td th:text="${dados.api.nome}"></td>
-                        <td th:text="${dados.api.getDescricao()}"></td>
-                        <td th:text="${#strings.listJoin(dados.tags.![nome], ', ')}"></td>
-                        <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td>
-                        <td>
-                            <button class="btn btn-info" th:attr="data-id=${dados.id}" onclick="abrirModal(this)">Abrir</button>
-                        </td>
-                    </tr>
+                    <tbody>
+                        <tr th:if="${apiDadosList.isEmpty()}">
+                            <td colspan="4" class="text-center">Nenhum dado de API encontrado.</td>
+                        </tr>
+                        <tr th:each="dados : ${apiDadosList}">
+                            <td th:text="${dados.api.nome}"></td>
+                            <td th:text="${#strings.listJoin(dados.tags.![nome], ', ')}"></td>
+                            <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td>
+                            <td>
+                                <button class="btn btn-info" th:attr="data-id=${dados.id}"
+                                    onclick="abrirModal(this)">Abrir</button>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -151,26 +150,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-
-        document.addEventListener('DOMContentLoaded', () => {
-            ordenarTabelaPorId('desc');
-        });
-
-        function ordenarTabelaPorId(order) {
-            const tbody = document.getElementById('api-dados-body');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-
-            rows.sort((a, b) => {
-                const idA = parseInt(a.getAttribute('data-id'), 10);
-                const idB = parseInt(b.getAttribute('data-id'), 10);
-
-                return order === 'asc' ? idA - idB : idB - idA;
-            });
-
-            tbody.innerHTML = '';
-            rows.forEach(row => tbody.appendChild(row));
-        }
-
         document.querySelector('form').addEventListener('submit', function (e) {
             const dataInicio = document.getElementById('dataInicio').value;
             const dataFim = document.getElementById('dataFim').value;
