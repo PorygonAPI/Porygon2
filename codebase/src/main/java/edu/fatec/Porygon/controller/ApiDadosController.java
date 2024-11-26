@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,10 +30,16 @@ public class ApiDadosController {
     private TagService tagService;
 
     @GetMapping("/apis/dados")
-    public String listarApiDados(@RequestParam(required = false) List<Integer> tagIds, Model model) {
+    public String listarApiDados(
+            @RequestParam(required = false) List<Integer> tagIds,
+            @RequestParam(required = false) LocalDate dataInicio,
+            @RequestParam(required = false) LocalDate dataFim,
+            Model model) {
         List<ApiDados> apiDadosList;
 
-        if (tagIds != null && !tagIds.isEmpty()) {
+        if (dataInicio != null && dataFim != null) {
+            apiDadosList = apiDadosService.buscarApiDadosPorDatas(dataInicio, dataFim);
+        } else if (tagIds != null && !tagIds.isEmpty()) {
             apiDadosList = apiDadosService.buscarApiDadosPorTags(tagIds);
         } else {
             apiDadosList =apiDadosRepository.findAll(Sort.by(Sort.Order.desc("id")));
@@ -41,12 +47,17 @@ public class ApiDadosController {
 
         model.addAttribute("apiDadosList", apiDadosList);
 
+        model.addAttribute("dataInicio", dataInicio);
+        model.addAttribute("dataFim", dataFim);
+
         List<Tag> tags = tagService.listarTagsOrdenadas();
         model.addAttribute("tags", tags);
         model.addAttribute("selectedTagIds", tagIds);
 
         return "apiDados";
     }
+
+
 
     @GetMapping("/dados/{id}")
     public ResponseEntity<?> abrirDados(@PathVariable Long id) {
