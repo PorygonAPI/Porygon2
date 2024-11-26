@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DataScrapperService {
@@ -39,11 +41,11 @@ public class DataScrapperService {
     private NoticiaService noticiaService;
 
     @Transactional
-    public void scrapeDatabyPortalID(int id) {
+    @Async
+    public CompletableFuture<Void> scrapeDatabyPortalID(int id) {
         Portal portal = portalRepository.findByIdWithTags(id)
                 .orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
         portal.getTags().size();
-
 
         String classNameLink = portal.getSeletorCaminhoNoticia();
         String referenceClass = "a[href]." + classNameLink;
@@ -114,7 +116,70 @@ public class DataScrapperService {
         } catch (IOException e) {
             System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
         }
+        
+        return CompletableFuture.completedFuture(null);
     }
+
+    @Async
+    public CompletableFuture<Void> WebScrapper() {
+        showLoading();
+
+        List<Portal> portais = portalRepository.findAll();
+
+        CompletableFuture<Void> allScrapingTasks = CompletableFuture.allOf(
+            portais.stream()
+                   .filter(portal -> !portal.isHasScrapedToday() && portal.isAtivo())
+                   .map(portal -> scrapeDatabyPortalID(portal.getId()))
+                   .toArray(CompletableFuture[]::new)
+        );
+
+        allScrapingTasks.join();
+
+        hideLoading();
+        return CompletableFuture.completedFuture(null);
+    }
+
+    public void validarSeletores(Portal portal) {
+        try {
+            Document doc = Jsoup.connect(portal.getUrl()).get();
+    
+            String seletorCaminhoNoticia = "a[href]." + portal.getSeletorCaminhoNoticia();
+            Element firstLinkElement = doc.select(seletorCaminhoNoticia).first();
+    
+            if (firstLinkElement == null) {
+                throw new IllegalArgumentException("O seletor do caminho de notícia está inválido. Verifique!");
+            }
+    
+            String noticiaUrl = firstLinkElement.absUrl("href");
+            //System.out.println("Validando seletores com a notícia encontrada: " + noticiaUrl);
+
+            Document noticiaDoc = Jsoup.connect(noticiaUrl).get();
+    
+            if (noticiaDoc.select(portal.getSeletorTitulo()).isEmpty()) {
+                throw new IllegalArgumentException("O seletor de título está inválido. Verifique!");
+            }
+    
+            if (noticiaDoc.select(portal.getSeletorDataPublicacao()).isEmpty()) {
+                throw new IllegalArgumentException("O seletor de data de publicação está inválido. Verifique!");
+            }
+    
+            if (noticiaDoc.select(portal.getSeletorJornalista()).isEmpty()) {
+                throw new IllegalArgumentException("O seletor de jornalista está inválido. Verifique!");
+            }
+    
+            if (noticiaDoc.select(portal.getSeletorConteudo()).isEmpty()) {
+                throw new IllegalArgumentException("O seletor de conteúdo está inválido. Verifique!");
+            }
+    
+            //System.out.println("Todos os seletores foram validados com sucesso para o portal: " + portal.getNome());
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao acessar a URL: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            //System.err.println("Erro de validação de seletores: " + e.getMessage());
+            throw e;
+        }
+    }
+    
 
     private Date convertStringToDate(String dateStr) {
         try {
@@ -125,23 +190,6 @@ public class DataScrapperService {
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse date: " + dateStr, e);
         }
-
-    }
-
-    public void WebScrapper() {
-        showLoading();
-
-        List<Portal> portais = portalRepository.findAll();
-
-        for (Portal portal : portais) {
-            if (!portal.isHasScrapedToday()) {
-                if (portal.isAtivo()) {
-                    scrapeDatabyPortalID(portal.getId());
-                }
-            }
-        }
-
-        hideLoading();
     }
 
     private void showLoading() {
