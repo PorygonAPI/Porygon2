@@ -15,6 +15,6 @@ public interface ApiDadosRepository extends JpaRepository<ApiDados, Integer> {
     Optional<ApiDados> findById(Long id);
     List<ApiDados> findByApiId(Integer apiId);
     List<ApiDados> findDistinctByTags_IdIn(List<Integer> tagIds);
-    @Query("SELECT ad FROM ApiDados ad JOIN ad.tags t WHERE ad.dataColeta BETWEEN :dataInicio AND :dataFim AND t.id IN :tagIds")
-    List<ApiDados> findByDataColetaBetweenAndTags_IdIn(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds);
+    @Query("SELECT ad FROM ApiDados ad JOIN ad.tags t WHERE ad.dataColeta BETWEEN :dataInicio AND :dataFim")
+    List<ApiDados> findByDataColetaBetweenAndTags_IdIn(LocalDate dataInicio, LocalDate dataFim);
 }

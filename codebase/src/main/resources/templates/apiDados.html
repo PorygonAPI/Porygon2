@@ -50,11 +50,13 @@
             <div class="row mb-3">
                 <div class="col">
                     <label for="dataInicio" class="form-label">Data Início</label>
-                    <input type="date" class="form-control" id="dataInicio" name="dataInicio" required>
+                    <input type="date" class="form-control" id="dataInicio" name="dataInicio"
+                           th:value="${dataInicio != null ? dataInicio : ''}">
                 </div>
                 <div class="col">
                     <label for="dataFim" class="form-label">Data Fim</label>
-                    <input type="date" class="form-control" id="dataFim" name="dataFim" required>
+                    <input type="date" class="form-control" id="dataFim" name="dataFim"
+                           th:value="${dataFim != null ? dataFim : ''}">
                 </div>
             </div>
 
@@ -71,8 +73,7 @@
                 </div>
                 <div class="col-md-6">
                     <label for="tags" class="form-label">Tags</label>
-                    <select id="tags" name="tagIds" class="form-select" multiple required
-                        onchange="updateSelectedTags()">
+                    <select id="tags" name="tagIds" class="form-select" multiple onchange="updateSelectedTags()">
                         <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.nome}" th:selected="${selectedTagIds != null and selectedTagIds.contains(tag.id)}">
                         </option>
                     </select>

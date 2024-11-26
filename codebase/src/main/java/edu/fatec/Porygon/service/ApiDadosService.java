@@ -24,16 +24,15 @@ public class ApiDadosService {
         return apiDadosRepository.findAll();
     }
 
-    public List<ApiDados> buscarApiDadosPorDatas(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds) {
+    public List<ApiDados> buscarApiDadosPorDatas(LocalDate dataInicio, LocalDate dataFim) {
         if (dataInicio != null && dataFim != null && dataInicio.isAfter(dataFim)) {
             throw new IllegalArgumentException("A data de início não pode ser posterior à data de fim.");
         }
+//        if (tagIds != null && !tagIds.isEmpty()) {
+//            return apiDadosRepository.findByDataColetaBetweenAndTags_IdIn(dataInicio, dataFim, tagIds);
+//        }
 
-        if (tagIds != null && !tagIds.isEmpty()) {
-            return apiDadosRepository.findByDataColetaBetweenAndTags_IdIn(dataInicio, dataFim, tagIds);
-        }
-
-        return apiDadosRepository.findByDataColetaBetweenAndTags_IdIn(dataInicio, dataFim, tagIds);
+        return apiDadosRepository.findByDataColetaBetweenAndTags_IdIn(dataInicio, dataFim);
     }
 
 
