@@ -44,6 +44,9 @@
     <br>
 
     <div class="container mt-5">
+
+        <div id="error-message" class="alert alert-danger" style="display: none;">Nenhuma API encontrada.</div>
+
         <h4 class="mb-4 text-center">Consulta de APIs</h4>
 
         <form method="get">
@@ -59,8 +62,6 @@
                            th:value="${dataFim != null ? dataFim : ''}">
                 </div>
             </div>
-
-            <div id="error-message" class="alert alert-danger" style="display: none;"></div>
 
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -120,17 +121,14 @@
                 </tr>
                 </thead>
                 <tbody id="api-dados-body">
-                <tr th:if="${apiDadosList.isEmpty()}">
-                    <td colspan="5" class="text-center">Nenhum dado de API encontrado.</td>
+                <tr th:each="dados : ${apiDadosList}" th:attr="data-id=${dados.id}">
+                    <td th:text="${dados.api.nome}"></td>
+                    <td th:text="${#strings.listJoin(dados.tags.![nome], ', ')}"></td>
+                    <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td>
+                    <td>
+                        <button class="btn btn-info" th:attr="data-id=${dados.id}" onclick="abrirModal(this)">Abrir</button>
+                    </td>
                 </tr>
-                    <tr th:each="dados : ${apiDadosList}" th:attr="data-id=${dados.id}">
-                        <td th:text="${dados.api.nome}"></td>
-                        <td th:text="${#strings.listJoin(dados.tags.![nome], ', ')}"></td>
-                        <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td>
-                        <td>
-                            <button class="btn btn-info" th:attr="data-id=${dados.id}" onclick="abrirModal(this)">Abrir</button>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
@@ -224,31 +222,47 @@
         return new Date(year, month - 1, day);
     }
 
+    function showErrorMessage(message) {
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 5000);
+    }
+
     document.querySelector('form').addEventListener('submit', function (e) {
         const dataInicio = document.getElementById('dataInicio').value;
         const dataFim = document.getElementById('dataFim').value;
+        const tagSelect = document.getElementById('tags');
+        const selectedTags = Array.from(tagSelect.selectedOptions);
+        const errorMessage = document.getElementById('error-message');
 
-            const errorMessage = document.getElementById('error-message');
             errorMessage.style.display = 'none';
+
+        if (!dataInicio && !dataFim && selectedTags.length === 0) {
+            e.preventDefault();
+            showErrorMessage('Selecione pelo menos um filtro de busca.');
+            return;
+        }
 
             if (dataInicio && dataFim) {
                 const startDate = new Date(dataInicio);
                 const endDate = new Date(dataFim);
 
-
                 if (startDate > endDate) {
                     e.preventDefault();
-                    errorMessage.textContent = 'A data de início não pode ser posterior à data de fim.';
-                    errorMessage.style.display = 'block';
-                    setTimeout(() => {
-                        errorMessage.textContent = '';
-                        errorMessage.style.display = 'none';
-                    }, 5000);
+                    showErrorMessage('A data de início não pode ser posterior à data de fim.');
                     return;
                 }
             }
-        });
+    });
 
+    const apiDadosBody = document.getElementById('api-dados-body');
+    if (!apiDadosBody || apiDadosBody.children.length === 0) {
+        showErrorMessage('Nenhuma API encontrada.');
+    }
         const tagInput = document.getElementById('tagSearchInput');
         const tagSelect = document.getElementById('tags');
         const allTags = Array.from(tagSelect.options);
