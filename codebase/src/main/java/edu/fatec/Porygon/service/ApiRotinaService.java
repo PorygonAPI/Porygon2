@@ -31,7 +31,7 @@ public class ApiRotinaService {
 
     @PostConstruct
     public void verificarApisNaInicializacao() {
-        System.out.println("Verificando e atualizando APIs ao iniciar a aplicação...");
+        //System.out.println("Verificando e atualizando APIs ao iniciar a aplicação...");
         verificarEAtualizarApis();
     }
     

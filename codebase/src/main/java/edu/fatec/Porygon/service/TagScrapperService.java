@@ -40,7 +40,7 @@ public class TagScrapperService {
                 }
             }
         } catch (IOException e) {
-            System.err.println("Erro ao buscar sinônimos no Dicio: " + e.getMessage());
+            //System.err.println("Erro ao buscar sinônimos no Dicio: " + e.getMessage());
         }
         return Collections.emptyList();
     }
@@ -57,7 +57,7 @@ public class TagScrapperService {
                         .collect(Collectors.toList());
             }
         } catch (IOException e) {
-            System.err.println("Erro ao buscar sinônimos no Sinonimos" + e.getMessage());
+            //System.err.println("Erro ao buscar sinônimos no Sinonimos" + e.getMessage());
         }
         return Collections.emptyList();
     }

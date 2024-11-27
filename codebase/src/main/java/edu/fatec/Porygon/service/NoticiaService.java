@@ -53,7 +53,7 @@ public class NoticiaService {
         Set<Tag> foundTags = associarTags(noticia);
 
         if (foundTags.isEmpty()) {
-            System.out.println("Notícia não possui tags, não será salva.");
+            //System.out.println("Notícia não possui tags, não será salva.");
             return null;
         }
 
