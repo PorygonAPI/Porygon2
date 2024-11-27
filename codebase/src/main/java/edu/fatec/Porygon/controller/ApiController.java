@@ -103,9 +103,6 @@ public class ApiController {
     public ResponseEntity<?> alterarStatus(@PathVariable Integer id, @RequestBody Map<String, Boolean> body) {
         boolean novoStatus = body.get("ativo");
         apiService.alterarStatus(id, novoStatus);
-        if (novoStatus) {
-            apiService.realizarRaspagemAoAtivar(id);
-        }
         return ResponseEntity.ok().build();
     }
 

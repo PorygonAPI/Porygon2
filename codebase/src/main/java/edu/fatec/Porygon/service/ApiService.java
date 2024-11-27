@@ -4,8 +4,10 @@ import edu.fatec.Porygon.model.Api;
 import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.ApiRepository;
 import edu.fatec.Porygon.repository.TagRepository;
+import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -17,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ApiService {
@@ -80,7 +83,8 @@ public class ApiService {
             } catch (HttpClientErrorException | HttpServerErrorException e) {
                 throw new IllegalArgumentException("A URL fornecida é inválida ou não possui um endpoint válido!");
             } catch (ResourceAccessException e) {
-                throw new IllegalArgumentException("Não foi possível acessar a URL fornecida. Verifique se ela está ativa: " + e.getMessage());
+                throw new IllegalArgumentException(
+                        "Não foi possível acessar a URL fornecida. Verifique se ela está ativa: " + e.getMessage());
             }
 
             Api savedApi = apiRepository.save(api);
@@ -105,25 +109,29 @@ public class ApiService {
         return salvarOuAtualizar(api, null);
     }
 
-    public Api alterarStatus(Integer id, boolean novoStatus) {
+    @Async
+    @Transactional
+    public CompletableFuture<Void> alterarStatus(Integer id, boolean novoStatus) {
         Optional<Api> apiOptional = apiRepository.findById(id);
         if (apiOptional.isPresent()) {
             Api api = apiOptional.get();
             api.setAtivo(novoStatus);
-            return apiRepository.save(api);
+            apiRepository.save(api);
+    
+            if (novoStatus) {
+                return CompletableFuture.runAsync(() -> {
+                    try {
+                        apiRotinaService.realizarRequisicaoApi(api);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Erro ao realizar a raspagem ao ativar a API: " + e.getMessage());
+                    }
+                });
+            }
         }
-        return null;
+    
+        return CompletableFuture.completedFuture(null);
     }
-
-    public void realizarRaspagemAoAtivar(Integer id) {
-        Api api = apiRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("API não encontrada com ID: " + id));
-        try {
-            apiRotinaService.realizarRequisicaoApi(api);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao realizar a raspagem após ativar: " + e.getMessage());
-        }
-    }
+    
 
     public Api atualizarTags(Integer apiId, List<Integer> tagIds) {
         Api api = apiRepository.findById(apiId)
