@@ -4,6 +4,8 @@ import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.PortalRepository;
 import edu.fatec.Porygon.repository.TagRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PortalService {
@@ -78,21 +81,25 @@ public class PortalService {
         return atualizar(portal, null);
     }
 
-    public Portal alterarStatus(Integer id, boolean novoStatus) {
+    @Transactional
+    public CompletableFuture<Portal> alterarStatus(Integer id, boolean novoStatus) {
         Optional<Portal> portalOptional = portalRepository.findById(id);
         
         if (portalOptional.isPresent()) {
             Portal portal = portalOptional.get();
             portal.setAtivo(novoStatus);
+            
             if (novoStatus && !portal.isHasScrapedToday()) {
-                dataScrapperService.WebScrapper();
-                portal.setHasScrapedToday(true); 
+                dataScrapperService.scrapeDatabyPortalID(portal.getId());
+                portal.setHasScrapedToday(true);
                 portal.setUltimaAtualizacao(LocalDate.now());
             }
-            return portalRepository.save(portal);
+            
+            return CompletableFuture.completedFuture(portalRepository.save(portal));
         }
-        return null; 
+        return CompletableFuture.completedFuture(null); 
     }
+    
 
     public Portal atualizarTags(Integer portalId, List<Integer> tagIds) {
         Portal portal = portalRepository.findById(portalId)
