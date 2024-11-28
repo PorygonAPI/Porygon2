@@ -13,8 +13,16 @@ import org.springframework.stereotype.Repository;
 public interface ApiDadosRepository extends JpaRepository<ApiDados, Integer> {
     boolean existsByConteudo(String conteudo);
     Optional<ApiDados> findById(Long id);
-    List<ApiDados> findByApiId(Integer apiId);
     List<ApiDados> findDistinctByTags_IdIn(List<Integer> tagIds);
-    @Query("SELECT ad FROM ApiDados ad JOIN ad.tags t WHERE ad.dataColeta BETWEEN :dataInicio AND :dataFim")
-    List<ApiDados> findByDataColetaBetweenAndTags_IdIn(LocalDate dataInicio, LocalDate dataFim);
+    List<ApiDados> findAllByOrderByIdDesc();
+    @Query("SELECT DISTINCT ad FROM ApiDados ad JOIN ad.tags t " + "WHERE ad.dataColeta BETWEEN :dataInicio AND :dataFim " + "AND t.id IN :tagIds")
+    List<ApiDados> findDistinctByDataColetaBetweenAndTags_IdIn(
+            LocalDate dataInicio,
+            LocalDate dataFim,
+            List<Integer> tagIds
+    );
+    List<ApiDados> findByDataColetaBetween(
+            LocalDate dataInicio,
+            LocalDate dataFim
+    );
 }

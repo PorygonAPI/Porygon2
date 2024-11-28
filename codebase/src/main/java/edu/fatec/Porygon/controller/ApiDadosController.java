@@ -35,15 +35,7 @@ public class ApiDadosController {
             @RequestParam(required = false) LocalDate dataInicio,
             @RequestParam(required = false) LocalDate dataFim,
             Model model) {
-        List<ApiDados> apiDadosList;
-
-        if (dataInicio != null && dataFim != null) {
-            apiDadosList = apiDadosService.buscarApiDadosPorDatas(dataInicio, dataFim);
-        } else if (tagIds != null && !tagIds.isEmpty()) {
-            apiDadosList = apiDadosService.buscarApiDadosPorTags(tagIds);
-        } else {
-            apiDadosList =apiDadosRepository.findAll(Sort.by(Sort.Order.desc("id")));
-        }
+        List<ApiDados> apiDadosList = apiDadosService.buscarApiDados(dataInicio, dataFim, tagIds);
 
         model.addAttribute("apiDadosList", apiDadosList);
 
