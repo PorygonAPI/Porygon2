@@ -64,16 +64,19 @@ public class PortalService {
     public Portal atualizar(Portal portal, List<Integer> tagIds) {
         Portal portalExistente = portalRepository.findById(portal.getId())
             .orElseThrow(() -> new RuntimeException("Portal não encontrado"));
-
+    
         portal.setDataCriacao(portalExistente.getDataCriacao());
         
+        portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
+        portal.setHasScrapedToday(portalExistente.isHasScrapedToday());
+    
         if (tagIds != null) {
             Set<Tag> novasTags = tagIds.isEmpty() 
                 ? new HashSet<>() 
                 : new HashSet<>(tagRepository.findAllById(tagIds));
             portal.setTags(novasTags);
         }
-
+    
         return portalRepository.save(portal);
     }
 

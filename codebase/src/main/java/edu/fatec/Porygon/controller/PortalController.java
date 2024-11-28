@@ -70,16 +70,16 @@ public class PortalController {
             @RequestParam("isEdit") boolean isEdit,
             @RequestParam(required = false) String tagIds,
             Model model) {
-
+    
         String errorMessage = null;
         String successMessage = null;
-
+    
         List<Integer> tagIdsList = processarTags(tagIds);
         if (tagIdsList != null) {
             Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIdsList));
             portal.setTags(tags);
         }
-
+    
         try {
             dataScrapperService.validarSeletores(portal);
         } catch (IllegalArgumentException e) {
@@ -87,28 +87,37 @@ public class PortalController {
         } catch (RuntimeException e) {
             errorMessage = "Erro ao acessar a URL: " + e.getMessage();
         }
-
+    
         if (errorMessage != null) {
             carregarModelBase(model, portal);
             model.addAttribute("errorMessage", errorMessage);
             return "portal";
         }
-
+    
         if (isEdit) {
             errorMessage = verificarDuplicidadeParaEdicao(portal);
         } else {
             errorMessage = verificarDuplicidadeParaCadastro(portal);
         }
-
+    
         if (errorMessage != null) {
             carregarModelBase(model, portal);
             model.addAttribute("errorMessage", errorMessage);
             return "portal";
         }
-
+    
         ajustarDatasCadastroEdicao(portal, isEdit);
+    
+        if (isEdit) {
+            Portal portalExistente = portalRepository.findById(portal.getId())
+                .orElseThrow(() -> new RuntimeException("Portal não encontrado"));
+            
+            portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
+            portal.setHasScrapedToday(portalExistente.isHasScrapedToday());
+        }
+    
         portalRepository.save(portal);
-
+    
         try {
             if (!isEdit && portal.isAtivo() && !portal.isHasScrapedToday()) {
                 dataScrapperService.WebScrapper();
@@ -121,10 +130,14 @@ public class PortalController {
             model.addAttribute("errorMessage", errorMessage);
             return "portal";
         }
+    
+        if (isEdit) {
+            successMessage = "Portal editado com sucesso!";
+        } else {
+            successMessage = "Portal salvo com sucesso!";
+        }
 
-        successMessage = "Portal salvo com sucesso!";
-        model.addAttribute("successMessage", successMessage);
-        return "redirect:/portais";
+        return "redirect:/portais?successMessage=" + successMessage;
     }
 
     @PostMapping("/alterarStatus/{id}")
