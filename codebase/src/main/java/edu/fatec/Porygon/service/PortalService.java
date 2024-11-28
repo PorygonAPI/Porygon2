@@ -102,6 +102,7 @@ public class PortalService {
         }
         return CompletableFuture.completedFuture(null); 
     }
+    
 
     public Portal atualizarTags(Integer portalId, List<Integer> tagIds) {
         Portal portal = portalRepository.findById(portalId)

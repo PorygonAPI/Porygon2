@@ -50,7 +50,7 @@ public class PortalController {
 
     @GetMapping()
     public String mostrarFormularioCadastro(Model model) {
-        Portal portal = new Portal(); 
+        Portal portal = new Portal();
         portal.setAtivo(true);
         carregarModelBase(model, portal);
         return "portal";
