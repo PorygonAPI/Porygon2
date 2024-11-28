@@ -21,7 +21,7 @@ public class ApiDadosService {
     private SinonimoRepository sinonimoRepository;
 
     public List<ApiDados> listarApiDados() {
-        return apiDadosRepository.findAll();
+        return apiDadosRepository.findAllByOrderByIdDesc();
     }
     public List<ApiDados> buscarApiDados(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds) {
         if (dataInicio != null && dataFim != null && dataInicio.isAfter(dataFim)) {

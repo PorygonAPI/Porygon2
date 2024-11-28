@@ -14,6 +14,7 @@ public interface ApiDadosRepository extends JpaRepository<ApiDados, Integer> {
     boolean existsByConteudo(String conteudo);
     Optional<ApiDados> findById(Long id);
     List<ApiDados> findDistinctByTags_IdIn(List<Integer> tagIds);
+    List<ApiDados> findAllByOrderByIdDesc();
     @Query("SELECT DISTINCT ad FROM ApiDados ad JOIN ad.tags t " + "WHERE ad.dataColeta BETWEEN :dataInicio AND :dataFim " + "AND t.id IN :tagIds")
     List<ApiDados> findDistinctByDataColetaBetweenAndTags_IdIn(
             LocalDate dataInicio,
