@@ -13,9 +13,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class ApiDadosController {
@@ -49,9 +58,40 @@ public class ApiDadosController {
         return "apiDados";
     }
 
+    @GetMapping("/apiDados")
+    @ResponseBody
+    public ResponseEntity<?> listarApiDados(
+            @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+            @RequestParam(value = "tagIds", required = false) List<Integer> tagIds,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size) {
+        
+        if (dataInicio != null && dataFim != null && dataFim.isBefore(dataInicio)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("A data final não pode ser anterior à data inicial.");
+        }
 
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ApiDados> apiDadosPage = apiDadosService.buscarApiDados(dataInicio, dataFim, tagIds, pageable);
+
+        if (apiDadosPage.isEmpty()) {
+            return ResponseEntity.ok(Collections.singletonMap("mensagem", "Nenhum dado encontrado"));
+        }
+
+        List<ApiDadosDTO> apiDadosDTOs = apiDadosPage.getContent().stream()
+                .map(apiDados -> new ApiDadosDTO(apiDados, apiDados.getConteudo()))
+                .collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", apiDadosDTOs);
+        response.put("totalPages", apiDadosPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/dados/{id}")
+    @ResponseBody
     public ResponseEntity<?> abrirDados(@PathVariable Long id) {
         Optional<ApiDados> apiDadosOptional = apiDadosRepository.findById(id);
     
