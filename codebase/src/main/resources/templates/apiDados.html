@@ -112,7 +112,7 @@
                     <th>
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             Data
-                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleSortOrder()" style="margin-left: 5px;">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="toggleDataSortOrder()" style="margin-left: 5px;">
                                 <span id="sort-order-label">▲</span>
                             </button>
                         </div>
@@ -167,18 +167,14 @@
 
     function toggleNameSortOrder() {
         nameSortOrder = nameSortOrder === 'asc' ? 'desc' : 'asc';
-        dateSortOrder = 'asc';
-        document.getElementById('name-sort-order-label').textContent = nameSortOrder === 'asc' ? '▲' : '▼';
-        document.getElementById('sort-order-label').textContent = '▲';
         ordenarTabelaPorNome(nameSortOrder);
+        document.getElementById('name-sort-order-label').textContent = nameSortOrder === 'asc' ? '▲' : '▼';
     }
 
-    function toggleSortOrder() {
+    function toggleDataSortOrder() {
         dateSortOrder = dateSortOrder === 'asc' ? 'desc' : 'asc';
-        nameSortOrder = 'asc';
-        document.getElementById('sort-order-label').textContent = dateSortOrder === 'asc' ? '▲' : '▼';
-        document.getElementById('name-sort-order-label').textContent = '▲';
         ordenarTabelaPorData(dateSortOrder);
+        document.getElementById('data-sort-order-label').textContent = dataSortOrder === 'asc' ? '▲' : '▼';
     }
 
     function ordenarTabelaPorNome(order) {
@@ -207,8 +203,8 @@
         const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.querySelector('td'));
 
         rows.sort((a, b) => {
-            const dateA = parseDate(a.cells[3].textContent.trim());
-            const dateB = parseDate(b.cells[3].textContent.trim());
+            const dateA = parseDate(a.cells[2].textContent.trim());
+            const dateB = parseDate(b.cells[2].textContent.trim());
 
             return order === 'asc' ? dateA - dateB : dateB - dateA;
         });
