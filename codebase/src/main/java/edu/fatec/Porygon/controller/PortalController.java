@@ -135,7 +135,7 @@ public class PortalController {
             successMessage = "Portal salvo com sucesso!";
         }
 
-        return "redirect:/portais?successMessage=" + successMessage
+        return "redirect:/portais?successMessage=" + successMessage;
     }
 
     @PostMapping("/alterarStatus/{id}")
