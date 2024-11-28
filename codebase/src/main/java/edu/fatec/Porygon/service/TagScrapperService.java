@@ -65,7 +65,6 @@ public class TagScrapperService {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Erro ao buscar sinonimos de " + palavra + " na fonte ");
         }
         return Collections.emptyList();
     }

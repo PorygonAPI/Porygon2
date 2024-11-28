@@ -36,14 +36,6 @@ public class NoticiaService {
         return noticiaRepository.findAll();
     }
 
-    public List<Noticia> listarNoticiasPorData(LocalDate dataInicio, LocalDate dataFim) {
-        return noticiaRepository.searchNewsByData(dataInicio, dataFim);
-    }
-
-    public List<Noticia> listarNoticiasPorTags(List<Integer> tagIds) {
-        return noticiaRepository.findByTags(tagIds);
-    }
-
     public List<Noticia> listarNoticiasPorFiltros(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds) {
         if (dataInicio != null && dataFim != null && tagIds != null && !tagIds.isEmpty()) {
             return noticiaRepository.findByDataBetweenAndTagsIn(dataInicio, dataFim, tagIds);
@@ -60,7 +52,6 @@ public class NoticiaService {
         Set<Tag> foundTags = associarTagsAsync(noticia).join();
 
         if (foundTags.isEmpty()) {
-            //System.out.println("Notícia não possui tags, não será salva.");
             return null;
         }
 

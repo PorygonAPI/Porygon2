@@ -31,7 +31,6 @@ public class AgendadorDataLoader implements CommandLineRunner {
             agendadorRepository.save(semanal);
             agendadorRepository.save(mensal);
 
-            // System.out.println("Agendadores padrão inseridos no banco de dados.");
         }
     }
 }

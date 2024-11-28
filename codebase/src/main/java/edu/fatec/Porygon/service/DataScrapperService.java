@@ -166,7 +166,6 @@ public class DataScrapperService {
             }
     
             String noticiaUrl = firstLinkElement.absUrl("href");
-            //System.out.println("Validando seletores com a notícia encontrada: " + noticiaUrl);
 
             Document noticiaDoc = Jsoup.connect(noticiaUrl).get();
     
@@ -186,11 +185,9 @@ public class DataScrapperService {
                 throw new IllegalArgumentException("O seletor de conteúdo está inválido. Verifique!");
             }
     
-            //System.out.println("Todos os seletores foram validados com sucesso para o portal: " + portal.getNome());
         } catch (IOException e) {
             throw new RuntimeException("Erro ao acessar a URL: " + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            //System.err.println("Erro de validação de seletores: " + e.getMessage());
             throw e;
         }
     }
@@ -208,11 +205,9 @@ public class DataScrapperService {
     }
 
     private void showLoading() {
-        //System.out.println("Carregamento iniciado...");
     }
 
     private void hideLoading() {
-        //System.out.println("Carregamento encerrado.");
     }
 
     // Set to run at noon(12h00)
@@ -289,7 +284,6 @@ public class DataScrapperService {
                     LocalDate lastUpdate = portal.getUltimaAtualizacao();
 
                     if (lastUpdate == null) {
-                        //System.err.println("lastUpdate is null for portal: " + portal.getId());
                         continue;
                     }
 
