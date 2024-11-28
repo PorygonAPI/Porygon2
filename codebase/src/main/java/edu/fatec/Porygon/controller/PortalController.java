@@ -131,9 +131,13 @@ public class PortalController {
             return "portal";
         }
     
-        successMessage = "Portal salvo com sucesso!";
-        model.addAttribute("successMessage", successMessage);
-        return "redirect:/portais";
+        if (isEdit) {
+            successMessage = "Portal editado com sucesso!";
+        } else {
+            successMessage = "Portal salvo com sucesso!";
+        }
+
+        return "redirect:/portais?successMessage=" + successMessage;
     }
 
     @PostMapping("/alterarStatus/{id}")
