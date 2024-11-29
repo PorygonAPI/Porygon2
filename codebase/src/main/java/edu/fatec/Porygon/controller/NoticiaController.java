@@ -6,7 +6,9 @@ import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Controller
 public class NoticiaController {
@@ -38,9 +44,6 @@ public class NoticiaController {
 
     @GetMapping("/")
     public String listarNoticias(Model model) {
-        List<Noticia> noticias = noticiaRepository.findAll();
-        noticias.sort(Comparator.comparing(Noticia::getId).reversed());
-        model.addAttribute("noticias", noticias);
         model.addAttribute("tags", tagRepository.findAll());
         return "index";
     }
@@ -56,29 +59,36 @@ public class NoticiaController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @GetMapping("/noticias")
     @ResponseBody
     public ResponseEntity<?> listarNoticias(
             @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
             @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
-            @RequestParam(value = "tagIds", required = false) List<Integer> tagIds) {
+            @RequestParam(value = "tagIds", required = false) List<Integer> tagIds,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
 
         if (dataInicio != null && dataFim != null && dataFim.isBefore(dataInicio)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("A data final não pode ser anterior à data inicial.");
         }
 
-        List<Noticia> noticias = noticiaService.listarNoticiasPorFiltros(dataInicio, dataFim, tagIds);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Noticia> noticiasPage = noticiaService.listarNoticiasPorFiltros(dataInicio, dataFim, tagIds, pageable);
 
-        if (noticias.isEmpty()) {
+        if (noticiasPage.isEmpty()) {
             return ResponseEntity.ok(Collections.singletonMap("mensagem", "Nenhuma notícia encontrada"));
         }
 
-        List<NoticiaDTO> noticiaDTOs = noticias.stream()
+        List<NoticiaDTO> noticiaDTOs = noticiasPage.getContent().stream()
                 .map(NoticiaDTO::new)
-                .sorted(Comparator.comparing(NoticiaDTO::getId).reversed())
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(noticiaDTOs);
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", noticiaDTOs);
+        response.put("totalPages", noticiasPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
 }

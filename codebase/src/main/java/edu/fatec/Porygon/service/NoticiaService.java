@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class NoticiaService {
@@ -37,15 +39,15 @@ public class NoticiaService {
         return noticiaRepository.findByTags(tagIds);
     }
 
-    public List<Noticia> listarNoticiasPorFiltros(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds) {
+    public Page<Noticia> listarNoticiasPorFiltros(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds, Pageable pageable) {
         if (dataInicio != null && dataFim != null && tagIds != null && !tagIds.isEmpty()) {
-            return noticiaRepository.findByDataBetweenAndTagsIn(dataInicio, dataFim, tagIds);
+            return noticiaRepository.findByDataBetweenAndTagsIn(dataInicio, dataFim, tagIds, pageable);
         } else if (dataInicio != null && dataFim != null) {
-            return noticiaRepository.searchNewsByData(dataInicio, dataFim);
+            return noticiaRepository.searchNewsByData(dataInicio, dataFim, pageable);
         } else if (tagIds != null && !tagIds.isEmpty()) {
-            return noticiaRepository.findByTags(tagIds);
+            return noticiaRepository.findByTags(tagIds, pageable);
         } else {
-            return noticiaRepository.findAll();
+            return noticiaRepository.findAll(pageable);
         }
     }
 
