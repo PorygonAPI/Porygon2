@@ -88,7 +88,7 @@
                     <a href="/apis/dados" class="btn btn-secondary">Limpar Filtros</a>
                 </div>
                 <div class="d-grid col-2">
-                    <button id="consultarApi" type="submit" class="btn btn-primary">Consultar</button>
+                    <button id="consultar" type="button" class="btn btn-primary">Consultar</button>
                 </div>
             </div>
 
@@ -121,17 +121,38 @@
                 </tr>
                 </thead>
                 <tbody id="api-dados-body">
-                <tr th:each="dados : ${apiDadosList}" th:attr="data-id=${dados.id}">
-                    <td th:text="${dados.api.nome}"></td>
-                    <td th:text="${#strings.listJoin(dados.tags.![nome], ', ')}"></td>
-                    <td th:text="${#temporals.format(dados.dataColeta, 'dd/MM/yyyy')}"></td>
-                    <td>
-                        <button class="btn btn-info" th:attr="data-id=${dados.id}" onclick="abrirModal(this)">Abrir</button>
-                    </td>
-                </tr>
+                <!-- Data will be populated here -->
                 </tbody>
             </table>
         </div>
+
+        <div id="pagination-controls" class="d-flex justify-content-center mt-4">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="#" id="first-page">«</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" id="previous-page">‹</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" id="next-page">›</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" id="last-page">»</a>
+                    </li>
+                    <li class="page-item" style="margin-left: 10px;">
+                        <div class="input-group" style="width: auto;">
+                            <span class="input-group-text">Ir para a página</span>
+                            <input type="number" id="page-input" class="form-control" min="1" style="width: 80px;">
+                            <button class="btn btn-primary" id="go-to-page">Ir</button>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
     </div>
 
         <div class="modal fade" id="apiModal" tabindex="-1" aria-labelledby="apiModalLabel" aria-hidden="true">
@@ -161,87 +182,87 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
-    let nameSortOrder = 'asc';
-    let dateSortOrder = 'asc';
+    <script>
+        let nameSortOrder = 'asc';
+        let dateSortOrder = 'asc';
 
-    function toggleNameSortOrder() {
-        nameSortOrder = nameSortOrder === 'asc' ? 'desc' : 'asc';
-        ordenarTabelaPorNome(nameSortOrder);
-        document.getElementById('name-sort-order-label').textContent = nameSortOrder === 'asc' ? '▲' : '▼';
-    }
-
-    function toggleDataSortOrder() {
-        dateSortOrder = dateSortOrder === 'asc' ? 'desc' : 'asc';
-        ordenarTabelaPorData(dateSortOrder);
-        document.getElementById('data-sort-order-label').textContent = dataSortOrder === 'asc' ? '▲' : '▼';
-    }
-
-    function ordenarTabelaPorNome(order) {
-        const tbody = document.getElementById('api-dados-body');
-        const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.querySelector('td'));
-
-        rows.sort((a, b) => {
-            const nameA = removeAccents(a.cells[0].textContent.trim().toLowerCase());
-            const nameB = removeAccents(b.cells[0].textContent.trim().toLowerCase());
-
-            if (nameA < nameB) return order === 'asc' ? -1 : 1;
-            if (nameA > nameB) return order === 'asc' ? 1 : -1;
-            return 0;
-        });
-
-        tbody.innerHTML = '';
-        rows.forEach(row => tbody.appendChild(row));
-    }
-
-    function removeAccents(str) {
-        return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-
-    function ordenarTabelaPorData(order) {
-        const tbody = document.getElementById('api-dados-body');
-        const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.querySelector('td'));
-
-        rows.sort((a, b) => {
-            const dateA = parseDate(a.cells[2].textContent.trim());
-            const dateB = parseDate(b.cells[2].textContent.trim());
-
-            return order === 'asc' ? dateA - dateB : dateB - dateA;
-        });
-
-        tbody.innerHTML = '';
-        rows.forEach(row => tbody.appendChild(row));
-    }
-
-    function parseDate(dateStr) {
-        const [day, month, year] = dateStr.split('/');
-        return new Date(year, month - 1, day);
-    }
-
-    function showErrorMessage(message) {
-        const errorMessage = document.getElementById('error-message');
-        errorMessage.textContent = message;
-        errorMessage.style.display = 'block';
-
-        setTimeout(() => {
-            errorMessage.style.display = 'none';
-        }, 5000);
-    }
-
-    document.querySelector('form').addEventListener('submit', function (e) {
-        const dataInicio = document.getElementById('dataInicio').value;
-        const dataFim = document.getElementById('dataFim').value;
-        const tagSelect = document.getElementById('tags');
-        const selectedTags = Array.from(tagSelect.selectedOptions);
-        const errorMessage = document.getElementById('error-message');
-
-            errorMessage.style.display = 'none';
-
-        if (!dataInicio && !dataFim && selectedTags.length === 0) {
-            e.preventDefault();
-            showErrorMessage('Selecione pelo menos um filtro de busca.');
-            return;
+        function toggleNameSortOrder() {
+            nameSortOrder = nameSortOrder === 'asc' ? 'desc' : 'asc';
+            ordenarTabelaPorNome(nameSortOrder);
+            document.getElementById('name-sort-order-label').textContent = nameSortOrder === 'asc' ? '▲' : '▼';
         }
+
+        function toggleDataSortOrder() {
+            dateSortOrder = dateSortOrder === 'asc' ? 'desc' : 'asc';
+            ordenarTabelaPorData(dateSortOrder);
+            document.getElementById('sort-order-label').textContent = dateSortOrder === 'asc' ? '▲' : '▼';
+        }
+
+        function ordenarTabelaPorNome(order) {
+            const tbody = document.getElementById('api-dados-body');
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.querySelector('td'));
+
+            rows.sort((a, b) => {
+                const nameA = removeAccents(a.cells[0].textContent.trim().toLowerCase());
+                const nameB = removeAccents(b.cells[0].textContent.trim().toLowerCase());
+
+                if (nameA < nameB) return order === 'asc' ? -1 : 1;
+                if (nameA > nameB) return order === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        function removeAccents(str) {
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        }
+
+        function ordenarTabelaPorData(order) {
+            const tbody = document.getElementById('api-dados-body');
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => row.querySelector('td'));
+
+            rows.sort((a, b) => {
+                const dateA = parseDate(a.cells[2].textContent.trim());
+                const dateB = parseDate(b.cells[2].textContent.trim());
+
+                return order === 'asc' ? dateA - dateB : dateB - dateA;
+            });
+
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        function parseDate(dateStr) {
+            const [day, month, year] = dateStr.split('/');
+            return new Date(year, month - 1, day);
+        }
+
+        function showErrorMessage(message) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const dataInicio = document.getElementById('dataInicio').value;
+            const dataFim = document.getElementById('dataFim').value;
+            const tagSelect = document.getElementById('tags');
+            const selectedTags = Array.from(tagSelect.selectedOptions);
+            const errorMessage = document.getElementById('error-message');
+
+            errorMessage.style.display = 'none';
+
+            if (!dataInicio && !dataFim && selectedTags.length === 0) {
+                e.preventDefault();
+                showErrorMessage('Selecione pelo menos um filtro de busca.');
+                return;
+            }
 
             if (dataInicio && dataFim) {
                 const startDate = new Date(dataInicio);
@@ -253,17 +274,17 @@
                     return;
                 }
             }
-    });
+        });
 
-    const apiDadosBody = document.getElementById('api-dados-body');
-    if (!apiDadosBody || apiDadosBody.children.length === 0) {
-        showErrorMessage('Nenhuma API encontrada.');
-    }
+        const apiDadosBody = document.getElementById('api-dados-body');
+        if (!apiDadosBody || apiDadosBody.children.length === 0) {
+            showErrorMessage('Nenhuma API encontrada.');
+        }
+
         const tagInput = document.getElementById('tagSearchInput');
         const tagSelect = document.getElementById('tags');
         const allTags = Array.from(tagSelect.options);
 
-        
         tagInput.addEventListener('input', function () {
             const searchQuery = this.value.toLowerCase();
             tagSelect.innerHTML = '';
@@ -275,7 +296,6 @@
             });
             updateSelectedTags();
         });
-        
 
         function updateSelectedTags() {
             const select = document.getElementById('tags');
@@ -301,7 +321,7 @@
         }
 
         function abrirModal(button) {
-            var apiDadosId = button.getAttribute('data-id');
+            const apiDadosId = button.getAttribute('data-id');
 
             fetch(`/dados/${apiDadosId}`)
                 .then(response => {
@@ -311,8 +331,6 @@
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Dados recebidos:', data);
-
                     document.getElementById('conteudoApi').textContent = data.conteudo;
 
                     const tagsContainer = document.getElementById('modalTags');
@@ -328,19 +346,208 @@
                         tagsContainer.textContent = 'Nenhuma tag encontrada';
                     }
 
-                    var modal = new bootstrap.Modal(document.getElementById('apiModal'));
+                    const modal = new bootstrap.Modal(document.getElementById('apiModal'));
                     modal.show();
                 })
                 .catch(error => {
                     console.error('Erro ao buscar os dados da API:', error);
                     document.getElementById('conteudoApi').textContent = 'Erro ao carregar os dados.';
                     document.getElementById('modalTags').textContent = 'Erro ao carregar as tags.';
-                    var modal = new bootstrap.Modal(document.getElementById('apiModal'));
+                    const modal = new bootstrap.Modal(document.getElementById('apiModal'));
                     modal.show();
                 });
         }
 
-        document.addEventListener('DOMContentLoaded', updateSelectedTags);
+        document.addEventListener('DOMContentLoaded', function () {
+            updateSelectedTags();
+            fetchApiDados();
+        });
+
+        let currentPage = 0;
+        let totalPages = 0;
+
+        document.getElementById('consultar').addEventListener('click', function () {
+            currentPage = 0;
+            fetchApiDados();
+        });
+
+        function fetchApiDados() {
+            const dataInicio = document.getElementById('dataInicio').value;
+            const dataFim = document.getElementById('dataFim').value;
+            const selectedTags = Array.from(document.getElementById('tags').selectedOptions).map(option => option.value);
+
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.style.display = 'none';
+
+            if (dataFim && dataInicio && new Date(dataFim) < new Date(dataInicio)) {
+                errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+                return;
+            }
+
+            let url = `/apiDados?page=${currentPage}&size=10&`;
+            if (dataInicio) url += `dataInicio=${dataInicio}&`;
+            if (dataFim) url += `dataFim=${dataFim}&`;
+            if (selectedTags.length > 0) url += `tagIds=${selectedTags.join(',')}`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(text);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tbody = document.getElementById('api-dados-body');
+                    tbody.innerHTML = '';
+
+                    if (data.content.length === 0) {
+                        errorMessage.textContent = data.mensagem || 'Nenhum dado encontrado.';
+                        errorMessage.style.display = 'block';
+                    } else {
+                        data.content.forEach(apiDados => {
+                            const row = document.createElement('tr');
+                            const tags = apiDados.tags.length > 0
+                                ? apiDados.tags.map(tag => tag.nome).join(', ')
+                                : 'Sem tag associada';
+
+                            const dateParts = apiDados.dataColeta.split('-');
+                            const dateObject = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+                            const formattedDate = dateObject.toLocaleDateString('pt-BR');
+
+                            row.innerHTML = `
+                                <td>${apiDados.api.nome}</td>
+                                <td>${tags}</td>
+                                <td>${formattedDate}</td>
+                                <td><button class="btn btn-info" data-id="${apiDados.id}" onclick="abrirModal(this)">Abrir</button></td>
+                            `;
+                            tbody.appendChild(row);
+                        });
+
+                        totalPages = data.totalPages;
+                        renderPaginationControls();
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar os dados:', error);
+                    errorMessage.textContent = error.message || 'Erro ao carregar os dados.';
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.style.display = 'none';
+                    }, 5000);
+                });
+        }
+
+        function renderPaginationControls() {
+            const paginationUl = document.querySelector('#pagination-controls ul.pagination');
+            paginationUl.querySelectorAll('.page-number').forEach(el => el.parentElement.remove());
+
+            const maxDisplayedPages = 5;
+            const halfRange = Math.floor(maxDisplayedPages / 2);
+            let startPage = Math.max(currentPage - halfRange, 0);
+            let endPage = Math.min(startPage + maxDisplayedPages - 1, totalPages - 1);
+
+            if (endPage - startPage < maxDisplayedPages - 1) {
+                startPage = Math.max(endPage - maxDisplayedPages + 1, 0);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.classList.add('page-item');
+
+                if (i === currentPage) {
+                    pageItem.classList.add('active');
+                }
+
+                const pageLink = document.createElement('a');
+                pageLink.classList.add('page-link', 'page-number');
+                pageLink.textContent = i + 1;
+                pageLink.href = '#';
+                pageLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    currentPage = i;
+                    fetchApiDados();
+                });
+
+                pageItem.appendChild(pageLink);
+                paginationUl.insertBefore(pageItem, document.getElementById('next-page').parentElement);
+            }
+
+            document.getElementById('page-input').value = currentPage + 1;
+
+            document.getElementById('first-page').parentElement.classList.toggle('disabled', currentPage === 0);
+            document.getElementById('previous-page').parentElement.classList.toggle('disabled', currentPage === 0);
+            document.getElementById('next-page').parentElement.classList.toggle('disabled', currentPage >= totalPages - 1);
+            document.getElementById('last-page').parentElement.classList.toggle('disabled', currentPage >= totalPages - 1);
+        }
+
+        document.getElementById('go-to-page').addEventListener('click', function() {
+            const pageInput = document.getElementById('page-input').value;
+            const pageNumber = parseInt(pageInput, 10) - 1;
+            if (pageNumber >= 0 && pageNumber < totalPages) {
+                currentPage = pageNumber;
+                fetchApiDados();
+            } else {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = 'Número de página inválido.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
+
+        document.getElementById('first-page').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentPage > 0) {
+                currentPage = 0;
+                fetchApiDados();
+            }
+        });
+
+        document.getElementById('previous-page').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentPage > 0) {
+                currentPage--;
+                fetchApiDados();
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                fetchApiDados();
+            }
+        });
+
+        document.getElementById('last-page').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentPage < totalPages - 1) {
+                currentPage = totalPages - 1;
+                fetchApiDados();
+            }
+        });
+
+        document.getElementById('page-input').addEventListener('change', function() {
+            let pageNumber = parseInt(this.value) - 1;
+            if (pageNumber >= 0 && pageNumber < totalPages) {
+                currentPage = pageNumber;
+                fetchApiDados();
+            } else {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = 'Número de página inválido.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
     </script>
 
 </body>

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 
-<body>
+<body onload="initializePage()">
 
 <nav class="navbar bg-dark border-bottom border-body absolute-top" data-bs-theme="dark">
     <a class="navbar-brand" href="#" style="margin-left: 10px;">
@@ -116,25 +116,38 @@
                 </tr>
                 </thead>
                 <tbody class="table-group-divider" id="noticias-body">
-                <tr th:each="noticia : ${noticias}">
-                    <td th:text="${noticia.titulo}"></td>
-                    <td>
-                        <span th:if="${#lists.isEmpty(noticia.tags)}">Sem tag associada</span>
-                        <span th:each="tag, iterStat : ${noticia.tags}">
-                            <span th:text="${tag.nome}"></span>
-                            <span th:if="${!iterStat.last}">, </span>
-                        </span>
-                    </td>
-                    <td th:text="${#dates.format(noticia.data, 'dd/MM/yyyy')}"></td>
-                    <td>
-                        <button class="btn btn-info" th:onclick="'abrirModal(' + ${noticia.id} + ')'">Abrir</button>
-                    </td>
-                </tr>
+                    <!-- News items will be dynamically loaded here -->
                 </tbody>
             </table>
         </div>
     </div>
+    <div id="pagination-controls" class="d-flex justify-content-center mt-4">
+    <nav>
+        <ul class="pagination">
+            <li class="page-item">
+                <a class="page-link" href="#" id="first-page">«</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#" id="previous-page">‹</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#" id="next-page">›</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="#" id="last-page">»</a>
+            </li>
+            <li class="page-item" style="margin-left: 10px;">
+                <div class="input-group" style="width: auto;">
+                    <span class="input-group-text">Ir para a página</span>
+                    <input type="number" id="page-input" class="form-control" min="1" style="width: 80px;">
+                    <button class="btn btn-primary" id="go-to-page">Ir</button>
+                </div>
+            </li>
+        </ul>
+    </nav>
+</div>
 
+<div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
 </div>
 <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -300,7 +313,19 @@
             })
             .catch(error => console.error('Erro ao carregar os detalhes da notícia:', error));
     }
+    let currentPage = 0;
+    let totalPages = 0;
+
+    function initializePage() {
+        fetchNoticias(); 
+    }
+
     document.getElementById('consultar').addEventListener('click', function () {
+        currentPage = 0;
+        fetchNoticias();
+    });
+
+    function fetchNoticias() {
         const dataInicio = document.getElementById('dataInicio').value;
         const dataFim = document.getElementById('dataFim').value;
         const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
@@ -309,15 +334,6 @@
         errorMessage.textContent = '';
         errorMessage.style.display = 'none';
 
-        if (!dataInicio && !dataFim && selectedTags.length === 0) {
-            errorMessage.textContent = 'Selecione pelo menos um filtro de busca.';
-            errorMessage.style.display = 'block';
-            setTimeout(() => {
-                errorMessage.textContent = '';
-                errorMessage.style.display = 'none';
-            }, 5000);
-            return;
-        }
         if (dataFim && dataInicio && new Date(dataFim) < new Date(dataInicio)) {
             errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
             errorMessage.style.display = 'block';
@@ -328,7 +344,7 @@
             return;
         }
 
-        let url = `/noticias?`;
+        let url = `/noticias?page=${currentPage}&size=10&`;
         if (dataInicio) url += `dataInicio=${dataInicio}&`;
         if (dataFim) url += `dataFim=${dataFim}&`;
         if (selectedTags.length > 0) url += `tagIds=${selectedTags.join(',')}`;
@@ -346,25 +362,27 @@
                 const tbody = document.querySelector('tbody.table-group-divider');
                 tbody.innerHTML = '';
 
-                if (data.length === 0 || (data.mensagem && data.mensagem === "Nenhuma notícia encontrada")) {
+                if (data.content.length === 0) {
                     errorMessage.textContent = data.mensagem || 'Nenhuma notícia encontrada.';
                     errorMessage.style.display = 'block';
-                    return;
-                }
+                } else {
+                    data.content.forEach(noticia => {
+                        const row = document.createElement('tr');
+                        const tags = noticia.tags.length > 0
+                            ? noticia.tags.map(tag => tag.nome).join(', ')
+                            : 'Sem tag associada';
+                        row.innerHTML = `
+                            <td>${noticia.titulo}</td>
+                            <td>${tags}</td>
+                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                            <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
 
-                data.forEach(noticia => {
-                    const row = document.createElement('tr');
-                    const tags = noticia.tags.length > 0
-                        ? noticia.tags.map(tag => tag.nome).join(', ')
-                        : 'Sem tag associada';
-                    row.innerHTML = `
-                    <td>${noticia.titulo}</td>
-                    <td>${tags}</td>
-                    <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                    <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
-                `;
-                    tbody.appendChild(row);
-                });
+                    totalPages = data.totalPages;
+                    renderPaginationControls();
+                }
             })
             .catch(error => {
                 console.error('Erro ao carregar as notícias:', error);
@@ -375,6 +393,97 @@
                     errorMessage.style.display = 'none';
                 }, 5000);
             });
+    }
+
+    function renderPaginationControls() {
+        const paginationUl = document.querySelector('#pagination-controls ul.pagination');
+        paginationUl.querySelectorAll('.page-number').forEach(el => el.parentElement.remove());
+
+        const maxDisplayedPages = 5;
+        const halfRange = Math.floor(maxDisplayedPages / 2);
+        let startPage = Math.max(currentPage - halfRange, 0);
+        let endPage = Math.min(startPage + maxDisplayedPages - 1, totalPages - 1);
+
+        if (endPage - startPage < maxDisplayedPages - 1) {
+            startPage = Math.max(endPage - maxDisplayedPages + 1, 0);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            const pageItem = document.createElement('li');
+            pageItem.classList.add('page-item');
+
+            if (i === currentPage) {
+                pageItem.classList.add('active');
+            }
+
+            const pageLink = document.createElement('a');
+            pageLink.classList.add('page-link', 'page-number');
+            pageLink.textContent = i + 1;
+            pageLink.href = '#';
+            pageLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                currentPage = i;
+                fetchNoticias();
+            });
+
+            pageItem.appendChild(pageLink);
+            paginationUl.insertBefore(pageItem, document.getElementById('next-page').parentElement);
+        }
+
+        document.getElementById('page-input').value = currentPage + 1;
+
+        document.getElementById('first-page').parentElement.classList.toggle('disabled', currentPage === 0);
+        document.getElementById('previous-page').parentElement.classList.toggle('disabled', currentPage === 0);
+        document.getElementById('next-page').parentElement.classList.toggle('disabled', currentPage >= totalPages - 1);
+        document.getElementById('last-page').parentElement.classList.toggle('disabled', currentPage >= totalPages - 1);
+    }
+
+    document.getElementById('first-page').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (currentPage > 0) {
+            currentPage = 0;
+            fetchNoticias();
+        }
+    });
+
+    document.getElementById('previous-page').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (currentPage > 0) {
+            currentPage--;
+            fetchNoticias();
+        }
+    });
+
+    document.getElementById('next-page').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (currentPage < totalPages - 1) {
+            currentPage++;
+            fetchNoticias();
+        }
+    });
+
+    document.getElementById('last-page').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (currentPage < totalPages - 1) {
+            currentPage = totalPages - 1;
+            fetchNoticias();
+        }
+    });
+
+    document.getElementById('go-to-page').addEventListener('click', function() {
+        const pageInput = document.getElementById('page-input').value;
+        const pageNumber = parseInt(pageInput, 10) - 1;
+        if (pageNumber >= 0 && pageNumber < totalPages) {
+            currentPage = pageNumber;
+            fetchNoticias();
+        } else {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = 'Número de página inválido.';
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
     });
 </script>
 </body>

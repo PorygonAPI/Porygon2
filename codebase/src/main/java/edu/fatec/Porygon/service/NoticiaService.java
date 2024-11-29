@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @EnableAsync
@@ -36,15 +38,15 @@ public class NoticiaService {
         return noticiaRepository.findAll();
     }
 
-    public List<Noticia> listarNoticiasPorFiltros(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds) {
+    public Page<Noticia> listarNoticiasPorFiltros(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds, Pageable pageable) {
         if (dataInicio != null && dataFim != null && tagIds != null && !tagIds.isEmpty()) {
-            return noticiaRepository.findByDataBetweenAndTagsIn(dataInicio, dataFim, tagIds);
+            return noticiaRepository.findByDataBetweenAndTagsIn(dataInicio, dataFim, tagIds, pageable);
         } else if (dataInicio != null && dataFim != null) {
-            return noticiaRepository.searchNewsByData(dataInicio, dataFim);
+            return noticiaRepository.searchNewsByData(dataInicio, dataFim, pageable);
         } else if (tagIds != null && !tagIds.isEmpty()) {
-            return noticiaRepository.findByTags(tagIds);
+            return noticiaRepository.findByTags(tagIds, pageable);
         } else {
-            return noticiaRepository.findAll();
+            return noticiaRepository.findAll(pageable);
         }
     }
 
