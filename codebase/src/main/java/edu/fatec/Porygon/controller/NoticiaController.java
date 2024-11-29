@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Controller
 public class NoticiaController {
@@ -73,7 +74,7 @@ public class NoticiaController {
                     .body("A data final não pode ser anterior à data inicial.");
         }
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Noticia> noticiasPage = noticiaService.listarNoticiasPorFiltros(dataInicio, dataFim, tagIds, pageable);
 
         if (noticiasPage.isEmpty()) {

@@ -72,7 +72,7 @@ public class ApiDadosController {
                     .body("A data final não pode ser anterior à data inicial.");
         }
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<ApiDados> apiDadosPage = apiDadosService.buscarApiDados(dataInicio, dataFim, tagIds, pageable);
 
         if (apiDadosPage.isEmpty()) {
