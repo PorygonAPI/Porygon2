@@ -126,11 +126,33 @@
             </table>
         </div>
 
-        <div id="pagination-controls" class="d-flex justify-content-center">
-            <ul class="pagination">
-                <!-- Pagination buttons will be added here -->
-            </ul>
+        <div id="pagination-controls" class="d-flex justify-content-center mt-4">
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" href="#" id="first-page">«</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" id="previous-page">‹</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" id="next-page">›</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" id="last-page">»</a>
+                    </li>
+                    <li class="page-item" style="margin-left: 10px;">
+                        <div class="input-group" style="width: auto;">
+                            <span class="input-group-text">Ir para a página</span>
+                            <input type="number" id="page-input" class="form-control" min="1" style="width: 80px;">
+                            <button class="btn btn-primary" id="go-to-page">Ir</button>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
         </div>
+
+        <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
     </div>
 
         <div class="modal fade" id="apiModal" tabindex="-1" aria-labelledby="apiModalLabel" aria-hidden="true">
@@ -423,28 +445,109 @@
 
         function renderPaginationControls() {
             const paginationUl = document.querySelector('#pagination-controls ul.pagination');
-            paginationUl.innerHTML = '';
+            paginationUl.querySelectorAll('.page-number').forEach(el => el.parentElement.remove());
 
-            for (let i = 0; i < totalPages; i++) {
-                const li = document.createElement('li');
-                li.classList.add('page-item');
+            const maxDisplayedPages = 5;
+            const halfRange = Math.floor(maxDisplayedPages / 2);
+            let startPage = Math.max(currentPage - halfRange, 0);
+            let endPage = Math.min(startPage + maxDisplayedPages - 1, totalPages - 1);
+
+            if (endPage - startPage < maxDisplayedPages - 1) {
+                startPage = Math.max(endPage - maxDisplayedPages + 1, 0);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.classList.add('page-item');
+
                 if (i === currentPage) {
-                    li.classList.add('active');
+                    pageItem.classList.add('active');
                 }
-                const a = document.createElement('a');
-                a.classList.add('page-link');
-                a.textContent = i + 1;
-                a.href = '#';
-                a.dataset.page = i;
-                a.addEventListener('click', function (e) {
+
+                const pageLink = document.createElement('a');
+                pageLink.classList.add('page-link', 'page-number');
+                pageLink.textContent = i + 1;
+                pageLink.href = '#';
+                pageLink.addEventListener('click', function(e) {
                     e.preventDefault();
-                    currentPage = parseInt(this.dataset.page);
+                    currentPage = i;
                     fetchApiDados();
                 });
-                li.appendChild(a);
-                paginationUl.appendChild(li);
+
+                pageItem.appendChild(pageLink);
+                paginationUl.insertBefore(pageItem, document.getElementById('next-page').parentElement);
             }
+
+            document.getElementById('page-input').value = currentPage + 1;
+
+            document.getElementById('first-page').parentElement.classList.toggle('disabled', currentPage === 0);
+            document.getElementById('previous-page').parentElement.classList.toggle('disabled', currentPage === 0);
+            document.getElementById('next-page').parentElement.classList.toggle('disabled', currentPage >= totalPages - 1);
+            document.getElementById('last-page').parentElement.classList.toggle('disabled', currentPage >= totalPages - 1);
         }
+
+        document.getElementById('go-to-page').addEventListener('click', function() {
+            const pageInput = document.getElementById('page-input').value;
+            const pageNumber = parseInt(pageInput, 10) - 1;
+            if (pageNumber >= 0 && pageNumber < totalPages) {
+                currentPage = pageNumber;
+                fetchApiDados();
+            } else {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = 'Número de página inválido.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
+
+        document.getElementById('first-page').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentPage > 0) {
+                currentPage = 0;
+                fetchApiDados();
+            }
+        });
+
+        document.getElementById('previous-page').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentPage > 0) {
+                currentPage--;
+                fetchApiDados();
+            }
+        });
+
+        document.getElementById('next-page').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                fetchApiDados();
+            }
+        });
+
+        document.getElementById('last-page').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentPage < totalPages - 1) {
+                currentPage = totalPages - 1;
+                fetchApiDados();
+            }
+        });
+
+        document.getElementById('page-input').addEventListener('change', function() {
+            let pageNumber = parseInt(this.value) - 1;
+            if (pageNumber >= 0 && pageNumber < totalPages) {
+                currentPage = pageNumber;
+                fetchApiDados();
+            } else {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = 'Número de página inválido.';
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
     </script>
 
 </body>
