@@ -324,7 +324,7 @@
             return;
         }
 
-        let url = `/noticias?page=${currentPage}&size=5&`;
+        let url = `/noticias?page=${currentPage}&size=10&`;
         if (dataInicio) url += `dataInicio=${dataInicio}&`;
         if (dataFim) url += `dataFim=${dataFim}&`;
         if (selectedTags.length > 0) url += `tagIds=${selectedTags.join(',')}`;

@@ -67,7 +67,7 @@ public class NoticiaController {
             @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
             @RequestParam(value = "tagIds", required = false) List<Integer> tagIds,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "5") int size) {
+            @RequestParam(value = "size", defaultValue = "10") int size) {
 
         if (dataInicio != null && dataFim != null && dataFim.isBefore(dataInicio)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
