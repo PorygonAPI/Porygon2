@@ -327,7 +327,6 @@
         errorMessage.textContent = '';
         errorMessage.style.display = 'none';
 
-        // Verifica se pelo menos um filtro foi selecionado
         if (selectedTags.length === 0 && !dataInicio && !dataFim) {
             errorMessage.textContent = 'Por favor, selecione ao menos um filtro para consultar.';
             errorMessage.style.display = 'block';
@@ -338,8 +337,8 @@
             return;
         }
 
-        currentPage = 0; // Reinicia a página para a primeira ao consultar
-        fetchNoticias(true); // Realiza a consulta
+        currentPage = 0;
+        fetchNoticias(true);
     });
 
     function fetchNoticias() {
@@ -351,7 +350,6 @@
         errorMessage.textContent = '';
         errorMessage.style.display = 'none';
 
-        // Verifica se a data final é anterior à data inicial
         if (dataFim && dataInicio && new Date(dataFim) < new Date(dataInicio)) {
             errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
             errorMessage.style.display = 'block';
@@ -362,7 +360,6 @@
             return;
         }
 
-        // Constroi a URL com base nos filtros aplicados
         let url = `/noticias?page=${currentPage}&size=10&`;
         if (dataInicio) url += `dataInicio=${dataInicio}&`;
         if (dataFim) url += `dataFim=${dataFim}&`;
@@ -399,7 +396,6 @@
                     totalPages = data.totalPages;
                     renderPaginationControls();
                 } else {
-                    // Exibe a mensagem "Nenhuma notícia encontrada" quando não houver resultados
                     errorMessage.textContent = 'Nenhuma notícia encontrada.';
                     errorMessage.style.display = 'block';
                     setTimeout(() => {
