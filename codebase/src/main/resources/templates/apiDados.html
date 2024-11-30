@@ -268,11 +268,6 @@
         }
     });
 
-    const apiDadosBody = document.getElementById('api-dados-body');
-    if (!apiDadosBody || apiDadosBody.children.length === 0) {
-        showErrorMessage('Nenhuma API encontrada.');
-    }
-
     const tagInput = document.getElementById('tagSearchInput');
     const tagSelect = document.getElementById('tags');
     const allTags = Array.from(tagSelect.options);
@@ -428,6 +423,8 @@
 
                     totalPages = data.totalPages;
                     renderPaginationControls();
+                } else {
+                    showErrorMessage('Nenhuma API encontrada.');
                 }
             })
             .catch(error => {
