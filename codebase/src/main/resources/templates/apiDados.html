@@ -152,7 +152,6 @@
             </nav>
         </div>
 
-        <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
     </div>
 
         <div class="modal fade" id="apiModal" tabindex="-1" aria-labelledby="apiModalLabel" aria-hidden="true">
@@ -243,7 +242,6 @@
             const errorMessage = document.getElementById('error-message');
             errorMessage.textContent = message;
             errorMessage.style.display = 'block';
-
             setTimeout(() => {
                 errorMessage.style.display = 'none';
             }, 5000);
@@ -257,12 +255,6 @@
             const errorMessage = document.getElementById('error-message');
 
             errorMessage.style.display = 'none';
-
-            if (!dataInicio && !dataFim && selectedTags.length === 0) {
-                e.preventDefault();
-                showErrorMessage('Selecione pelo menos um filtro de busca.');
-                return;
-            }
 
             if (dataInicio && dataFim) {
                 const startDate = new Date(dataInicio);
@@ -367,7 +359,15 @@
         let totalPages = 0;
 
         document.getElementById('consultar').addEventListener('click', function () {
-            currentPage = 0;
+            const dataInicio = document.getElementById('dataInicio').value;
+            const dataFim = document.getElementById('dataFim').value;
+            const selectedTags = Array.from(document.getElementById('tags').selectedOptions).map(option => option.value);
+
+            if (!dataInicio && !dataFim && selectedTags.length === 0) {
+                showErrorMessage('Por favor, selecione ao menos um filtro para consultar.');
+                return;
+            }
+
             fetchApiDados();
         });
 
@@ -406,13 +406,10 @@
                     const tbody = document.getElementById('api-dados-body');
                     tbody.innerHTML = '';
 
-                    if (data.content.length === 0) {
-                        errorMessage.textContent = data.mensagem || 'Nenhum dado encontrado.';
-                        errorMessage.style.display = 'block';
-                    } else {
+                    if (data.content && Array.isArray(data.content) && data.content.length > 0) {
                         data.content.forEach(apiDados => {
                             const row = document.createElement('tr');
-                            const tags = apiDados.tags.length > 0
+                            const tags = apiDados.tags && apiDados.tags.length > 0
                                 ? apiDados.tags.map(tag => tag.nome).join(', ')
                                 : 'Sem tag associada';
 
