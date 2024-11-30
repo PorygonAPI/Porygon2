@@ -51,16 +51,6 @@ public class PortalService {
         return salvar(portal, null);
     }
 
-    public void deletar(Integer id) {
-        Portal portal = portalRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Portal não encontrado"));
-        
-        portal.setTags(new HashSet<>());
-        portalRepository.save(portal);
-        
-        portalRepository.deleteById(id);
-    }
-
     public Portal atualizar(Portal portal, List<Integer> tagIds) {
         Portal portalExistente = portalRepository.findById(portal.getId())
             .orElseThrow(() -> new RuntimeException("Portal não encontrado"));

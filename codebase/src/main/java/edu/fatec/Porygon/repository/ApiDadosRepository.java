@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +26,7 @@ public interface ApiDadosRepository extends JpaRepository<ApiDados, Integer> {
             LocalDate dataInicio,
             LocalDate dataFim
     );
+
 
     @Query("SELECT DISTINCT ad FROM ApiDados ad JOIN ad.tags t " +
            "WHERE ad.dataColeta BETWEEN :dataInicio AND :dataFim " +

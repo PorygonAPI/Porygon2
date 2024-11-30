@@ -2,7 +2,6 @@ package edu.fatec.Porygon.service;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
-import java.util.*;
 
 import edu.fatec.Porygon.model.Sinonimo;
 import edu.fatec.Porygon.model.Tag;
@@ -12,10 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @Service
+@EnableAsync
 public class NoticiaService {
 
     @Autowired
@@ -31,14 +38,6 @@ public class NoticiaService {
         return noticiaRepository.findAll();
     }
 
-    public List<Noticia> listarNoticiasPorData(LocalDate dataInicio, LocalDate dataFim) {
-        return noticiaRepository.searchNewsByData(dataInicio, dataFim);
-    }
-
-    public List<Noticia> listarNoticiasPorTags(List<Integer> tagIds) {
-        return noticiaRepository.findByTags(tagIds);
-    }
-
     public Page<Noticia> listarNoticiasPorFiltros(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds, Pageable pageable) {
         if (dataInicio != null && dataFim != null && tagIds != null && !tagIds.isEmpty()) {
             return noticiaRepository.findByDataBetweenAndTagsIn(dataInicio, dataFim, tagIds, pageable);
@@ -52,10 +51,9 @@ public class NoticiaService {
     }
 
     public Noticia salvar(Noticia noticia) {
-        Set<Tag> foundTags = associarTags(noticia);
+        Set<Tag> foundTags = associarTagsAsync(noticia).join();
 
         if (foundTags.isEmpty()) {
-            System.out.println("Notícia não possui tags, não será salva.");
             return null;
         }
 
@@ -63,21 +61,25 @@ public class NoticiaService {
         return noticiaRepository.save(noticia);
     }
 
-    private Set<Tag> associarTags(Noticia noticia) {
+    @Async
+    public CompletableFuture<Set<Tag>> associarTagsAsync(Noticia noticia) {
         Set<Tag> tagsPortal = new HashSet<>(tagRepository.findAllByPortais_Id(noticia.getPortal().getId()));
 
-        Set<Tag> foundTags = encontrarTagsNoTitulo(noticia.getTitulo(), tagsPortal);
-        if (foundTags.isEmpty()) {
-            foundTags = encontrarTagsNoConteudo(noticia.getConteudo(), tagsPortal);
-        }
-        if (foundTags.isEmpty()) {
-            foundTags = encontrarSinonimos(noticia.getTitulo(), noticia.getConteudo(), tagsPortal);
-        }
-
-        return foundTags;
+        CompletableFuture<Set<Tag>> foundTagsTitulo = encontrarTagsNoTituloAsync(noticia.getTitulo(), tagsPortal);
+        CompletableFuture<Set<Tag>> foundTagsConteudo = encontrarTagsNoConteudoAsync(noticia.getConteudo(), tagsPortal);
+        CompletableFuture<Set<Tag>> foundTagsSinonimos = encontrarSinonimosAsync(noticia.getTitulo(), noticia.getConteudo(), tagsPortal);
+  
+        return foundTagsTitulo.thenCombine(foundTagsConteudo, (tagsTitulo, tagsConteudo) -> {
+            tagsTitulo.addAll(tagsConteudo); 
+            return tagsTitulo;
+        }).thenCombine(foundTagsSinonimos, (tagsCombinadas, tagsSinonimos) -> {
+            tagsCombinadas.addAll(tagsSinonimos);
+            return tagsCombinadas;
+        });
     }
-
-    private Set<Tag> encontrarTagsNoTitulo(String titulo, Set<Tag> tagsPortal) {
+    
+    @Async
+    public CompletableFuture<Set<Tag>> encontrarTagsNoTituloAsync(String titulo, Set<Tag> tagsPortal) {
         Set<Tag> foundTags = new HashSet<>();
         String tituloNormalizado = normalizarTexto(titulo); 
         for (Tag tag : tagsPortal) {
@@ -86,10 +88,11 @@ public class NoticiaService {
                 foundTags.add(tag);
             }
         }
-        return foundTags;
+        return CompletableFuture.completedFuture(foundTags);
     }
 
-    private Set<Tag> encontrarTagsNoConteudo(String conteudo, Set<Tag> tagsPortal) {
+    @Async
+    public CompletableFuture<Set<Tag>> encontrarTagsNoConteudoAsync(String conteudo, Set<Tag> tagsPortal) {
         Set<Tag> foundTags = new HashSet<>();
         String conteudoNormalizado = normalizarTexto(conteudo);
         for (Tag tag : tagsPortal) {
@@ -98,10 +101,11 @@ public class NoticiaService {
                 foundTags.add(tag);
             }
         }
-        return foundTags;
+        return CompletableFuture.completedFuture(foundTags);
     }
 
-    private Set<Tag> encontrarSinonimos(String titulo, String conteudo, Set<Tag> tagsPortal) {
+    @Async
+    public CompletableFuture<Set<Tag>> encontrarSinonimosAsync(String titulo, String conteudo, Set<Tag> tagsPortal) {
         Set<Tag> foundTags = new HashSet<>();
         String tituloNormalizado = normalizarTexto(titulo);
         String conteudoNormalizado = normalizarTexto(conteudo); 
@@ -116,7 +120,7 @@ public class NoticiaService {
                 }
             }
         }
-        return foundTags;
+        return CompletableFuture.completedFuture(foundTags);
     }
 
     private String normalizarTexto(String texto) {

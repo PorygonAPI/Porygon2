@@ -89,8 +89,8 @@ public class TagService {
 
     @Async
     public CompletableFuture<Void> atualizarSinonimos(String nomeTagParaScraping, Tag tag) {
-        List<String> sinonimos = tagScrapperService.buscarSinonimos(nomeTagParaScraping);
-        vincularSinonimos(sinonimos, tag);
+        CompletableFuture<List<String>> sinonimos = tagScrapperService.buscarSinonimosAsync(nomeTagParaScraping);
+        vincularSinonimos(sinonimos.join(), tag); 
         return CompletableFuture.completedFuture(null);
     }
 

@@ -46,78 +46,93 @@ public class DataScrapperService {
         Portal portal = portalRepository.findByIdWithTags(id)
                 .orElseThrow(() -> new RuntimeException("Portal not found with id: " + id));
         portal.getTags().size();
-
+    
         String classNameLink = portal.getSeletorCaminhoNoticia();
         String referenceClass = "a[href]." + classNameLink;
         String url = portal.getUrl();
-
+    
         try {
-            Element Titulo, Data, Autor;
-            Elements Conteudo;
-
             Document doc = Jsoup.connect(url).get();
             Elements selectPag = doc.select(referenceClass);
             HashSet<String> Links = new HashSet<>();
+            
             for (Element selector : selectPag) {
                 Links.add(selector.absUrl("href"));
             }
-
+    
+            List<CompletableFuture<Void>> futures = new ArrayList<>();
+            
             for (String link : Links) {
-                Document linkDoc = Jsoup.connect(link).get();
-                Titulo = linkDoc.select(portal.getSeletorTitulo()).first();
-                Data = linkDoc.select(portal.getSeletorDataPublicacao()).first();
-                Autor = linkDoc.select(portal.getSeletorJornalista()).first();
-                Conteudo = linkDoc.select(portal.getSeletorConteudo());
-
-                String verificationDate = "";
-                if (Data != null) {
-                    verificationDate = Data.attr("datetime");
-                } else {
-                    System.err.println("No date element found for link: " + link);
-                    verificationDate = "1001-01-01T10:44:13.253Z";
-                }
-
-                Date dataPublicacao = convertStringToDate(verificationDate);
-
-                StringBuilder contentScrapperBuilder = new StringBuilder();
-                for (Element conteudo : Conteudo) {
-                    contentScrapperBuilder.append(conteudo.text()).append("\n");
-                }
-                String contentScrapper = contentScrapperBuilder.toString();
-
-                if (Titulo == null || Titulo.text().trim().isEmpty()
-                        || Autor == null || Autor.text().trim().isEmpty()
-                        || contentScrapper.trim().isEmpty()) {
-                    System.err.println(
-                            "Notícia não salva. Título, autor e conteúdo não podem estar vazios para o link: " + link);
-                    continue;
-                }
-
-                Jornalista jornalista = jornalistaService.obterOuCriarJornalista(Autor.text());
-
-                Noticia noticia = new Noticia();
-                noticia.setTitulo(Titulo.text());
-                noticia.setJornalista(jornalista);
-                noticia.setData(dataPublicacao);
-                noticia.setPortal(portal);
-                noticia.setConteudo(contentScrapper);
-                noticia.setHref(link);
-
-                if (!noticiaRepository.existsByHref(noticia.getHref())) {
-                    noticiaService.salvar(noticia);
-                } else {
-                    System.out.println("Notícia já existente: " + noticia.getHref());
-                }
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                    try {
+                        processLink(link, portal);
+                    } catch (IOException e) {
+                        System.err.println("Erro ao processar o link: " + link + " - " + e.getMessage());
+                    }
+                });
+                futures.add(future);
             }
+    
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
             portal.setHasScrapedToday(true);
             portal.setUltimaAtualizacao(LocalDate.now());
             portalRepository.save(portal);
-
+    
         } catch (IOException e) {
             System.err.println("Error fetching URL: " + url + " - " + e.getMessage());
         }
-        
+    
         return CompletableFuture.completedFuture(null);
+    }
+    
+    private void processLink(String link, Portal portal) throws IOException {
+        Document linkDoc = Jsoup.connect(link).get();
+        Element Titulo = linkDoc.select(portal.getSeletorTitulo()).first();
+        Element Data = linkDoc.select(portal.getSeletorDataPublicacao()).first();
+        Element Autor = linkDoc.select(portal.getSeletorJornalista()).first();
+        Elements Conteudo = linkDoc.select(portal.getSeletorConteudo());
+    
+        String verificationDate = (Data != null) ? Data.attr("datetime") : "1001-01-01T10:44:13.253Z";
+        Date dataPublicacao = convertStringToDate(verificationDate);
+    
+        StringBuilder contentScrapperBuilder = new StringBuilder();
+        for (Element conteudo : Conteudo) {
+            contentScrapperBuilder.append(conteudo.text()).append("\n");
+        }
+        String contentScrapper = contentScrapperBuilder.toString();
+    
+        if (Titulo == null || Titulo.text().trim().isEmpty()
+                || Autor == null || Autor.text().trim().isEmpty()
+                || contentScrapper.trim().isEmpty()) {
+            return;  
+        }
+    
+        Jornalista jornalista = jornalistaService.obterOuCriarJornalista(Autor.text());
+    
+
+        Noticia noticia = new Noticia();
+        noticia.setTitulo(Titulo.text());
+        noticia.setJornalista(jornalista);
+        noticia.setData(dataPublicacao);
+        noticia.setPortal(portal);
+        noticia.setConteudo(contentScrapper);
+        noticia.setHref(link);
+    
+        if (!noticiaRepository.existsByHref(noticia.getHref())) {
+            noticiaService.salvar(noticia);
+        }
+    }
+    
+
+    public CompletableFuture<Document> fetchDocumentAsync(String url) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return Jsoup.connect(url).get();
+            } catch (IOException e) {
+                throw new RuntimeException("Error fetching URL: " + url, e);
+            }
+        });
     }
 
     @Async
@@ -151,7 +166,6 @@ public class DataScrapperService {
             }
     
             String noticiaUrl = firstLinkElement.absUrl("href");
-            //System.out.println("Validando seletores com a notícia encontrada: " + noticiaUrl);
 
             Document noticiaDoc = Jsoup.connect(noticiaUrl).get();
     
@@ -171,11 +185,9 @@ public class DataScrapperService {
                 throw new IllegalArgumentException("O seletor de conteúdo está inválido. Verifique!");
             }
     
-            //System.out.println("Todos os seletores foram validados com sucesso para o portal: " + portal.getNome());
         } catch (IOException e) {
             throw new RuntimeException("Erro ao acessar a URL: " + e.getMessage(), e);
         } catch (IllegalArgumentException e) {
-            //System.err.println("Erro de validação de seletores: " + e.getMessage());
             throw e;
         }
     }
@@ -193,11 +205,9 @@ public class DataScrapperService {
     }
 
     private void showLoading() {
-        System.out.println("Carregamento iniciado...");
     }
 
     private void hideLoading() {
-        System.out.println("Carregamento encerrado.");
     }
 
     // Set to run at noon(12h00)
@@ -274,7 +284,6 @@ public class DataScrapperService {
                     LocalDate lastUpdate = portal.getUltimaAtualizacao();
 
                     if (lastUpdate == null) {
-                        System.err.println("lastUpdate is null for portal: " + portal.getId());
                         continue;
                     }
 
