@@ -159,6 +159,7 @@
             <div class="modal-body">
                 <h5 id="modalTitulo"></h5>
                 <h6 id="modalJornalista" class="text-muted"></h6>
+                <h6 id="modalPortal" class="text-muted"></h6>
                 <p id="modalData"></p>
                 <p><strong>Tags:</strong> <span id="modalTags"></span></p>
                 <p id="modalConteudo" class="modal-conteudo"></p>
@@ -288,6 +289,7 @@
             .then(data => {
                 document.getElementById('modalTitulo').innerText = data.titulo;
                 document.getElementById('modalJornalista').innerText = 'Jornalista: ' + data.jornalista;
+                document.getElementById('modalPortal').innerText = 'Portal: ' + data.portal;
 
                 const dataPublicacao = new Date(data.data);
                 const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
