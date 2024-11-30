@@ -428,6 +428,12 @@
 
                         totalPages = data.totalPages;
                         renderPaginationControls();
+                    } else {
+                        errorMessage.textContent = 'Nenhuma API encontrada.';
+                        errorMessage.style.display = 'block';
+                        setTimeout(() => {
+                            errorMessage.style.display = 'none';
+                        }, 5000);
                     }
                 })
                 .catch(error => {

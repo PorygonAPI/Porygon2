@@ -315,7 +315,7 @@
     let totalPages = 0;
 
     function initializePage() {
-        fetchNoticias();
+        fetchNoticias(false);
     }
 
     document.getElementById('consultar').addEventListener('click', function () {
@@ -327,6 +327,7 @@
         errorMessage.textContent = '';
         errorMessage.style.display = 'none';
 
+        // Verifica se pelo menos um filtro foi selecionado
         if (selectedTags.length === 0 && !dataInicio && !dataFim) {
             errorMessage.textContent = 'Por favor, selecione ao menos um filtro para consultar.';
             errorMessage.style.display = 'block';
@@ -337,8 +338,8 @@
             return;
         }
 
-        currentPage = 0;
-        fetchNoticias();
+        currentPage = 0; // Reinicia a página para a primeira ao consultar
+        fetchNoticias(true); // Realiza a consulta
     });
 
     function fetchNoticias() {
@@ -350,6 +351,7 @@
         errorMessage.textContent = '';
         errorMessage.style.display = 'none';
 
+        // Verifica se a data final é anterior à data inicial
         if (dataFim && dataInicio && new Date(dataFim) < new Date(dataInicio)) {
             errorMessage.textContent = 'A data final não pode ser anterior à data inicial.';
             errorMessage.style.display = 'block';
@@ -360,6 +362,7 @@
             return;
         }
 
+        // Constroi a URL com base nos filtros aplicados
         let url = `/noticias?page=${currentPage}&size=10&`;
         if (dataInicio) url += `dataInicio=${dataInicio}&`;
         if (dataFim) url += `dataFim=${dataFim}&`;
@@ -385,17 +388,18 @@
                             ? noticia.tags.map(tag => tag.nome).join(', ')
                             : 'Sem tag associada';
                         row.innerHTML = `
-                    <td>${noticia.titulo}</td>
-                    <td>${tags}</td>
-                    <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                    <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
-                `;
+                        <td>${noticia.titulo}</td>
+                        <td>${tags}</td>
+                        <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                        <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
+                    `;
                         tbody.appendChild(row);
                     });
 
                     totalPages = data.totalPages;
                     renderPaginationControls();
                 } else {
+                    // Exibe a mensagem "Nenhuma notícia encontrada" quando não houver resultados
                     errorMessage.textContent = 'Nenhuma notícia encontrada.';
                     errorMessage.style.display = 'block';
                     setTimeout(() => {
@@ -414,6 +418,7 @@
                 }, 5000);
             });
     }
+    initializePage();
 
     function renderPaginationControls() {
         const paginationUl = document.querySelector('#pagination-controls ul.pagination');
