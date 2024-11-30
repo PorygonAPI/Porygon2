@@ -44,11 +44,11 @@
 <br>
 
 <div class="container mt-5">
-    
-            <div class="alert alert-danger" id="error-message" style="display:none;"></div>
-    
+
+    <div class="alert alert-danger" id="error-message" style="display:none;"></div>
+
     <h4 class="mb-4 text-center">Consulta de Notícias</h4>
-    
+
     <form id="filterForm">
         <div class="row mb-3">
             <div class="col">
@@ -121,30 +121,30 @@
         </div>
     </div>
     <div id="pagination-controls" class="d-flex justify-content-center mt-4">
-    <nav>
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="#" id="first-page">«</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#" id="previous-page">‹</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#" id="next-page">›</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#" id="last-page">»</a>
-            </li>
-            <li class="page-item" style="margin-left: 10px;">
-                <div class="input-group" style="width: auto;">
-                    <span class="input-group-text">Ir para a página</span>
-                    <input type="number" id="page-input" class="form-control" min="1" style="width: 80px;">
-                    <button class="btn btn-primary" id="go-to-page">Ir</button>
-                </div>
-            </li>
-        </ul>
-    </nav>
-</div>
+        <nav>
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" id="first-page">«</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" id="previous-page">‹</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" id="next-page">›</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" id="last-page">»</a>
+                </li>
+                <li class="page-item" style="margin-left: 10px;">
+                    <div class="input-group" style="width: auto;">
+                        <span class="input-group-text">Ir para a página</span>
+                        <input type="number" id="page-input" class="form-control" min="1" style="width: 80px;">
+                        <button class="btn btn-primary" id="go-to-page">Ir</button>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
 </div>
 <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
@@ -233,7 +233,7 @@
 
     function parseDate(dateStr) {
         const [day, month, year] = dateStr.split('/').map(Number);
-        return new Date(year, month - 1, day); 
+        return new Date(year, month - 1, day);
     }
 
     const tagInput = document.getElementById('tagSearchInput');
@@ -315,7 +315,7 @@
     let totalPages = 0;
 
     function initializePage() {
-        fetchNoticias(); 
+        fetchNoticias();
     }
 
     document.getElementById('consultar').addEventListener('click', function () {
@@ -396,7 +396,12 @@
                     totalPages = data.totalPages;
                     renderPaginationControls();
                 } else {
-                    console.log('Sem notícias para exibir.');
+                    errorMessage.textContent = 'Nenhuma notícia encontrada.';
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.textContent = '';
+                        errorMessage.style.display = 'none';
+                    }, 5000);
                 }
             })
             .catch(error => {
