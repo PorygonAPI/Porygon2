@@ -116,7 +116,6 @@
                 </tr>
                 </thead>
                 <tbody class="table-group-divider" id="noticias-body">
-                    <!-- News items will be dynamically loaded here -->
                 </tbody>
             </table>
         </div>
@@ -147,7 +146,6 @@
     </nav>
 </div>
 
-<div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
 </div>
 <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -321,6 +319,24 @@
     }
 
     document.getElementById('consultar').addEventListener('click', function () {
+        const dataInicio = document.getElementById('dataInicio').value;
+        const dataFim = document.getElementById('dataFim').value;
+        const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
+
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = '';
+        errorMessage.style.display = 'none';
+
+        if (selectedTags.length === 0 && !dataInicio && !dataFim) {
+            errorMessage.textContent = 'Selecione pelo menos um filtro de busca.';
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.textContent = '';
+                errorMessage.style.display = 'none';
+            }, 5000);
+            return;
+        }
+
         currentPage = 0;
         fetchNoticias();
     });
@@ -362,26 +378,25 @@
                 const tbody = document.querySelector('tbody.table-group-divider');
                 tbody.innerHTML = '';
 
-                if (data.content.length === 0) {
-                    errorMessage.textContent = data.mensagem || 'Nenhuma notícia encontrada.';
-                    errorMessage.style.display = 'block';
-                } else {
+                if (data.content && data.content.length > 0) {
                     data.content.forEach(noticia => {
                         const row = document.createElement('tr');
                         const tags = noticia.tags.length > 0
                             ? noticia.tags.map(tag => tag.nome).join(', ')
                             : 'Sem tag associada';
                         row.innerHTML = `
-                            <td>${noticia.titulo}</td>
-                            <td>${tags}</td>
-                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                            <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
-                        `;
+                    <td>${noticia.titulo}</td>
+                    <td>${tags}</td>
+                    <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                    <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
+                `;
                         tbody.appendChild(row);
                     });
 
                     totalPages = data.totalPages;
                     renderPaginationControls();
+                } else {
+                    console.log('Sem notícias para exibir.');
                 }
             })
             .catch(error => {
