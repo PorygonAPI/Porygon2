@@ -3,7 +3,6 @@ package edu.fatec.Porygon.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 import edu.fatec.Porygon.model.ApiDados;
-import edu.fatec.Porygon.model.Api;
 import java.time.LocalDate;
 
 public class ApiDadosDTO {
