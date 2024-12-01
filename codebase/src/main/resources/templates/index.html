@@ -44,11 +44,11 @@
 <br>
 
 <div class="container mt-5">
-    
-            <div class="alert alert-danger" id="error-message" style="display:none;"></div>
-    
+
+    <div class="alert alert-danger" id="error-message" style="display:none;"></div>
+
     <h4 class="mb-4 text-center">Consulta de Notícias</h4>
-    
+
     <form id="filterForm">
         <div class="row mb-3">
             <div class="col">
@@ -116,38 +116,36 @@
                 </tr>
                 </thead>
                 <tbody class="table-group-divider" id="noticias-body">
-                    <!-- News items will be dynamically loaded here -->
                 </tbody>
             </table>
         </div>
     </div>
     <div id="pagination-controls" class="d-flex justify-content-center mt-4">
-    <nav>
-        <ul class="pagination">
-            <li class="page-item">
-                <a class="page-link" href="#" id="first-page">«</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#" id="previous-page">‹</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#" id="next-page">›</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#" id="last-page">»</a>
-            </li>
-            <li class="page-item" style="margin-left: 10px;">
-                <div class="input-group" style="width: auto;">
-                    <span class="input-group-text">Ir para a página</span>
-                    <input type="number" id="page-input" class="form-control" min="1" style="width: 80px;">
-                    <button class="btn btn-primary" id="go-to-page">Ir</button>
-                </div>
-            </li>
-        </ul>
-    </nav>
-</div>
+        <nav>
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" id="first-page">«</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" id="previous-page">‹</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" id="next-page">›</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" id="last-page">»</a>
+                </li>
+                <li class="page-item" style="margin-left: 10px;">
+                    <div class="input-group" style="width: auto;">
+                        <span class="input-group-text">Ir para a página</span>
+                        <input type="number" id="page-input" class="form-control" min="1" style="width: 80px;">
+                        <button class="btn btn-primary" id="go-to-page">Ir</button>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
-<div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
 </div>
 <div class="modal fade" id="noticiaModal" tabindex="-1" aria-labelledby="noticiaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -159,6 +157,7 @@
             <div class="modal-body">
                 <h5 id="modalTitulo"></h5>
                 <h6 id="modalJornalista" class="text-muted"></h6>
+                <h6 id="modalPortal" class="text-muted"></h6>
                 <p id="modalData"></p>
                 <p><strong>Tags:</strong> <span id="modalTags"></span></p>
                 <p id="modalConteudo" class="modal-conteudo"></p>
@@ -235,7 +234,7 @@
 
     function parseDate(dateStr) {
         const [day, month, year] = dateStr.split('/').map(Number);
-        return new Date(year, month - 1, day); 
+        return new Date(year, month - 1, day);
     }
 
     const tagInput = document.getElementById('tagSearchInput');
@@ -288,6 +287,7 @@
             .then(data => {
                 document.getElementById('modalTitulo').innerText = data.titulo;
                 document.getElementById('modalJornalista').innerText = 'Jornalista: ' + data.jornalista;
+                document.getElementById('modalPortal').innerText = 'Portal: ' + data.portal;
 
                 const dataPublicacao = new Date(data.data);
                 const dataPublicacaoUTC = new Date(dataPublicacao.getTime() + dataPublicacao.getTimezoneOffset() * 60000);
@@ -317,12 +317,30 @@
     let totalPages = 0;
 
     function initializePage() {
-        fetchNoticias(); 
+        fetchNoticias(false);
     }
 
     document.getElementById('consultar').addEventListener('click', function () {
+        const dataInicio = document.getElementById('dataInicio').value;
+        const dataFim = document.getElementById('dataFim').value;
+        const selectedTags = Array.from(tagSelect.selectedOptions).map(option => option.value);
+
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.textContent = '';
+        errorMessage.style.display = 'none';
+
+        if (selectedTags.length === 0 && !dataInicio && !dataFim) {
+            errorMessage.textContent = 'Por favor, selecione ao menos um filtro para consultar.';
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.textContent = '';
+                errorMessage.style.display = 'none';
+            }, 5000);
+            return;
+        }
+
         currentPage = 0;
-        fetchNoticias();
+        fetchNoticias(true);
     });
 
     function fetchNoticias() {
@@ -362,26 +380,30 @@
                 const tbody = document.querySelector('tbody.table-group-divider');
                 tbody.innerHTML = '';
 
-                if (data.content.length === 0) {
-                    errorMessage.textContent = data.mensagem || 'Nenhuma notícia encontrada.';
-                    errorMessage.style.display = 'block';
-                } else {
+                if (data.content && data.content.length > 0) {
                     data.content.forEach(noticia => {
                         const row = document.createElement('tr');
                         const tags = noticia.tags.length > 0
                             ? noticia.tags.map(tag => tag.nome).join(', ')
                             : 'Sem tag associada';
                         row.innerHTML = `
-                            <td>${noticia.titulo}</td>
-                            <td>${tags}</td>
-                            <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
-                            <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
-                        `;
+                        <td>${noticia.titulo}</td>
+                        <td>${tags}</td>
+                        <td>${new Date(noticia.data).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</td>
+                        <td><button class="btn btn-info" onclick="abrirModal(${noticia.id})">Abrir</button></td>
+                    `;
                         tbody.appendChild(row);
                     });
 
                     totalPages = data.totalPages;
                     renderPaginationControls();
+                } else {
+                    errorMessage.textContent = 'Nenhuma notícia encontrada.';
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.textContent = '';
+                        errorMessage.style.display = 'none';
+                    }, 5000);
                 }
             })
             .catch(error => {
@@ -394,6 +416,7 @@
                 }, 5000);
             });
     }
+    initializePage();
 
     function renderPaginationControls() {
         const paginationUl = document.querySelector('#pagination-controls ul.pagination');
