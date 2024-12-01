@@ -131,6 +131,9 @@ Para instalar configurar o banco, atualizar o Maven e demais informações impor
 <details>
 <summary> SPRINT 1 </summary>
 
+### Vídeo da aplicação e suas funcionalidades:
+https://github.com/user-attachments/assets/ffb53d26-2658-420c-84b2-b42ea6672f9c
+
 ### **1** - User Story - Cadastro de Portais de Notícias - *R1, RN1, RN7 e RN9*
 Como usuário, quero poder cadastrar portais de notícias para que eu possa coletar e armazenar informações desses canais para posterior pesquisa e análise.    
 ### Critérios de Aceite:   
@@ -157,6 +160,8 @@ Como usuário, quero que o sistema capture notícias dos portais cadastrados par
 <details>
 <summary> SPRINT 2 </summary>
 
+### Vídeo da aplicação e suas funcionalidades:
+https://github.com/user-attachments/assets/ecf9a2c3-bc68-442f-a9ba-4b01d428d3ce
 
 ### **10** - User Story: Rotina do Web Scraping dos Portais de Notícia *R1, R5, RN7 e RN9*
 Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. 
@@ -194,6 +199,9 @@ Visualizar o [Wireframe da Sprint 2](doc/images/wireframe2.png).
 
 <details>
 <summary> SPRINT 3 </summary>
+
+### Vídeo da aplicação e suas funcionalidades:
+https://github.com/user-attachments/assets/94cbb601-29eb-468a-8204-dc4a2566c86d
 
 ### **4** - User Story - Cadastro de Tags - *R3, R6, RN3, RN7 e RN9*
 Como usuário, quero cadastrar tags que serão usadas para categorizar e filtrar notícias para melhorar a organização e a busca de dados.
