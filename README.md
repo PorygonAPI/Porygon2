@@ -81,6 +81,12 @@ Para instalar configurar o banco, atualizar o Maven e demais informações impor
 
 ### :triangular_ruler: Wireframe do Produto
 * Wireframe do produto disponível pelo [Figma](https://www.figma.com/design/0BWdbmpjQpwVmLui2AUoVl/API_3SEM_PORYGON?node-id=80-618&t=pSpfCnX8lu9lPUyf-1)
+
+### :game_die: Banco de Dados
+
+* [Documentação do Banco de Dados](doc/sprint4.pdf)
+
+* [Modelo Físico](doc/sprint4.png)
   
 ## :white_check_mark: Requisitos
 
