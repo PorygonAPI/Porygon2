@@ -11,23 +11,21 @@ public class NoticiaDTO {
     private Date data;
     private String conteudo;
     private String jornalista;
-    private String portal;  // Novo campo para o nome do portal
+    private String portal;
     private List<TagDTO> tags;
 
-    // Construtor que agora também preenche o nome do portal
     public NoticiaDTO(Noticia noticia) {
         this.id = noticia.getId();
         this.titulo = noticia.getTitulo();
         this.data = noticia.getData();
         this.conteudo = noticia.getConteudo();
         this.jornalista = noticia.getJornalista().getNome();
-        this.portal = noticia.getPortal() != null ? noticia.getPortal().getNome() : null; // Preenche o nome do portal
+        this.portal = noticia.getPortal() != null ? noticia.getPortal().getNome() : null;
         this.tags = noticia.getTags().stream()
                 .map(TagDTO::new)
                 .collect(Collectors.toList());
     }
 
-    // Getters e Setters
 
     public Integer getId() {
         return id;
