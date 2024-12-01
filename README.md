@@ -55,8 +55,8 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 - [x] 26/08 a 30/08 - Kick-off
 - [x] 09/09 a 29/09 - Primeira Sprint
 - [x] 30/09 a 20/10 - Segunda Sprint
-- [ ] 21/10 a 10/11 - Terceira Sprint
-- [ ] 11/11 a 01/12 - Quarta Sprint
+- [x] 21/10 a 10/11 - Terceira Sprint
+- [x] 11/11 a 01/12 - Quarta Sprint
 - [ ] 12/12 - Feira de Soluções e Apresentação Final API
 
 *****
