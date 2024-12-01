@@ -235,6 +235,9 @@ Como usuário, quero consultar notícias e APIs que contenham uma palavra espec�
 <details>
 <summary> SPRINT 4 </summary>
 
+### Vídeo da aplicação e suas funcionalidades:
+https://github.com/user-attachments/assets/251aaaa2-ebbf-48bf-a78b-743cab99f5f4
+
 ### **5** - User Story - Consulta de Notícias por Tag - *R7, R6, RN1 e RN9*
 Como usuário, quero consultar notícias filtrando por tag para focar em tópicos específicos.
 ### Critérios de Aceite:

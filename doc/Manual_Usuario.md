@@ -2,14 +2,13 @@
 
 <p align="center">
   <a href ="#requisitos"> REQUISITOS </a>  •
-  <a href ="#configuração-do-banco-de-dados"> CONFIGURAÇÃO DO BANCO DE DADOS </a>  •
+  <a href ="#configuração-do-banco-de-dados"> CONFIGURAÇÃO DO BANCO DE DADOS </a>  
   <a href ="#instalaçao"> INSTALAÇÃO </a>  •
   <a href ="#cadastro-de-tag"> CADASTRO DE TAG </a>  •
   <a href ="#cadastro-de-portal"> CADASTRO DE PORTAL </a>  •
   <a href ="#cadastro-de-seletores"> CADASTRO DE SELETORES </a>  •
   <a href ="#cadastro-de-api"> CADASTRO DE API </a>  •
-  <a href="#inspeção-da-página"> INSPEÇÃO DA PÁGINA </a> •
-  <a href="#exemplos-de-cadastro"> EXEMPLOS DE CADASTRO </a>
+  <a href ="#status"> STATUS </a>
 </p>
 
 # REQUISITOS
@@ -125,17 +124,30 @@ Caso o usuário queira selecionar várias tags de uma vez, clicar em Ctrl e sele
 ![image](https://github.com/user-attachments/assets/d5ad0096-9396-4cea-8031-3d27508a26c5)
 
 # CADASTRO DE SELETORES
+
+#### Para que o Web Scraping aconteça corretamente, coletando todas as informação importantes para o usuário, os seletores devem ser bem configurados no momento do cadastro. 
 ![image](https://github.com/user-attachments/assets/a0fb400b-2f5d-472d-8211-39e94412c4a2)
+#### Para isso, basta inspecionar a página clicando em Crtl, Shift e I e na setinha no canto superior esquerdo na nova tela de inspeção que abrir no navegador. 
 ![image](https://github.com/user-attachments/assets/eb9d03ee-070d-4799-b721-d6fcd3b21042)
+
+> A classe correta é a que contém exatamente a informação que queremos coletar. No exemplo abaixo, o seletor para o conteúdo do texto é `p.content-text__container`.
+
 ![image](https://github.com/user-attachments/assets/e23df91d-6594-4410-8e3e-fc210746d5a6)
 
-# Exemplos de Cadastro
+> Existe uma validação de seletores antes de salvar no banco, para saber se ele retorna um valor válido. Sendo assim, no exemplo abaixo está com uma parte do seletor de caminho de notícias faltando.
 
-## Portais de Notícia
+![image](https://github.com/user-attachments/assets/a2c7f6a7-8e6d-4db2-9033-c4df326ef2a3)
 
-Para facilitar os testes do sistema, utilize os exemplos abaixo para popular o banco com portais e notícias
+> Mas quando está completo, todas as informações são salvas no banco e o scraping é feito corretamente, apresentando a mensagem no coonsole
+![image](https://github.com/user-attachments/assets/ff9f12d8-05a8-451e-b658-532adfcdddf1)
 
-## 1. Canal Rural
+#### Mensagem de sucesso:
+
+![image](https://github.com/user-attachments/assets/a06afff0-bab6-4a2e-a6a5-089ae210b580)
+
+### Exemplos de Cadastro
+
+#### 1. Canal Rural
 
 - **URL**: [https://www.canalrural.com.br](https://www.canalrural.com.br)
 - **Caminho da Lista de Notícias**: `feed-link`
@@ -164,4 +176,94 @@ Para facilitar os testes do sistema, utilize os exemplos abaixo para popular o b
 
 > **Nota**: O G1 - Agro compartilha os mesmos seletores HTML que o portal G1, mas está focado em notícias do setor agro. Pode haver duplicação de notícias entre os dois portais se uma notícia sobre o agronegócio aparecer na página principal do G1. Este portal é ideal para testes de verificação de duplicidade.
 
+Caso o erro não seja nos seletores ou na URL, provavelmente a aplicação foi pausada ou o servidor foi interrompido. A mensagem abaixo é o aviso de erro de comunicação:
+
 ![image](https://github.com/user-attachments/assets/478ef74d-980f-4675-8725-3a97b784bef5)
+
+# CADASTRO DE API
+
+### Diferente do cadastro de Portal, a API não possui seletores.
+
+> Verifique o tipo de arquivo que a requisição retorna para configurar no cadastro. Dessa forma, os dados serão tratados de formas diferentes.
+
+![image](https://github.com/user-attachments/assets/2da8cfff-9e6a-49bb-afeb-d2e417b7860e)
+
+> Existe a validação da URL que impede que requisições falhas ou endpoints inválidos sejam cadastrados.
+![image](https://github.com/user-attachments/assets/f91d0b53-35c0-4ee2-93be-3ee944289c9d)
+
+Aqui estão algumas APIs REST de exemplo que podem ser utilizadas para testar o sistema. Cada uma delas é acessível sem necessidade de autenticação.
+
+## _APIs em XML_
+
+### IBGE - Localidades
+
+- **Endpoint**: https://servicodados.ibge.gov.br/api/v1/localidades/estados/RR/municipios?formato=xml
+- **Descrição**: Retorna uma lista de municípios do estado de Roraima em formato XML.
+- **Tipo de Arquivo**: XML
+
+### ViaCEP - Consulta de CEP
+
+- **Endpoint**: https://viacep.com.br/ws/12247014/xml/
+- **Descrição**: Consulta de endereço a partir do CEP informado. Neste exemplo, é usado o CEP da FATEC.
+- **Tipo de Arquivo**: XML
+
+### W3Schools - XML Note
+
+- **Endpoint**: https://www.w3schools.com/xml/note.xml
+- **Descrição**: Exemplo de um documento XML simples contendo uma nota.
+- **Tipo** de Arquivo: XML
+
+### OpenWeatherMap - Dados Climáticos (XML)
+
+- **Endpoint**: https://samples.openweathermap.org/data/2.5/weather?q=London&mode=xml&appid=b1b15e88fa797225412429c1c50c122a1
+- **Descrição**: Retorna dados climáticos básicos para a cidade de Londres em formato XML.
+- **Tipo de Arquivo**: XML
+
+### NBP - Taxas de Câmbio (Tabela A)
+
+- **Endpoint**: http://api.nbp.pl/api/exchangerates/tables/A?format=xml
+- **Descrição**: Retorna as taxas de câmbio do Banco Nacional da Polônia em formato XML.
+- **Tipo de Arquivo**: XML
+
+## _APIs em CSV_
+
+### IPCA Mensal - Banco Central
+
+- **Endpoint**: https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=csv
+- **Descrição**: Retorna o Índice de Preços ao Consumidor Amplo (IPCA) de um mês específico em formato CSV.
+- **Tipo de Arquivo**: CSV
+
+### Sample Data - Weight and Height
+
+- **Endpoint**: https://people.sc.fsu.edu/~jburkardt/data/csv/hw_200.csv
+- **Descrição**: Exemplo de arquivo CSV com dados de altura e peso.
+- **Tipo de Arquivo**: CSV
+
+## _APIs em JSON_
+
+### PokeAPI - Pokémon Data
+
+- **Endpoint**: https://pokeapi.co/api/v2/pokemon
+- **Descrição**: Retorna dados sobre diversos Pokémon, como nome, tipos e habilidades, em formato JSON.
+- **Tipo de Arquivo**: JSON
+
+### JSONPlaceholder - Posts
+
+- **Endpoint**: https://jsonplaceholder.typicode.com/posts
+- **Descrição**: API de testes que retorna uma lista de posts fictícios em formato JSON.
+- **Tipo de Arquivo**: JSON
+
+# STATUS
+
+### Tanto as APIs quanto os Portais não são excluídos do sistema, mas podem ser desativados. Para isso, basta mudar o status na lista de APIs/Portais cadastrados. 
+
+#### Quando está ativo, API ou Portal é checado de acordo com o agendamento e o scraping é feito. Quando está desativo, as informações ficam armazenadas mas a verificação e o scraping não são feitos.
+
+![image](https://github.com/user-attachments/assets/dab502b7-39a8-4c59-a9fb-e2020c9bad5d)
+
+> Ao mudar o status de um portal ou api desativo, o sistema faz o scraping imediatamente, iniciando o processo de contagem do agendamento no dia da ativação. 
+
+![image](https://github.com/user-attachments/assets/f136de81-5b2e-43c5-aaf1-db72bef6476b)
+
+### Mensagem ao desativar um portal ou API:
+![image](https://github.com/user-attachments/assets/95310544-ff6d-4b4c-b575-8399439fe06e)
