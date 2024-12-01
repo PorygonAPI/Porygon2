@@ -2,19 +2,27 @@ package edu.fatec.Porygon.service;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
-import java.util.*;
 
 import edu.fatec.Porygon.model.Sinonimo;
 import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.SinonimoRepository;
 import edu.fatec.Porygon.repository.TagRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
+@EnableAsync
 public class NoticiaService {
 
     @Autowired
@@ -30,159 +38,100 @@ public class NoticiaService {
         return noticiaRepository.findAll();
     }
 
-    public List<Noticia> listarNoticiasPorData(LocalDate dataInicio, LocalDate dataFim) {
-        return noticiaRepository.searchNewsByData(dataInicio, dataFim);
+    public Page<Noticia> listarNoticiasPorFiltros(LocalDate dataInicio, LocalDate dataFim, List<Integer> tagIds, Pageable pageable) {
+        if (dataInicio != null && dataFim != null && tagIds != null && !tagIds.isEmpty()) {
+            return noticiaRepository.findByDataBetweenAndTagsIn(dataInicio, dataFim, tagIds, pageable);
+        } else if (dataInicio != null && dataFim != null) {
+            return noticiaRepository.searchNewsByData(dataInicio, dataFim, pageable);
+        } else if (tagIds != null && !tagIds.isEmpty()) {
+            return noticiaRepository.findByTags(tagIds, pageable);
+        } else {
+            return noticiaRepository.findAll(pageable);
+        }
     }
 
-    public Noticia salvar(Noticia noticia, List<Integer> tagIds) {
-        if (tagIds != null && !tagIds.isEmpty()) {
-            Set<Tag> tagsPortal = new HashSet<>(tagRepository.findAllById(tagIds));
-            associarTagsRelevantes(noticia, tagsPortal);
+    public Noticia salvar(Noticia noticia) {
+        Set<Tag> foundTags = associarTagsAsync(noticia).join();
+
+        if (foundTags.isEmpty()) {
+            return null;
         }
+
+        noticia.setTags(foundTags);
         return noticiaRepository.save(noticia);
     }
 
-    public Noticia atualizarTags(Integer noticiaId, List<Integer> tagIds) {
-        Noticia noticia = noticiaRepository.findById(noticiaId)
-                .orElseThrow(() -> new RuntimeException("Notícia não encontrada"));
+    @Async
+    public CompletableFuture<Set<Tag>> associarTagsAsync(Noticia noticia) {
+        Set<Tag> tagsPortal = new HashSet<>(tagRepository.findAllByPortais_Id(noticia.getPortal().getId()));
 
-        if (tagIds != null) {
-            Set<Tag> tagsPortal = tagIds.isEmpty()
-                    ? new HashSet<>()
-                    : new HashSet<>(tagRepository.findAllById(tagIds));
-            associarTagsRelevantes(noticia, tagsPortal);
+        CompletableFuture<Set<Tag>> foundTagsTitulo = encontrarTagsNoTituloAsync(noticia.getTitulo(), tagsPortal);
+        CompletableFuture<Set<Tag>> foundTagsConteudo = encontrarTagsNoConteudoAsync(noticia.getConteudo(), tagsPortal);
+        CompletableFuture<Set<Tag>> foundTagsSinonimos = encontrarSinonimosAsync(noticia.getTitulo(), noticia.getConteudo(), tagsPortal);
+  
+        return foundTagsTitulo.thenCombine(foundTagsConteudo, (tagsTitulo, tagsConteudo) -> {
+            tagsTitulo.addAll(tagsConteudo); 
+            return tagsTitulo;
+        }).thenCombine(foundTagsSinonimos, (tagsCombinadas, tagsSinonimos) -> {
+            tagsCombinadas.addAll(tagsSinonimos);
+            return tagsCombinadas;
+        });
+    }
+    
+    @Async
+    public CompletableFuture<Set<Tag>> encontrarTagsNoTituloAsync(String titulo, Set<Tag> tagsPortal) {
+        Set<Tag> foundTags = new HashSet<>();
+        String tituloNormalizado = normalizarTexto(titulo); 
+        for (Tag tag : tagsPortal) {
+            String tagNormalizada = normalizarTexto(tag.getNome()); 
+            if (tituloNormalizado.contains(tagNormalizada)) {
+                foundTags.add(tag);
+            }
         }
-
-        return noticiaRepository.save(noticia);
+        return CompletableFuture.completedFuture(foundTags);
     }
 
-    @Transactional
-    public void findTagsInTitle() {
-        List<Tag> tags = tagRepository.findAll();
-        List<Noticia> news = noticiaRepository.findAll();
+    @Async
+    public CompletableFuture<Set<Tag>> encontrarTagsNoConteudoAsync(String conteudo, Set<Tag> tagsPortal) {
+        Set<Tag> foundTags = new HashSet<>();
+        String conteudoNormalizado = normalizarTexto(conteudo);
+        for (Tag tag : tagsPortal) {
+            String tagNormalizada = normalizarTexto(tag.getNome()); 
+            if (conteudoNormalizado.contains(tagNormalizada)) {
+                foundTags.add(tag);
+            }
+        }
+        return CompletableFuture.completedFuture(foundTags);
+    }
 
-        for (Noticia noticia : news) {
-            HashSet<Tag> foundTags = new HashSet<>();
-            for (Tag tag : tags) {
-                if (noticia.getTitulo().toLowerCase().contains(tag.getNome().toLowerCase())) {
+    @Async
+    public CompletableFuture<Set<Tag>> encontrarSinonimosAsync(String titulo, String conteudo, Set<Tag> tagsPortal) {
+        Set<Tag> foundTags = new HashSet<>();
+        String tituloNormalizado = normalizarTexto(titulo);
+        String conteudoNormalizado = normalizarTexto(conteudo); 
+        for (Tag tag : tagsPortal) {
+            List<Sinonimo> sinonimos = sinonimoRepository.findByTag(tag);
+            for (Sinonimo sinonimo : sinonimos) {
+                String sinonimoNormalizado = normalizarTexto(sinonimo.getNome()); 
+                if (tituloNormalizado.contains(sinonimoNormalizado) ||
+                        conteudoNormalizado.contains(sinonimoNormalizado)) {
                     foundTags.add(tag);
-                } else {
-                    Tag tagFound = searchSynonymsInTitle(tag, noticia);
-                    if (tagFound != null) {
-                        foundTags.add(tagFound);
-                    }
-                }
-            }
-
-            if (!foundTags.isEmpty()) {
-                noticia.setTags(foundTags);
-                noticiaRepository.save(noticia);
-            }
-
-            associarTagsPorConteudo();
-        }
-    }
-
-
-    public Tag searchSynonymsInTitle(Tag tag, Noticia noticia) {
-        List<Sinonimo> sinonimos = sinonimoRepository.findByTag(tag);
-        Tag retorno = null;
-
-        String cleanTitleAccent = Normalizer.normalize(noticia.getTitulo(), Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}", "");
-        String cleanTitleSpecialCharacter = cleanTitleAccent.replaceAll("[^a-zA-Z0-9\\s]", "").toLowerCase();
-        String[] words = cleanTitleSpecialCharacter.split("\\s+");
-
-        for (String word : words) {
-            for(Sinonimo sinonimo : sinonimos) {
-                if (sinonimo.getNome().toLowerCase().equals(word)){
-                    return tag;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    @Transactional
-    public void associarTagsPorConteudo() {
-        List<Tag> tags = tagRepository.findAll();
-        List<Noticia> noticias = noticiaRepository.findAll();
-
-        for (Noticia noticia : noticias) {
-            for (Tag tag : tags) {
-                if (buscarSinonimoNoConteudo(tag, noticia)) {
-                    if (noticia.getTags() == null) {
-                        noticia.setTags(new HashSet<>()); 
-                    }
-
-                    if (!noticia.getTags().contains(tag)) {
-                        noticia.getTags().add(tag);
-                        noticiaRepository.save(noticia);
-                    }
-
                     break;
                 }
             }
         }
-    }
-
-    private boolean buscarSinonimoNoConteudo(Tag tag, Noticia noticia) {
-        List<Sinonimo> sinonimos = sinonimoRepository.findByTag(tag);
-
-        String conteudoLimpo = Normalizer.normalize(noticia.getConteudo(), Normalizer.Form.NFD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}", "")
-                .replaceAll("[^a-zA-Z0-9\\s]", "").toLowerCase();
-
-        String[] palavrasConteudo = conteudoLimpo.split("\\s+");
-
-        for (String palavra : palavrasConteudo) {
-            for (Sinonimo sinonimo : sinonimos) {
-                if (sinonimo.getNome().toLowerCase().equals(palavra)) {
-                    return true; 
-                }
-            }
-        }
-        return false; 
-    }
-
-    private void associarTagsRelevantes(Noticia noticia, Set<Tag> tagsPortal) {
-        Set<Tag> tagsRelevantes = new HashSet<>();
-
-        String conteudoNormalizado = normalizarTexto(noticia.getConteudo());
-        String tituloNormalizado = normalizarTexto(noticia.getTitulo());
-
-        for (Tag tag : tagsPortal) {
-            String tagNormalizada = normalizarTexto(tag.getNome());
-            String[] palavrasTag = tagNormalizada.split("[-\\s]");
-            boolean tagEncontrada;
-
-            if (palavrasTag.length > 1) {
-                tagEncontrada = Arrays.stream(palavrasTag)
-                        .allMatch(palavra -> conteudoNormalizado.contains(palavra) ||
-                                tituloNormalizado.contains(palavra));
-            } else {
-                tagEncontrada = conteudoNormalizado.contains(tagNormalizada) ||
-                        tituloNormalizado.contains(tagNormalizada);
-            }
-
-            if (tagEncontrada) {
-                tagsRelevantes.add(tag);
-            }
-        }
-
-        noticia.setTags(tagsRelevantes);
+        return CompletableFuture.completedFuture(foundTags);
     }
 
     private String normalizarTexto(String texto) {
-        if (texto == null)
-            return "";
-        return texto.toLowerCase()
-                .replaceAll("[áàãâä]", "a")
-                .replaceAll("[éèêë]", "e")
-                .replaceAll("[íìîï]", "i")
-                .replaceAll("[óòõôö]", "o")
-                .replaceAll("[úùûü]", "u")
-                .replaceAll("[ç]", "c")
-                .replaceAll("[^a-z0-9\\s-]", "");
+        if (texto == null) {
+            return null;
+        }
+
+        texto = texto.toLowerCase();
+        texto = Normalizer.normalize(texto, Normalizer.Form.NFD);
+        texto = texto.replaceAll("[^\\p{ASCII}]", "");
+
+        return texto;
     }
 }

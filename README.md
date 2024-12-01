@@ -55,8 +55,8 @@ Ferramenta de Captura e Armazenamento de Notícias Estratégicas e Dados Relevan
 - [x] 26/08 a 30/08 - Kick-off
 - [x] 09/09 a 29/09 - Primeira Sprint
 - [x] 30/09 a 20/10 - Segunda Sprint
-- [ ] 21/10 a 10/11 - Terceira Sprint
-- [ ] 11/11 a 01/12 - Quarta Sprint
+- [x] 21/10 a 10/11 - Terceira Sprint
+- [x] 11/11 a 01/12 - Quarta Sprint
 - [ ] 12/12 - Feira de Soluções e Apresentação Final API
 
 *****
@@ -81,6 +81,12 @@ Para instalar configurar o banco, atualizar o Maven e demais informações impor
 
 ### :triangular_ruler: Wireframe do Produto
 * Wireframe do produto disponível pelo [Figma](https://www.figma.com/design/0BWdbmpjQpwVmLui2AUoVl/API_3SEM_PORYGON?node-id=80-618&t=pSpfCnX8lu9lPUyf-1)
+
+### :game_die: Banco de Dados
+
+* [Documentação do Banco de Dados](doc/sprint4.pdf)
+
+* [Modelo Físico](doc/sprint4.png)
   
 ## :white_check_mark: Requisitos
 
@@ -131,6 +137,9 @@ Para instalar configurar o banco, atualizar o Maven e demais informações impor
 <details>
 <summary> SPRINT 1 </summary>
 
+### Vídeo da aplicação e suas funcionalidades:
+https://github.com/user-attachments/assets/ffb53d26-2658-420c-84b2-b42ea6672f9c
+
 ### **1** - User Story - Cadastro de Portais de Notícias - *R1, RN1, RN7 e RN9*
 Como usuário, quero poder cadastrar portais de notícias para que eu possa coletar e armazenar informações desses canais para posterior pesquisa e análise.    
 ### Critérios de Aceite:   
@@ -157,6 +166,8 @@ Como usuário, quero que o sistema capture notícias dos portais cadastrados par
 <details>
 <summary> SPRINT 2 </summary>
 
+### Vídeo da aplicação e suas funcionalidades:
+https://github.com/user-attachments/assets/ecf9a2c3-bc68-442f-a9ba-4b01d428d3ce
 
 ### **10** - User Story: Rotina do Web Scraping dos Portais de Notícia *R1, R5, RN7 e RN9*
 Como usuário, quero configurar e validar o funcionamento dos portais de notícia, para que o processo de web scraping ocorra de forma eficiente de acordo com o agendamento e sem duplicações, garantindo a integridade dos dados. 
@@ -195,6 +206,9 @@ Visualizar o [Wireframe da Sprint 2](doc/images/wireframe2.png).
 <details>
 <summary> SPRINT 3 </summary>
 
+### Vídeo da aplicação e suas funcionalidades:
+https://github.com/user-attachments/assets/94cbb601-29eb-468a-8204-dc4a2566c86d
+
 ### **4** - User Story - Cadastro de Tags - *R3, R6, RN3, RN7 e RN9*
 Como usuário, quero cadastrar tags que serão usadas para categorizar e filtrar notícias para melhorar a organização e a busca de dados.
 ### Critérios de Aceite:
@@ -220,6 +234,9 @@ Como usuário, quero consultar notícias e APIs que contenham uma palavra espec�
 
 <details>
 <summary> SPRINT 4 </summary>
+
+### Vídeo da aplicação e suas funcionalidades:
+https://github.com/user-attachments/assets/251aaaa2-ebbf-48bf-a78b-743cab99f5f4
 
 ### **5** - User Story - Consulta de Notícias por Tag - *R7, R6, RN1 e RN9*
 Como usuário, quero consultar notícias filtrando por tag para focar em tópicos específicos.
@@ -283,7 +300,6 @@ Como usuário, quero consultar APIs filtrando por data de cadastro para revisar 
 <br>
 ![Burndown - Sprint 2 (1)](https://github.com/user-attachments/assets/56112d28-8240-4d07-929f-c7cb82e06201)
 <br>
-Tarefas Realizadas
 
 | História | Tarefa finalizada | Story Points | Data de Finalização |
 |----------|-------------------|--------------|---------------------|
@@ -329,9 +345,8 @@ Tarefas Realizadas
 
 
 <br>
-Tarefas Realizadas
 
-| História | Chave do item | Status                  | Atualizado(a)       | Story Point Tarefa |
+| História | Chave do item | Status                  | Data de Finalização      | Story Point Tarefa |
 |----------|---------------|-------------------------|----------------------|---------------------|
 | PYG-14   | PYG-70        | Concluído               | 24/out./24 00:12     | 5                   |
 | PYG-93   | PYG-102       | Concluído               | 25/out./24 10:49     | 3                   |
@@ -364,6 +379,36 @@ Tarefas Realizadas
 | PYG-93   | PYG-108       | Concluído               | 10/nov./24 14:07     | -                   |
 | PYG-110  | PYG-112       | Concluído               | 10/nov./24 14:14     | 8                   |
 | PYG-14   | PYG-90        | Concluído               | 10/nov./24 14:44     | 8                   |
+
+
+<br>
+Última Atualização: 10/11/2024
+
+</details>
+
+<details>
+<summary> SPRINT 4 | 11/11/2024 até 01/12/2024 </summary>
+<br>
+
+  Nesta sprint, usamos story points para medir nosso progresso em relação às entregas propostas.  
+  Pontuação total: 220
+<br>
+<br>
+<br>
+![Burndown - Sprint 4](https://github.com/user-attachments/assets/65bfe1fd-fb5c-4bd0-ab0f-e57e04f0cbf1)
+
+
+
+
+<br>
+
+| História  | Resumo                                          | Status Concluído         | Data de Finalização     | Story Point |
+|-----------|-------------------------------------------------|--------------------------|-------------------------|-------------|
+| PYG-122   | Melhorias e Refatoração no Cadastro de Portais e APIs - Parte 2 | 10/11/2024 16:10 | 01/12/2024 21:48 | 89.0        |
+| PYG-22    | Consultar APIs por Tag                          | 11/09/2024 20:41         | 28/11/2024 14:46        | 55.0        |
+| PYG-21    | Consultar APIs por Data                         | 11/09/2024 20:33         | 26/11/2024 07:25        | 21.0        |
+| PYG-18    | Consultar Notícias por Tag                      | 11/09/2024 20:26         | 18/11/2024 15:54        | 55.0        |
+
 
 
 <br>

@@ -8,6 +8,7 @@ import edu.fatec.Porygon.repository.ApiRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -30,10 +31,9 @@ public class ApiRotinaService {
 
     @PostConstruct
     public void verificarApisNaInicializacao() {
-        System.out.println("Verificando e atualizando APIs ao iniciar a aplicação...");
         verificarEAtualizarApis();
     }
-
+    
     public void verificarEAtualizarApis() {
         List<Api> apis = apiRepository.findAll();
 
@@ -59,6 +59,8 @@ public class ApiRotinaService {
         }
     }
 
+    
+    @Async
     @Transactional
     public void realizarRequisicaoApi(Api api) {
         api = apiRepository.findByIdWithTags(api.getId()).orElseThrow(() -> new RuntimeException("API não encontrada"));

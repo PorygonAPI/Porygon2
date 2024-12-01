@@ -28,7 +28,6 @@ public class FormatoDataLoader implements CommandLineRunner {
             formatoRepository.save(csv);
             formatoRepository.save(xml);
 
-            // System.out.println("Formatos padrão inseridos no banco de dados.");
         }
     }
 }

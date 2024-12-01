@@ -11,6 +11,7 @@ public class NoticiaDTO {
     private Date data;
     private String conteudo;
     private String jornalista;
+    private String portal;
     private List<TagDTO> tags;
 
     public NoticiaDTO(Noticia noticia) {
@@ -19,10 +20,12 @@ public class NoticiaDTO {
         this.data = noticia.getData();
         this.conteudo = noticia.getConteudo();
         this.jornalista = noticia.getJornalista().getNome();
+        this.portal = noticia.getPortal() != null ? noticia.getPortal().getNome() : null;
         this.tags = noticia.getTags().stream()
-                            .map(TagDTO::new)
-                            .collect(Collectors.toList());
+                .map(TagDTO::new)
+                .collect(Collectors.toList());
     }
+
 
     public Integer getId() {
         return id;
@@ -62,6 +65,14 @@ public class NoticiaDTO {
 
     public void setJornalista(String jornalista) {
         this.jornalista = jornalista;
+    }
+
+    public String getPortal() {
+        return portal;
+    }
+
+    public void setPortal(String portal) {
+        this.portal = portal;
     }
 
     public List<TagDTO> getTags() {

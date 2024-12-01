@@ -4,11 +4,14 @@ import edu.fatec.Porygon.dto.NoticiaDTO;
 import edu.fatec.Porygon.model.Noticia;
 import edu.fatec.Porygon.repository.NoticiaRepository;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
+import edu.fatec.Porygon.repository.TagRepository;
 import edu.fatec.Porygon.service.NoticiaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Controller
 public class NoticiaController {
@@ -31,11 +38,12 @@ public class NoticiaController {
     @Autowired
     private NoticiaService noticiaService;
 
+    @Autowired
+    private TagRepository tagRepository;
+
     @GetMapping("/")
     public String listarNoticias(Model model) {
-        List<Noticia> noticias = noticiaRepository.findAll();
-        noticias.sort(Comparator.comparing(Noticia::getTitulo));
-        model.addAttribute("noticias", noticias);
+        model.addAttribute("tags", tagRepository.findAll());
         return "index";
     }
 
@@ -53,35 +61,33 @@ public class NoticiaController {
 
     @GetMapping("/noticias")
     @ResponseBody
-    public ResponseEntity<?> listarNoticiasPorData(
-            @RequestParam("dataInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
-            @RequestParam("dataFim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
+    public ResponseEntity<?> listarNoticias(
+            @RequestParam(value = "dataInicio", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
+            @RequestParam(value = "dataFim", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim,
+            @RequestParam(value = "tagIds", required = false) List<Integer> tagIds,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
 
-        if (dataFim.isBefore(dataInicio)) {
+        if (dataInicio != null && dataFim != null && dataFim.isBefore(dataInicio)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("A data final não pode ser anterior à data inicial.");
         }
 
-        List<Noticia> noticias = noticiaService.listarNoticiasPorData(dataInicio, dataFim);
-        noticias.sort(Comparator.comparing(Noticia::getData));
-        List<NoticiaDTO> noticiaDTOs = noticias.stream()
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Noticia> noticiasPage = noticiaService.listarNoticiasPorFiltros(dataInicio, dataFim, tagIds, pageable);
+
+        if (noticiasPage.isEmpty()) {
+            return ResponseEntity.ok(Collections.singletonMap("mensagem", "Nenhuma notícia encontrada"));
+        }
+
+        List<NoticiaDTO> noticiaDTOs = noticiasPage.getContent().stream()
                 .map(NoticiaDTO::new)
                 .collect(Collectors.toList());
-            noticiaDTOs.sort(Comparator.comparing(NoticiaDTO::getData));
-            return ResponseEntity.ok(noticiaDTOs);
-}
 
-    @GetMapping("/associar-tags")
-    @ResponseBody
-    public ResponseEntity<String> associarTagsANoticias() {
-        try {
-            noticiaService.findTagsInTitle();
-            noticiaService.associarTagsPorConteudo();
-            return ResponseEntity.ok("Tags associadas com sucesso às notícias.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erro ao associar tags às notícias: " + e.getMessage());
-        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("content", noticiaDTOs);
+        response.put("totalPages", noticiasPage.getTotalPages());
+
+        return ResponseEntity.ok(response);
     }
-
 }

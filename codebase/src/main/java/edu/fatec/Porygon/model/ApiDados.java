@@ -13,7 +13,7 @@ public class ApiDados {
     private Integer id;
 
     @Column(columnDefinition = "TEXT")
-    private String conteudo;
+    private String conteudo;    
 
     private String descricao;
 

@@ -4,6 +4,8 @@ import edu.fatec.Porygon.model.Portal;
 import edu.fatec.Porygon.model.Tag;
 import edu.fatec.Porygon.repository.PortalRepository;
 import edu.fatec.Porygon.repository.TagRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PortalService {
@@ -48,29 +51,22 @@ public class PortalService {
         return salvar(portal, null);
     }
 
-    public void deletar(Integer id) {
-        Portal portal = portalRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Portal não encontrado"));
-        
-        portal.setTags(new HashSet<>());
-        portalRepository.save(portal);
-        
-        portalRepository.deleteById(id);
-    }
-
     public Portal atualizar(Portal portal, List<Integer> tagIds) {
         Portal portalExistente = portalRepository.findById(portal.getId())
             .orElseThrow(() -> new RuntimeException("Portal não encontrado"));
-
+    
         portal.setDataCriacao(portalExistente.getDataCriacao());
         
+        portal.setUltimaAtualizacao(portalExistente.getUltimaAtualizacao());
+        portal.setHasScrapedToday(portalExistente.isHasScrapedToday());
+    
         if (tagIds != null) {
             Set<Tag> novasTags = tagIds.isEmpty() 
                 ? new HashSet<>() 
                 : new HashSet<>(tagRepository.findAllById(tagIds));
             portal.setTags(novasTags);
         }
-
+    
         return portalRepository.save(portal);
     }
 
@@ -78,21 +74,25 @@ public class PortalService {
         return atualizar(portal, null);
     }
 
-    public Portal alterarStatus(Integer id, boolean novoStatus) {
+    @Transactional
+    public CompletableFuture<Portal> alterarStatus(Integer id, boolean novoStatus) {
         Optional<Portal> portalOptional = portalRepository.findById(id);
         
         if (portalOptional.isPresent()) {
             Portal portal = portalOptional.get();
             portal.setAtivo(novoStatus);
+            
             if (novoStatus && !portal.isHasScrapedToday()) {
-                dataScrapperService.WebScrapper();
-                portal.setHasScrapedToday(true); 
+                dataScrapperService.scrapeDatabyPortalID(portal.getId());
+                portal.setHasScrapedToday(true);
                 portal.setUltimaAtualizacao(LocalDate.now());
             }
-            return portalRepository.save(portal);
+            
+            return CompletableFuture.completedFuture(portalRepository.save(portal));
         }
-        return null; 
+        return CompletableFuture.completedFuture(null); 
     }
+    
 
     public Portal atualizarTags(Integer portalId, List<Integer> tagIds) {
         Portal portal = portalRepository.findById(portalId)
