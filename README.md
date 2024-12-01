@@ -297,7 +297,6 @@ Como usuário, quero consultar APIs filtrando por data de cadastro para revisar 
 <br>
 ![Burndown - Sprint 2 (1)](https://github.com/user-attachments/assets/56112d28-8240-4d07-929f-c7cb82e06201)
 <br>
-Tarefas Realizadas
 
 | História | Tarefa finalizada | Story Points | Data de Finalização |
 |----------|-------------------|--------------|---------------------|
@@ -343,9 +342,8 @@ Tarefas Realizadas
 
 
 <br>
-Tarefas Realizadas
 
-| História | Chave do item | Status                  | Atualizado(a)       | Story Point Tarefa |
+| História | Chave do item | Status                  | Data de Finalização      | Story Point Tarefa |
 |----------|---------------|-------------------------|----------------------|---------------------|
 | PYG-14   | PYG-70        | Concluído               | 24/out./24 00:12     | 5                   |
 | PYG-93   | PYG-102       | Concluído               | 25/out./24 10:49     | 3                   |
@@ -378,6 +376,36 @@ Tarefas Realizadas
 | PYG-93   | PYG-108       | Concluído               | 10/nov./24 14:07     | -                   |
 | PYG-110  | PYG-112       | Concluído               | 10/nov./24 14:14     | 8                   |
 | PYG-14   | PYG-90        | Concluído               | 10/nov./24 14:44     | 8                   |
+
+
+<br>
+Última Atualização: 10/11/2024
+
+</details>
+
+<details>
+<summary> SPRINT 4 | 11/11/2024 até 01/12/2024 </summary>
+<br>
+
+  Nesta sprint, usamos story points para medir nosso progresso em relação às entregas propostas.  
+  Pontuação total: 220
+<br>
+<br>
+<br>
+![Burndown - Sprint 4](https://github.com/user-attachments/assets/65bfe1fd-fb5c-4bd0-ab0f-e57e04f0cbf1)
+
+
+
+
+<br>
+
+| História  | Resumo                                          | Status Concluído         | Data de Finalização     | Story Point |
+|-----------|-------------------------------------------------|--------------------------|-------------------------|-------------|
+| PYG-122   | Melhorias e Refatoração no Cadastro de Portais e APIs - Parte 2 | 10/11/2024 16:10 | 01/12/2024 21:48 | 89.0        |
+| PYG-22    | Consultar APIs por Tag                          | 11/09/2024 20:41         | 28/11/2024 14:46        | 55.0        |
+| PYG-21    | Consultar APIs por Data                         | 11/09/2024 20:33         | 26/11/2024 07:25        | 21.0        |
+| PYG-18    | Consultar Notícias por Tag                      | 11/09/2024 20:26         | 18/11/2024 15:54        | 55.0        |
+
 
 
 <br>
